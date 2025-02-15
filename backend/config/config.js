@@ -13,8 +13,14 @@ const configDB = {
     dbPort: process.env.DB_PORT
 }
 
+const configToken = {
+    secretKey: process.env.SECRET_KEY,
+    expireToken: process.env.EXPIRE_TOKEN
+}
+
 module.exports = {
     configServer,
-    configDB
+    configDB,
+    configToken
 }
 
