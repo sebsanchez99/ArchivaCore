@@ -1,7 +1,7 @@
 const passport = require('passport')
-const LocalStrategy =require ('./strategies/localStrategy')
+const localStrategy =require ('./strategies/localStrategy')
 
 
-passport.use(LocalStrategy)
+passport.use(localStrategy)
 
 module.exports = passport
