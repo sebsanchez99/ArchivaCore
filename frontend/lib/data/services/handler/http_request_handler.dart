@@ -24,7 +24,7 @@ HttpFuture<T> handleHttpRequest<T>(
       throw HttpRequestFailure.badRequest();
     }
     if (response.statusCode == 401) {
-      throw HttpRequestFailure.unathorized();
+      throw HttpRequestFailure.unauthorized();
     }
     if (response.statusCode >= 500) {
       throw HttpRequestFailure.server();
