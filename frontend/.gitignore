@@ -44,4 +44,8 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Archivos autogenerados con Freezed
+*.g.dart 
+*.freezed.dart
+
 
