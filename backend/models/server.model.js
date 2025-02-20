@@ -34,7 +34,6 @@ class Server {
    */
   init() {
     this.app.use(passport.initialize());
-    this.app.use(passport.session());
     this.app.listen(this.port, () => {
       console.log(`Servidor iniciado en el puerto ${this.port}`);
     });
