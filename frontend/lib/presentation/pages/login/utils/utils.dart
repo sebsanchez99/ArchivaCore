@@ -8,7 +8,15 @@ void _submit(BuildContext context) async {
   if (context.mounted) {
     result.when(
       right: (_) => Navigator.pushReplacementNamed(context, '/prueba'), 
-      left: (failure) => print(failure),
+      left: (failure) => _showAlertDialog(context,'Credenciales incorrectas. Intente de nuevo.' ),
     );
   }
+}
+
+// Muestra un diálogo de error
+Future<void> _showAlertDialog(BuildContext context, String message) async {
+  return showDialog(
+    context: context, 
+    builder: (context) => ErrorDialog(message: message ),
+  );
 }

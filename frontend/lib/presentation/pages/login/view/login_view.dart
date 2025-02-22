@@ -4,6 +4,8 @@ import 'package:frontend/domain/repositories/auth_repository.dart';
 import 'package:frontend/presentation/pages/login/bloc/login_bloc.dart';
 import 'package:frontend/presentation/pages/login/bloc/login_events.dart';
 import 'package:frontend/presentation/pages/login/bloc/login_state.dart';
+import 'package:frontend/presentation/widgets/custom_input.dart';
+import 'package:frontend/presentation/widgets/dialogs/error_dialog.dart';
 
 part '../utils/utils.dart';
 
@@ -13,7 +15,11 @@ class LoginView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => LoginBloc(LoginState(), authRepository: context.read<AuthRepository>()),
+      create:
+          (_) => LoginBloc(
+            LoginState(),
+            authRepository: context.read<AuthRepository>(),
+          ),
       child: Scaffold(
         backgroundColor: const Color(0xFFEFF3FA),
         body: Center(
@@ -57,79 +63,80 @@ class LoginView extends StatelessWidget {
 
                 Expanded(
                   flex: 3,
-                  child: Padding(
-                    padding: const EdgeInsets.all(50),
-                    child: BlocBuilder<LoginBloc, LoginState>(
-                      buildWhen: (previous, current) => previous.blocking != current.blocking,
-                      builder:
-                          (context, state) => AbsorbPointer(
-                            absorbing: state.blocking,
-                            child: Form(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  const Text(
-                                    "Iniciar sesión",
-                                    style: TextStyle(
-                                      fontSize: 35,
-                                      fontWeight: FontWeight.bold,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 244, 244, 244),
+                      borderRadius: const BorderRadius.horizontal(
+                        right: Radius.circular(12),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(50),
+                      child: BlocBuilder<LoginBloc, LoginState>(
+                        buildWhen:
+                            (previous, current) =>
+                                previous.blocking != current.blocking,
+                                
+                        builder:
+                            (context, state) => AbsorbPointer(
+                              absorbing: state.blocking,
+                              child: Form(
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    const Text(
+                                      "Iniciar sesión",
+                                      
+                                      style: TextStyle(
+                                        fontSize: 35,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 10),
+                                    const SizedBox(height: 10),
 
-                                  TextField(
-                                    decoration: InputDecoration(
-                                      labelText: "Usuario",
-                                      border: OutlineInputBorder(),
-                                      contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                                    CustomInput(
+                                      labeltext: 'Usuario',
+                                      onChanged: (text) => context.read<LoginBloc>().add(LoginEvents.usernameChanged(text.trim())),
+                                      isPassword: false,
                                     ),
-                                    onChanged: (text) => context.read<LoginBloc>().add(LoginEvents.usernameChanged(text.trim())),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  TextField(
-                                    obscureText: true,
-                                    decoration: InputDecoration(
-                                      labelText: "Contraseña",
-                                      border: OutlineInputBorder(),
-                                      contentPadding: EdgeInsets.symmetric(horizontal: 8)),
-                                    onSubmitted: (_) => _submit(context),
-                                    onChanged: (text) => context.read<LoginBloc>().add(LoginEvents.passwordChanged(text.trim())),
-                                  ),
-                                  const SizedBox(height: 15),
-                                  state.blocking
-                                      ? const Center(child: CircularProgressIndicator())
-                                      : Builder(
-                                        builder: (ctx) {
-                                          return SizedBox(
-                                            width: double.infinity,
-                                            child: ElevatedButton(
+                                    const SizedBox(height: 10),
+                                    CustomInput(labeltext:  'Contraseña', 
+                                      onChanged:(text) => context.read<LoginBloc>().add( LoginEvents.passwordChanged(text.trim(),),),
+                                      isPassword: true,
+                                      onSubmitted: (_) => _submit(context),
+                                    ),
+                                     
+                                    const SizedBox(height: 15),
+                                    state.blocking
+                                        ? const Center(
+                                          child: CircularProgressIndicator(
+                                          color: Color(0xFFBCDFFE,),
+                                          ),
+                                        )
+                                        : Builder(
+                                          builder: (ctx) {
+                                            return ElevatedButton(
                                               style: ElevatedButton.styleFrom(
-                                                backgroundColor:
-                                                    const Color.fromARGB(
-                                                      255,
-                                                      253,
-                                                      253,
-                                                      255,
-                                                    ),
-                                                foregroundColor:
-                                                    const Color.fromARGB(
-                                                      255,
-                                                      10,
-                                                      6,
-                                                      6,
-                                                    ),
-                                                padding: const EdgeInsets.symmetric(vertical: 10),
+                                                backgroundColor: Color( 0xFF3A5A98),
+                                                padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))  
                                               ),
                                               onPressed: () => _submit(context),
-                                              child: const Text("Entrar"),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                ],
+                                              child: const Text(
+                                                "Iniciar sesión",
+                                                style: TextStyle(
+                                                  color:  Colors.white,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
+                      ),
                     ),
                   ),
                 ),
@@ -141,3 +148,4 @@ class LoginView extends StatelessWidget {
     );
   }
 }
+
