@@ -1,14 +1,14 @@
 const AuthHelper = require('../helpers/auth.helper')
 
 /**
- * EntPoint que permite controlar la generación del token y enviarlo al usuario
+ * Controlador que permite controlar la generación del token y enviarlo al usuario
  * @param {} req petición 
  * @param {} res respuesta
  */
 const login = async (req, res) => {
-    const {username} = req.body
+    const { _usu_id, _rol_nombre } = req.user    
     const authHelper = new AuthHelper()
-    const token = authHelper.generateToken(username)
+    const token = authHelper.generateToken(_usu_id, _rol_nombre)
     res.json(token)
 }
 

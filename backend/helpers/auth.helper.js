@@ -4,21 +4,19 @@ const { configToken } = require("../config/config");
 class AuthHelper {
 
     /**
-     * Toma el nombre de usuario y genera el Token para retornarlo
-     * @param username - Nombre de usuario
-     * @returns Token de sesión con nombre de usuario
+     * Método que genera token de usuario con datos incluidos
+     * @param idUser - Id de usuario
+     * @returns Token de sesión 
      */
-    generateToken(username){
+    generateToken(idUser, userRole){
         const payload = {
-            username: username
+            id: idUser, 
+            role: userRole
         }
-
         const options = {
             expiresIn: configToken.expireToken
         }
-
         const token = jwt.sign(payload, configToken.secretKey , options)
-
         return token
     }
 }
