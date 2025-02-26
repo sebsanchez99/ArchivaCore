@@ -1,5 +1,4 @@
 const { Strategy, ExtractJwt } = require('passport-jwt')
-const jwt = require('jsonwebtoken')
 const { configToken } = require("../../../config/config");
 
 /**

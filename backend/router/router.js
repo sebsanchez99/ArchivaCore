@@ -6,8 +6,10 @@ const checkRole  = require('../middlewares/checkRole')
 
 const router = Router()
 
+// Ruta de autenticación
 router.use('/auth',authRouter)
-router.use('/admin', /* passport.authenticate('jwt', {session: false}),checkRole, */ adminRouter)
+// Ruta de administración
+router.use('/admin', passport.authenticate('jwt', {session: false}), checkRole, adminRouter)
 
 
 module.exports = router

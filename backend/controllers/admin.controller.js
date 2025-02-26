@@ -1,7 +1,7 @@
 const AdminHelper = require('../helpers/admin.helper')
 
 /**
- * EntPoint que permite listar los usuarios desde la BD
+ * Controlador que permite listar los usuarios desde la BD
  * @param {*} req Petición
  * @param {*} res Respuesta
  */
@@ -20,17 +20,16 @@ const listUsers = async(req, res) => {
             message: error.message
         })
     }
-   
 }
 
 /**
- * EndPoint que permite crear usuario
+ * Controlador que permite crear usuario
  * @param {*} req Petición
  * @param {*} res Respuesta
  */
 const createUsers = async(req, res) => {
     try {
-        const {username, password, rolUser} = req.body
+        const { username, password, rolUser } = req.body
         const adminHelper = new AdminHelper()
         const idRol = await adminHelper.obtenerRol(rolUser)
         await adminHelper.createUsers(username, password, idRol)
@@ -45,18 +44,17 @@ const createUsers = async(req, res) => {
             message: error.message
         })
     }
-
 }
 
 
 /**
- * EndPoint que permite Actualizar usuario
+ * Controlador que permite Actualizar usuario
  * @param {*} req Petición 
  * @param {*} res Respuesta
  */
 const userUpdate = async(req, res) => {
     try {
-        const {id, username, password, rolUser} = req.body
+        const { id, username, password, rolUser } = req.body
         const adminHelper = new AdminHelper()
         const idRol = await adminHelper.obtenerRol(rolUser)
         await adminHelper.userUpdate(id, username, password, idRol)
@@ -70,19 +68,17 @@ const userUpdate = async(req, res) => {
             result: false,
             message: error.message
         })
-        
     }
-
 }
 
 /**
- * Endpoint que permite eliminar usuario por id
- * @param {*} req 
- * @param {*} res 
+ * Controlador que permite eliminar usuario por id
+ * @param {*} req Petición
+ * @param {*} res Respuesta
  */
 const deleteUser = async(req, res) => {
     try {
-        const {id} = req.body
+        const { id } = req.body
         const adminHelper = new AdminHelper()
         await adminHelper.deleteUsers(id)
         res.json({
@@ -94,9 +90,7 @@ const deleteUser = async(req, res) => {
             result: false,
             message: error.message
         })
-        
     }
-
 }
 
 module.exports = {
