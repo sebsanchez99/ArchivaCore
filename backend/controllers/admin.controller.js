@@ -5,39 +5,105 @@ const AdminHelper = require('../helpers/admin.helper')
  * @param {*} req Petición
  * @param {*} res Respuesta
  */
-const listUsers =async(req, res) => {
-    const adminHelper = new AdminHelper()
-    const users = await adminHelper.listUsers()
-    res.json(users)
-    
+const listUsers = async(req, res) => {
+    try {
+        const adminHelper = new AdminHelper()
+        const usersList = await adminHelper.listUsers()
+        res.json({
+            result: true,
+            message: "Usuarios listados exitosamente",
+            data: usersList
+        })
+    } catch (error) {
+        res.status(500).send({
+            result: false,
+            message: error.message
+        })
+    }
+   
 }
 
-// /**
-//  * EntPoint que permite eliminar usuario por su ID
-//  * @param {*} req Petición 
-//  * @param {*} res Respuesta
-//  */
-// const deleteUsers = async(req, res) => {
-//     const adminHelper = new AdminHelper()
-//     const deleteUser = await adminHelper.deleteUsers()
-//     res.json(deleteUser)
-// }
+/**
+ * EndPoint que permite crear usuario
+ * @param {*} req Petición
+ * @param {*} res Respuesta
+ */
+const createUsers = async(req, res) => {
+    try {
+        const {username, password, rolUser} = req.body
+        const adminHelper = new AdminHelper()
+        const idRol = await adminHelper.obtenerRol(rolUser)
+        await adminHelper.createUsers(username, password, idRol)
+        res.json({
+            result: true,
+            message: "Usuario creado exitosamente"
+        })
+    } catch (error) {
+        const status = error.message == 'El usuario ya existe' ? 400 : 500
+        res.status(status).send({
+            result: false,
+            message: error.message
+        })
+    }
 
-// /**
-//  * EndPoint que permite crear usuario
-//  * @param {*} req Petición
-//  * @param {*} res Respuesta
-//  */
-// const createUsers = async(req, res) => {
-//     const adminHelper =new AdminHelper()
-//     const createUser =await adminHelper.createUsers()
-//     res.json(createUser)
-// }
+}
+
+
+/**
+ * EndPoint que permite Actualizar usuario
+ * @param {*} req Petición 
+ * @param {*} res Respuesta
+ */
+const userUpdate = async(req, res) => {
+    try {
+        const {id, username, password, rolUser} = req.body
+        const adminHelper = new AdminHelper()
+        const idRol = await adminHelper.obtenerRol(rolUser)
+        await adminHelper.userUpdate(id, username, password, idRol)
+        res.json({
+            result: true,
+            message: "usuario actualizado exitosamente"
+            
+        })
+    } catch (error) {
+        res.status(500).send({
+            result: false,
+            message: error.message
+        })
+        
+    }
+
+}
+
+/**
+ * Endpoint que permite eliminar usuario por id
+ * @param {*} req 
+ * @param {*} res 
+ */
+const deleteUser = async(req, res) => {
+    try {
+        const {id} = req.body
+        const adminHelper = new AdminHelper()
+        await adminHelper.deleteUsers(id)
+        res.json({
+            result: true,
+            message: "Usuario eliminado exitosamente"
+        })        
+    } catch (error) {
+        res.status(500).send({
+            result: false,
+            message: error.message
+        })
+        
+    }
+
+}
 
 module.exports = {
     listUsers,
-//   deleteUsers, 
-//   createUsers
+    createUsers, 
+    userUpdate, 
+    deleteUser
 };
 
 
