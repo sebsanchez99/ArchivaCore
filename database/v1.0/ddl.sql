@@ -13,6 +13,7 @@ CREATE TABLE Usuario (
     Usu_Nombre VARCHAR(100) NOT NULL,
     Usu_Hash TEXT NOT NULL, 
     Usu_Rol INT NOT NULL,
+    CONSTRAINT unique_username UNIQUE(Usu_Nombre),
     CONSTRAINT fk_usuario_rol FOREIGN KEY (Usu_Rol) REFERENCES Rol(Rol_ID) ON DELETE CASCADE
 );
 
@@ -22,6 +23,7 @@ CREATE TABLE Carpeta (
     Car_Nombre VARCHAR(255) NOT NULL,
     Car_Ubicacion TEXT NOT NULL,
     Car_Usuario UUID NOT NULL,
+    CONSTRAINT unique_folder UNIQUE(Car_Nombre),
     CONSTRAINT fk_carpeta_usuario FOREIGN KEY (Car_Usuario) REFERENCES Usuario(Usu_ID) ON DELETE CASCADE
 );
 
@@ -32,6 +34,7 @@ CREATE TABLE Documento (
     Doc_Ubicacion TEXT NOT NULL,
     Doc_Fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Doc_Carpeta UUID NOT NULL,
+    CONSTRAINT unique_file UNIQUE(Doc_Nombre),
     CONSTRAINT fk_documento_carpeta FOREIGN KEY (Doc_Carpeta) REFERENCES Carpeta(Car_ID) ON DELETE CASCADE
 );
 

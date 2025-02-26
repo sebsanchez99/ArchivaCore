@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/presentation/pages/home_view.dart';
 import 'package:frontend/presentation/pages/login/view/login_view.dart';
 import 'package:frontend/providers/providers.dart';
-import 'package:frontend/prueba.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -21,8 +21,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),
       routes: {
-        '/': (context) => const LoginView(),
-        '/prueba': (context) => const Prueba()
+        '/': (context) => const HomeView(),
+        // '/': (context) => const LoginView(),
       }, 
     );
   }
