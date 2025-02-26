@@ -1,53 +1,45 @@
-const jwt = require('jsonwebtoken')
-const { configToken } = require("../config/config")
 const pool = require("../libs/postgres");
 const bcrypt = require('bcrypt');
-
 
 class AdminHelper{
 
     /**
-     * Endpoint con query para listar usuarios
-     * @returns  usuarios listados
+     * Método que lista usuarios
+     * @returns Lista de usuarios con datos 
      */
     async listUsers(){
         const result = await pool.query(
             // 'SELECT listar_usuarios()'
             'SELECT * FROM listar_usuarios()',
-                    )
+        )
         const usersList = result.rows
         return usersList
     }
 
     /**
-     * Endpoint con query para obtener el rol del usuario
-     * @param {*} rolName Rol del usuario  
-     * @returns Rol del usuario
+     * Método que obtiene id de rol
+     * @param {*} rolName Nombre de rol del usuario  
+     * @returns Id de rol
      */
     async obtenerRol(rolName){
         const result = await pool.query(
             'SELECT * FROM obtener_id_rol($1)',
             [rolName]
-            
         )
-
         const idRol = result.rows[0].obtener_id_rol 
         return idRol
     }
 
     /**
-     * Endpoint con query para obtener usuario, compararlo  y crear usuario si es posible
+     * Método que crea usuario
      * @param {*} username Nombre de usuario
      * @param {*} password Hash de usuario
      * @param {*} rolUser Rol de usuario
-     * @returns Usuario creado 
+     * @returns Resultado de query 
      */
     async createUsers(username, password, rolUser){
-        const userExist = await pool.query(
-            'SELECT * FROM obtener_usuario($1)',
-            [username]
-        )
-        if (userExist.rows.length > 0){
+        const userExist = await this.#verifyUser(username)
+        if (userExist) {
             throw new Error('El usuario ya existe')
         }
         const hashPassword =  await bcrypt.hash( password ,  10 )
@@ -59,23 +51,19 @@ class AdminHelper{
     }
 
     /**
-     * Endpoint con query para actualizar usuario por id
+     * Método que actualiza usuario
      * @param {*} id Id de usuario  
      * @param {*} username Nombre de usuario
      * @param {*} password Hash de usuario
      * @param {*} rolUser Rol de usuario
-     * @returns Usuario Actualizado
+     * @returns Resultado de query
      */
     async userUpdate(id, username, password, rolUser){
-        const hashPassword = await bcrypt.hash( password ,  10 )
-        const userExist = await pool.query(
-            'SELECT * FROM obtener_usuario($1)',
-            [username]
-        )
-        if (userExist.rows.length > 0){
+        const userExist = await this.#verifyUser(username)
+        if (userExist) {
             throw new Error('El usuario ya existe')
         }
-
+        const hashPassword = await bcrypt.hash( password ,  10 )
         const updateUser = await pool.query(
             'SELECT * FROM actualizar_usuario( $1, $2, $3, $4 )',
             [id, username, hashPassword, rolUser]
@@ -84,9 +72,9 @@ class AdminHelper{
     }
 
     /**
-     * Endpoint con query para eliminar usuario por id
+     * Método que elimina usuario
      * @param {*} id Id de usuario
-     * @returns Usuario eliminado
+     * @returns Resultado de query
      */
     async deleteUsers(id){
         const userDelete = await pool.query(
@@ -96,9 +84,23 @@ class AdminHelper{
         return userDelete
     }
 
+    /**
+     * Verifica la existencia del nombre de usuario en la base de datos
+     * @param {*} username Nombre de usuario
+     * @returns Valor booleano indicando si el usuario existe
+     */
+    async #verifyUser(username) {
+        const userExist = await pool.query(
+            'SELECT * FROM obtener_usuario($1)',
+            [username]
+        )
+        if (userExist.rows.length > 0){
+            return true
+        } else {
+            return false
+        }
+    }
         
-}
-
-    
+}    
 
 module.exports = AdminHelper
