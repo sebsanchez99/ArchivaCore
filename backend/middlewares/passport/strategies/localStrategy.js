@@ -10,16 +10,16 @@ const localStrategy = new LocalStrategy(
       const result = await pool.query(
         "SELECT * FROM obtener_usuario($1)",
         [username]
-      );
+      )
 
       if (result.rows.length === 0) {
-        return done(null, false, { message: "Usuario no encontrado" });
+        return done(null, false, { message: "Usuario no encontrado" })
       }
-      const user = result.rows[0];
-      const isMatch = await bcrypt.compare(password, user._usu_hash);
+      const user = result.rows[0]
+      const isMatch = await bcrypt.compare(password, user._usu_hash)
 
       if (!isMatch) {
-        return done(null, false, { message: "Contraseña incorrecta" });
+        return done(null, false, { message: "Contraseña incorrecta" })
       }
       done(null,user)
     } catch (error) {
