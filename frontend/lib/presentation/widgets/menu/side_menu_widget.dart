@@ -15,12 +15,33 @@ class SideMenuWidget extends StatelessWidget {
       builder: (context, state) {
         return SideMenu(
           controller: sideMenuCubit.sideMenuController,
-          items:
-              menuItems.entries.map((item) {
+          title: Center(child: Icon(Icons.abc, size: 70,)), 
+        
+          style: SideMenuStyle(
+            showHamburger: true, 
+            backgroundColor: Color(0xFFE7E9ED),
+            hoverColor: Color(0xFFF3F4F6),
+            selectedColor: Color(0xFFD1D5DB),
+            selectedTitleTextStyle: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF2B3642),
+            ),
+            selectedIconColor: Color(0xFF3A5A98),
+            unselectedIconColor: Colors.grey,
+            unselectedTitleTextStyle: TextStyle(color: Color(0xFF394958)),
+            itemBorderRadius: BorderRadius.circular(12),
+            itemOuterPadding: EdgeInsets.symmetric(horizontal: 8,vertical: 4,), 
+            itemInnerSpacing: 10,
+            ),
+
+            items:
+            menuItems.entries.map((item) {
                 return SideMenuItem(
                   title: item.value["title"],
                   icon: item.value["icon"],
-                  onTap: (index, sideMenuController) => sideMenuCubit.selectIndex(index),
+                  onTap:
+                      (index, sideMenuController) =>
+                          sideMenuCubit.selectIndex(index),
                 );
               }).toList(),
         );
