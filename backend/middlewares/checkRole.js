@@ -1,8 +1,13 @@
+/**
+ * Middleware que verifica rol de usuario
+ * @param {*} req Petición
+ * @param {*} res Respuesta
+ * @param {*} next Función para pasar al siguiente middlware/controlador
+ * @returns Respuesta HTTP en caso de que el usuario no tenga rol de administrador
+ */
 const checkRole = (req, res, next) => {
-    console.log(req.user)
-    
-    if(req.user._rol_nombre != "Administrador"){
-        return res.status(401)
+    if (req.user.role !== "Administrador") {
+        return res.status(403).json({ message: "Acceso no autorizado" })
     }
     next()
 }
