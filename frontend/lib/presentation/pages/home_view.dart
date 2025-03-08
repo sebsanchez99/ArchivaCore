@@ -18,10 +18,19 @@ class HomeView extends StatelessWidget {
             Expanded(
               child: BlocBuilder<SideMenuCubit, int>(
                 builder: (context, state) {
-                    final sideMenuCubit = context.read<SideMenuCubit>();
-                  return PageView(
-                    controller: sideMenuCubit.pageController,
-                    children: menuItems.values.map((item) => item['widget'] as Widget).toList(),
+                  final sideMenuCubit = context.read<SideMenuCubit>();
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    child: PageView(
+                      controller: sideMenuCubit.pageController,
+                      children:
+                          menuItems.values
+                              .map((item) => item['widget'] as Widget)
+                              .toList(),
+                    ),
                   );
                 },
               ),
