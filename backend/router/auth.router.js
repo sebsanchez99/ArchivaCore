@@ -8,3 +8,5 @@ const router = Router()
 router.post('/login', passport.authenticate('local', {session: false}), login)
 
 module.exports = router
+
+// Esto es otro ejemplo 
