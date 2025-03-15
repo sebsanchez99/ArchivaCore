@@ -15,27 +15,35 @@ class SideMenuWidget extends StatelessWidget {
       builder: (context, state) {
         return SideMenu(
           controller: sideMenuCubit.sideMenuController,
-          title: Center(child: Icon(Icons.abc, size: 70,)), 
-        
+          title: Column(
+            children: [
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 150, maxHeight: 150),
+                child: Image.asset('assets/images/logo.png'),
+              ),
+              Divider(indent: 8, endIndent: 8),
+            ],
+          ),
+          displayModeToggleDuration: Duration(milliseconds: 250),
+
           style: SideMenuStyle(
-            showHamburger: true, 
+            openSideMenuWidth: 250,
             backgroundColor: Color(0xFFE7E9ED),
             hoverColor: Color(0xFFF3F4F6),
             selectedColor: Color(0xFFD1D5DB),
             selectedTitleTextStyle: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF2B3642),
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF2B3642),
             ),
             selectedIconColor: Color(0xFF3A5A98),
             unselectedIconColor: Colors.grey,
             unselectedTitleTextStyle: TextStyle(color: Color(0xFF394958)),
             itemBorderRadius: BorderRadius.circular(12),
-            itemOuterPadding: EdgeInsets.symmetric(horizontal: 8,vertical: 4,), 
-            itemInnerSpacing: 10,
-            ),
+            itemOuterPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+          ),
 
-            items:
-            menuItems.entries.map((item) {
+          items:
+              menuItems.entries.map((item) {
                 return SideMenuItem(
                   title: item.value["title"],
                   icon: item.value["icon"],
