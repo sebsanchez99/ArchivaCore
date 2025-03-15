@@ -3,6 +3,7 @@ import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/presentation/constants/menu_items.dart';
 import 'package:frontend/presentation/widgets/menu/side_menu_cubit.dart';
+import 'package:frontend/presentation/widgets/menu/side_menu_state.dart';
 
 class SideMenuWidget extends StatelessWidget {
   const SideMenuWidget({super.key});
@@ -11,7 +12,7 @@ class SideMenuWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final sideMenuCubit = context.read<SideMenuCubit>();
 
-    return BlocBuilder<SideMenuCubit, int>(
+    return BlocBuilder<SideMenuCubit, SideMenuState>(
       builder: (context, state) {
         return SideMenu(
           controller: sideMenuCubit.sideMenuController,
@@ -27,6 +28,7 @@ class SideMenuWidget extends StatelessWidget {
           displayModeToggleDuration: Duration(milliseconds: 250),
 
           style: SideMenuStyle(
+            displayMode: state.displayMode,
             openSideMenuWidth: 250,
             backgroundColor: Color(0xFFE7E9ED),
             hoverColor: Color(0xFFF3F4F6),
