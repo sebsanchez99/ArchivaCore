@@ -12,6 +12,13 @@ class HomeView extends StatelessWidget {
     return BlocProvider(
       create: (_) => SideMenuCubit(),
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Color(0xFFE7E9ED),
+          leading: IconButton(onPressed: () {}, icon: Icon(Icons.menu)),
+          actions: [
+            IconButton(onPressed: () {}, icon: Icon(Icons.notifications)),
+          ],
+        ),
         body: Row(
           children: [
             SideMenuWidget(),
