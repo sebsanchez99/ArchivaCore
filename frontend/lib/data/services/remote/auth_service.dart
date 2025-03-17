@@ -1,33 +1,27 @@
-import 'dart:convert';
-
-import 'package:frontend/data/services/handler/http_request_handler.dart';
+// Servicio de autenticación que maneja solicitudes HTTP usando Dio
+import 'package:dio/dio.dart';
+import 'package:frontend/data/services/handler/dio_client.dart';
+import 'package:frontend/data/services/handler/dio_handler.dart';
+import 'package:frontend/domain/models/server_response_model.dart';
 import 'package:frontend/domain/typedefs.dart';
-import 'package:http/http.dart';
 
-// Servicio de autentiación que maneja las solicitudes HTTP al backend
+// Servicio de autenticación 
 class AuthService {
-  AuthService(this._client);
 
-  final Client _client;
+  final Dio _dio = DioClient().client;
 
-  // Método encargado de autenticar un usuario con nombre de usuario y contraseña
-  HttpFuture<String> authUser(String username, String password) async {
-    return handleHttpRequest(
-      () async {
-        final url = Uri.parse('http://localhost:3000/api/v1/auth/login');
-        final headers = {'Content-Type': 'application/json'};
-        final body = {'username': username, 'password': password};
-        final response = await _client.post(
-          url,
-          headers: headers,
-          body: jsonEncode(body),
-        );
-        return response;
-      },
-      (responseBody) {
-        final token = jsonDecode(responseBody);
-        return token;
-      },
+  // Método para autenticar usuario con nombre de usuario y contraseña
+  HttpFuture<ServerResponseModel> authUser(String username, String password) {
+    return DioHandler.handleRequest(
+      () => _dio.post(
+        '/auth/login',
+        data: {
+          'username': username,
+          'password': password,
+        },
+      ),
+      (response) => ServerResponseModel.fromJson(response),
     );
   }
+
 }
