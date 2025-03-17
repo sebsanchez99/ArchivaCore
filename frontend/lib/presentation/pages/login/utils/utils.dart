@@ -7,7 +7,7 @@ void _submit(BuildContext context) async {
   // Verifica que el contexto siga siendo válido antes de interactuar con la UI
   if (context.mounted) {
     result.when(
-      right: (_) => Navigator.pushReplacementNamed(context, '/prueba'), 
+      right: (_) => Navigator.pushReplacementNamed(context, '/home'), 
       left: (failure) => _showAlertDialog(context,'Credenciales incorrectas. Intente de nuevo.' ),
     );
   }
