@@ -14,3 +14,4 @@ class AuthRepositoryImpl implements AuthRepository {
     return _authService.authUser(username, password);
   }
 }
+

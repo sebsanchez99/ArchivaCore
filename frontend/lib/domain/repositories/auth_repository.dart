@@ -6,3 +6,4 @@ abstract class AuthRepository {
   // Método abstracto para autenticar usuario
   HttpFuture<ServerResponseModel> logIn(String username, String password);
 }
+
