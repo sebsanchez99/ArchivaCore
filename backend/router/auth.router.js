@@ -7,6 +7,4 @@ const router = Router()
 // http://localhost:3000/api/v1/auth/login
 router.post('/login', passport.authenticate('local', {session: false}), login)
 
-module.exports = router
-
-// Esto es otro ejemplo 
+module.exports = router 
