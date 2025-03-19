@@ -13,9 +13,10 @@ class AdministrationView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<AdministrationBloc>(
       create:
-          (_) =>
-              AdministrationBloc(AdministrationState.loading(), administrationRepository: context.read<AdministrationRepository>())
-                ..add(InitializeEvent()),
+          (_) => AdministrationBloc(
+            AdministrationState.loading(),
+            administrationRepository: context.read<AdministrationRepository>(),
+          )..add(InitializeEvent()),
       child: BlocBuilder<AdministrationBloc, AdministrationState>(
         builder: (context, state) {
           final bloc = context.read<AdministrationBloc>();
@@ -113,6 +114,18 @@ class AdministrationView extends StatelessWidget {
                     ),
                   ),
                 ),
+              );
+            },
+            //TODO: Implementar alertas en los estados de falla
+            failed: (value) {
+              return value.failure.when(
+                network: () => Center(),
+                notFound: () => Center(),
+                server: () => Center(),
+                unauthorized: () => Center(),
+                badRequest: () => Center(),
+                local: () => Center(),
+                expired: () => Center(),
               );
             },
           );
