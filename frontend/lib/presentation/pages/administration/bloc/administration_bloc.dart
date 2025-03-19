@@ -4,7 +4,6 @@ import 'package:frontend/domain/models/user_model.dart';
 import 'package:frontend/domain/repositories/administration_repository.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_events.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_state.dart';
-import 'package:http/http.dart';
 
 class AdministrationBloc
     extends Bloc<AdministrationEvents, AdministrationState> {
@@ -35,7 +34,8 @@ class AdministrationBloc
               responseData.map((user) => UserModel.fromJson(user)).toList();
           return AdministrationState.loaded(users: users, filteredUsers: users);
         },
-        left: (value) => AdministrationState.loaded(users: [], filteredUsers: []),
+        left:
+            (value) => AdministrationState.loaded(users: [], filteredUsers: []),
       ),
     );
   }
@@ -52,9 +52,7 @@ class AdministrationBloc
                 event.username.toLowerCase(),
               );
             }).toList();
-        emit(
-          value.copyWith(filteredUsers: filteredUsers, users: filteredUsers),
-        );
+        emit(value.copyWith(filteredUsers: filteredUsers));
       },
     );
   }
