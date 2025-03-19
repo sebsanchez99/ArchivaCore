@@ -6,7 +6,7 @@ final Map<int, Map<String, dynamic>> menuItems = {
   0: {
     "title": "Administrar",
     "icon": Icon(Icons.admin_panel_settings),
-    "widget": AdminitrationView(),
+    "widget": AdministrationView(),
   },
   1: {
     "title": "Usuarios",
@@ -17,5 +17,5 @@ final Map<int, Map<String, dynamic>> menuItems = {
     "title": "Cerrar Sesion",
     "icon": Icon(Icons.verified_user_outlined),
     "widget": Text("Vista de cerrar sesion"),
-  },
+  },  
 };
