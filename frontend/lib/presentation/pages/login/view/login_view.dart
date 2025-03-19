@@ -4,6 +4,7 @@ import 'package:frontend/domain/repositories/auth_repository.dart';
 import 'package:frontend/presentation/pages/login/bloc/login_bloc.dart';
 import 'package:frontend/presentation/pages/login/bloc/login_events.dart';
 import 'package:frontend/presentation/pages/login/bloc/login_state.dart';
+import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
 import 'package:frontend/presentation/widgets/custom_input.dart';
 import 'package:frontend/presentation/widgets/dialogs/error_dialog.dart';
 
@@ -116,19 +117,9 @@ class LoginView extends StatelessWidget {
                                         )
                                         : Builder(
                                           builder: (ctx) {
-                                            return ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: Color( 0xFF3A5A98),
-                                                padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
-                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))  
-                                              ),
+                                            return CustomButton(
+                                              message: 'Iniciar sesión',
                                               onPressed: () => _submit(context),
-                                              child: const Text(
-                                                "Iniciar sesión",
-                                                style: TextStyle(
-                                                  color:  Colors.white,
-                                                ),
-                                              ),
                                             );
                                           },
                                         ),
@@ -148,4 +139,6 @@ class LoginView extends StatelessWidget {
     );
   }
 }
+
+
 
