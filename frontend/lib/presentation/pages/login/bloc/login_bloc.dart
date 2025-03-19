@@ -29,7 +29,6 @@ class LoginBloc extends Bloc<LoginEvents, LoginState> {
     add(LoginEvents.blocking(true));
     final result = await _authRepository.logIn(state.username, state.password);
     add(LoginEvents.blocking(false));
-    result.whenOrNull(right: (response) => print(response));
     return result;
   }
 }
