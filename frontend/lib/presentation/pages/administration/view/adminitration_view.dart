@@ -8,6 +8,7 @@ import 'package:frontend/presentation/pages/administration/bloc/administration_e
 import 'package:frontend/presentation/pages/administration/bloc/administration_state.dart';
 import 'package:frontend/presentation/widgets/states/failure_state.dart';
 import 'package:frontend/presentation/pages/administration/utils/utils.dart';
+import 'package:frontend/presentation/widgets/states/loading_state.dart';
 
 class AdministrationView extends StatelessWidget {
   const AdministrationView({super.key});
@@ -25,7 +26,7 @@ class AdministrationView extends StatelessWidget {
           final bloc = context.read<AdministrationBloc>();
 
           return state.map(
-            loading: (_) => Center(child: CircularProgressIndicator()),
+            loading: (_) => LoadingState(),
             loaded: (value) {
               final tableRow = TableRow(context, users: value.filteredUsers);
 
@@ -44,19 +45,19 @@ class AdministrationView extends StatelessWidget {
                       arrowHeadColor: Colors.blue,
                       actions: [
                         SizedBox(
-                            width: 185,
-                            height: 40,
-                            child: FilledButton.tonalIcon(
-                              onPressed: () {},
-                              label: Text('Agregar usuario'),
-                              icon: Icon(Icons.add),
-                              iconAlignment: IconAlignment.end,
-                              style: ButtonStyle(
-                                elevation: WidgetStatePropertyAll(3),
-                                iconSize: WidgetStatePropertyAll(30),
-                              ),
+                          width: 185,
+                          height: 40,
+                          child: FilledButton.tonalIcon(
+                            onPressed: () {},
+                            label: Text('Agregar usuario'),
+                            icon: Icon(Icons.add),
+                            iconAlignment: IconAlignment.end,
+                            style: ButtonStyle(
+                              elevation: WidgetStatePropertyAll(3),
+                              iconSize: WidgetStatePropertyAll(30),
                             ),
                           ),
+                        ),
                       ],
                       header: Align(
                         alignment: Alignment.center,
@@ -116,10 +117,8 @@ class AdministrationView extends StatelessWidget {
                 ),
               );
             },
-            failed: (value) => FailureState(
-              failure: value.failure, 
-              onRetry: () {}
-            )
+            failed:
+                (value) => FailureState(failure: value.failure, onRetry: () {}),
           );
         },
       ),
