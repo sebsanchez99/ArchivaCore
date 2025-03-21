@@ -34,8 +34,7 @@ class AdministrationBloc
               responseData.map((user) => UserModel.fromJson(user)).toList();
           return AdministrationState.loaded(users: users, filteredUsers: users);
         },
-        left:
-            (value) => AdministrationState.loaded(users: [], filteredUsers: []),
+        left: (failure) => AdministrationState.failed(failure),
       ),
     );
   }
