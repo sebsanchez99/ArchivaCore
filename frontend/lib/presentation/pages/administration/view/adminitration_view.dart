@@ -6,6 +6,7 @@ import 'package:frontend/presentation/constants/shema_colors.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_bloc.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_events.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_state.dart';
+import 'package:frontend/presentation/widgets/states/failure_state.dart';
 import 'package:frontend/presentation/pages/administration/utils/utils.dart';
 
 class AdministrationView extends StatelessWidget {
@@ -41,63 +42,57 @@ class AdministrationView extends StatelessWidget {
                     child: PaginatedDataTable(
                       showFirstLastButtons: true,
                       arrowHeadColor: Colors.blue,
-                      header: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            constraints: BoxConstraints(
-                              maxHeight: 40,
-                              maxWidth: 500,
-                            ),
-                            child: SearchAnchor.bar(
-                              viewConstraints: BoxConstraints(
-                                minHeight: kToolbarHeight,
-                                maxHeight: kToolbarHeight * 4,
-                              ),
-                              isFullScreen: false,
-                              searchController: bloc.searchController,
-                              suggestionsBuilder: (context, controller) {
-                                final userName = controller.text.toLowerCase();
-                                final results =
-                                    value.users.where((user) {
-                                      return user.name.toLowerCase().contains(
-                                        userName,
-                                      );
-                                    }).toList();
-                                return results.map((user) {
-                                  return SizedBox(
-                                    child: ListTile(
-                                      dense: true,
-                                      title: Text(user.name),
-                                      onTap: () {
-                                        controller.closeView(user.name);
-                                        bloc.searchController.text = user.name;
-                                      },
-                                    ),
-                                  );
-                                });
-                              },
-                            ),
-                          ),
-                          SizedBox(
+                      actions: [
+                        SizedBox(
                             width: 185,
                             height: 40,
                             child: FilledButton.tonalIcon(
-                              onPressed: () => showCreateDialog(context),
+                              onPressed: () {},
                               label: Text('Agregar usuario'),
                               icon: Icon(Icons.add),
                               iconAlignment: IconAlignment.end,
                               style: ButtonStyle(
-                                backgroundColor: WidgetStatePropertyAll(
-                                  ShemaColors.primary300,
-                                ),
                                 elevation: WidgetStatePropertyAll(3),
                                 iconSize: WidgetStatePropertyAll(30),
                               ),
                             ),
                           ),
-                        ],
+                      ],
+                      header: Align(
+                        alignment: Alignment.center,
+                        child: SizedBox(
+                          width: 500,
+                          height: 40,
+                          child: SearchAnchor.bar(
+                            viewConstraints: BoxConstraints(
+                              minHeight: kToolbarHeight,
+                              maxHeight: kToolbarHeight * 4,
+                            ),
+                            isFullScreen: false,
+                            searchController: bloc.searchController,
+                            suggestionsBuilder: (context, controller) {
+                              final userName = controller.text.toLowerCase();
+                              final results =
+                                  value.users.where((user) {
+                                    return user.name.toLowerCase().contains(
+                                      userName,
+                                    );
+                                  }).toList();
+                              return results.map((user) {
+                                return SizedBox(
+                                  child: ListTile(
+                                    dense: true,
+                                    title: Text(user.name),
+                                    onTap: () {
+                                      controller.closeView(user.name);
+                                      bloc.searchController.text = user.name;
+                                    },
+                                  ),
+                                );
+                              });
+                            },
+                          ),
+                        ),
                       ),
 
                       rowsPerPage: 8,
@@ -121,18 +116,10 @@ class AdministrationView extends StatelessWidget {
                 ),
               );
             },
-            //TODO: Implementar alertas en los estados de falla
-            failed: (value) {
-              return value.failure.when(
-                network: () => Center(),
-                notFound: () => Center(),
-                server: () => Center(),
-                unauthorized: () => Center(),
-                badRequest: () => Center(),
-                local: () => Center(),
-                expired: () => Center(),
-              );
-            },
+            failed: (value) => FailureState(
+              failure: value.failure, 
+              onRetry: () {}
+            )
           );
         },
       ),
