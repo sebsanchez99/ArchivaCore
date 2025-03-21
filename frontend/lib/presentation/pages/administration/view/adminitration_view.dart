@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/domain/models/user_model.dart';
 import 'package:frontend/domain/repositories/administration_repository.dart';
+import 'package:frontend/presentation/constants/shema_colors.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_bloc.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_events.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_state.dart';
+import 'package:frontend/presentation/pages/administration/utils/utils.dart';
 
 class AdministrationView extends StatelessWidget {
   const AdministrationView({super.key});
@@ -24,7 +26,7 @@ class AdministrationView extends StatelessWidget {
           return state.map(
             loading: (_) => Center(child: CircularProgressIndicator()),
             loaded: (value) {
-              final tableRow = TableRow(users: value.filteredUsers);
+              final tableRow = TableRow(context, users: value.filteredUsers);
 
               return SizedBox(
                 width: double.infinity,
@@ -82,11 +84,14 @@ class AdministrationView extends StatelessWidget {
                             width: 185,
                             height: 40,
                             child: FilledButton.tonalIcon(
-                              onPressed: () {},
+                              onPressed: () => showCreateDialog(context),
                               label: Text('Agregar usuario'),
                               icon: Icon(Icons.add),
                               iconAlignment: IconAlignment.end,
                               style: ButtonStyle(
+                                backgroundColor: WidgetStatePropertyAll(
+                                  ShemaColors.primary300,
+                                ),
                                 elevation: WidgetStatePropertyAll(3),
                                 iconSize: WidgetStatePropertyAll(30),
                               ),
@@ -137,8 +142,9 @@ class AdministrationView extends StatelessWidget {
 
 class TableRow extends DataTableSource {
   final List<UserModel> users;
+  final BuildContext context;
 
-  TableRow({required this.users});
+  TableRow(this.context, {required this.users});
 
   @override
   DataRow getRow(int index) {
@@ -152,7 +158,10 @@ class TableRow extends DataTableSource {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(icon: Icon(Icons.edit), onPressed: () {}),
+              IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () => showEditDialog(context),
+              ),
               IconButton(icon: Icon(Icons.delete), onPressed: () {}),
             ],
           ),
