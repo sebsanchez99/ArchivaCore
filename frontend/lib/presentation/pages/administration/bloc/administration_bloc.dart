@@ -12,7 +12,6 @@ class AdministrationBloc
     super.initialState, {
     required AdministrationRepository administrationRepository,
   }) : _administrationRepository = administrationRepository {
-
     searchController.addListener(() {
       add(FilterUsersEvent(username: searchController.text));
     });
@@ -20,11 +19,16 @@ class AdministrationBloc
     on<InitializeEvent>(_onInitialize);
     on<FilterUsersEvent>(_onFilterUsers);
     on<CreateUserEvent>(_onCreateUser);
+    on<PutUserEvent>(_onPutUser);
+    on<DeleteUserEvent>(_onDelete);
   }
 
   final AdministrationRepository _administrationRepository;
 
-  Future<void> _onInitialize(InitializeEvent event, Emitter<AdministrationState> emit) async {
+  Future<void> _onInitialize(
+    InitializeEvent event,
+    Emitter<AdministrationState> emit,
+  ) async {
     state.maybeWhen(
       loading: () {},
       orElse: () => emit(AdministrationState.loading()),
@@ -34,7 +38,8 @@ class AdministrationBloc
       result.when(
         right: (response) {
           final responseData = response.data as List<dynamic>;
-          final List<UserModel> users = responseData.map((user) => UserModel.fromJson(user)).toList();
+          final List<UserModel> users =
+              responseData.map((user) => UserModel.fromJson(user)).toList();
           return AdministrationState.loaded(users: users, filteredUsers: users);
         },
         left: (failure) => AdministrationState.failed(failure),
@@ -42,7 +47,10 @@ class AdministrationBloc
     );
   }
 
-  Future<void> _onFilterUsers( FilterUsersEvent event, Emitter<AdministrationState> emit) async {
+  Future<void> _onFilterUsers(
+    FilterUsersEvent event,
+    Emitter<AdministrationState> emit,
+  ) async {
     state.mapOrNull(
       loaded: (value) {
         final filteredUsers =
@@ -56,15 +64,65 @@ class AdministrationBloc
     );
   }
 
-  Future<void> _onCreateUser(CreateUserEvent event, Emitter<AdministrationState> emit) async {
+  Future<void> _onCreateUser(
+    CreateUserEvent event,
+    Emitter<AdministrationState> emit,
+  ) async {
     emit(AdministrationState.loading());
-    final result = await _administrationRepository.createUsers('admin8', '12345', 'Administrador');
-    emit(result.when(
-      left: (failure) => AdministrationState.failed(failure),
-      right: (response) {
-        add(AdministrationEvents.initialize());
-        return AdministrationState.loaded(response: response); 
-      } 
-    ));
+    final result = await _administrationRepository.createUsers(
+      'admin8',
+      '12345',
+      'Administrador',
+    );
+    emit(
+      result.when(
+        left: (failure) => AdministrationState.failed(failure),
+        right: (response) {
+          add(AdministrationEvents.initialize());
+          return AdministrationState.loaded(response: response);
+        },
+      ),
+    );
+  }
+
+  //Método que actualiza a los usuarios
+  Future<void> _onPutUser(
+    PutUserEvent event,
+    Emitter<AdministrationState> emit,
+  ) async {
+    emit(AdministrationState.loading());
+    final result = await _administrationRepository.putUsers(
+      'userID',
+      'username',
+      'password',
+      'rolUser',
+    );
+    emit(
+      result.when(
+        right: (response) {
+          add(AdministrationEvents.initialize());
+          return AdministrationState.loaded(response: response);
+        },
+        left: (failure) => AdministrationState.failed(failure),
+      ),
+    );
+  }
+
+  //Método que elimina a los usuarios
+  Future<void> _onDelete(
+    DeleteUserEvent event,
+    Emitter<AdministrationState> emit,
+  ) async {
+    emit(AdministrationState.loading());
+    final result = await _administrationRepository.deleteUsers(event.userID);
+    emit(
+      result.when(
+        right: (response) {
+          add(AdministrationEvents.initialize());
+          return AdministrationState.loaded(response: response);
+        },
+        left: (failure) => AdministrationState.failed(failure),
+      ),
+    );
   }
 }

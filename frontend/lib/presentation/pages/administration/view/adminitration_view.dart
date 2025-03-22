@@ -10,6 +10,8 @@ import 'package:frontend/presentation/pages/administration/bloc/administration_s
 import 'package:frontend/presentation/pages/administration/widgets/create_user_window.dart';
 import 'package:frontend/presentation/pages/administration/widgets/edit_user_window.dart';
 import 'package:frontend/presentation/widgets/dialogs/error_dialog.dart';
+import 'package:frontend/presentation/widgets/dialogs/info_dialog.dart';
+import 'package:frontend/presentation/widgets/dialogs/success_dialog.dart';
 import 'package:frontend/presentation/widgets/states/failure_state.dart';
 import 'package:frontend/presentation/widgets/states/loading_state.dart';
 
@@ -30,11 +32,11 @@ class AdministrationView extends StatelessWidget {
         listener: (context, state) {
           state.mapOrNull(
             loaded: (value) {
-              final response = value.response; 
+              final response = value.response;
               if (response != null) {
                 _showResult(context, response);
               }
-            }
+            },
           );
         },
         builder: (context, state) {
@@ -132,10 +134,11 @@ class AdministrationView extends StatelessWidget {
                 ),
               );
             },
-            failed: (value) => FailureState(
-              failure: value.failure, 
-              onRetry: () => bloc.add(InitializeEvent()) 
-            ),
+            failed:
+                (value) => FailureState(
+                  failure: value.failure,
+                  onRetry: () => bloc.add(InitializeEvent()),
+                ),
           );
         },
       ),
@@ -165,7 +168,10 @@ class TableRow extends DataTableSource {
                 icon: Icon(Icons.edit),
                 onPressed: () => _showEditDialog(context),
               ),
-              IconButton(icon: Icon(Icons.delete), onPressed: () {}),
+              IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => _showInfoDialog(context, user.id),
+              ),
             ],
           ),
         ),
