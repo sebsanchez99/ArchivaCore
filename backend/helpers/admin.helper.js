@@ -1,11 +1,12 @@
 const pool = require("../libs/postgres");
 const bcrypt = require('bcrypt');
+const ResponseUtil = require('../utils/response.util')
 
 class AdminHelper{
 
     /**
      * Método que lista usuarios
-     * @returns Lista de usuarios con datos 
+     * @returns Resultado de la operación en formato JSON
      */
     async listUsers(){
         const result = await pool.query(
@@ -13,13 +14,14 @@ class AdminHelper{
             'SELECT * FROM listar_usuarios()',
         )
         const usersList = result.rows
-        return usersList
+        return ResponseUtil.success('La operación se realizó con éxito', usersList)
+        
     }
 
     /**
      * Método que obtiene id de rol
      * @param {*} rolName Nombre de rol del usuario  
-     * @returns Id de rol
+     * @returns Resultado de la operación en formato JSON
      */
     async obtenerRol(rolName){
         const result = await pool.query(
@@ -35,19 +37,20 @@ class AdminHelper{
      * @param {*} username Nombre de usuario
      * @param {*} password Hash de usuario
      * @param {*} rolUser Rol de usuario
-     * @returns Resultado de query 
+     * @returns Resultado de la operación en formato JSON
      */
     async createUsers(username, password, rolUser){
         const userExist = await this.#verifyUser(username)
         if (userExist) {
-            throw new Error('El usuario ya existe')
+           return ResponseUtil.fail('El usuario ya existe')
         }
         const hashPassword =  await bcrypt.hash( password ,  10 )
-        const createUser = await pool.query(            
+        await pool.query(            
             'SELECT * FROM agregar_usuario($1, $2, $3)',
             [username, hashPassword, rolUser]
         )
-        return createUser
+        return ResponseUtil.success('EL usuario se creó con éxito')
+        
     }
 
     /**
@@ -56,32 +59,37 @@ class AdminHelper{
      * @param {*} username Nombre de usuario
      * @param {*} password Hash de usuario
      * @param {*} rolUser Rol de usuario
-     * @returns Resultado de query
+     * @returns Resultado de la operación en formato JSON
      */
     async userUpdate(id, username, password, rolUser){
         const userExist = await this.#verifyUser(username)
         if (userExist) {
-            throw new Error('El usuario ya existe')
+            return ResponseUtil.fail('El nombre de usuario ya existe, por favor modificarlo')
         }
         const hashPassword = await bcrypt.hash( password ,  10 )
-        const updateUser = await pool.query(
+        await pool.query(
             'SELECT * FROM actualizar_usuario( $1, $2, $3, $4 )',
             [id, username, hashPassword, rolUser]
         )
-        return updateUser
+        return ResponseUtil.success('El usuario se actualizó con éxito')
     }
 
     /**
      * Método que elimina usuario
      * @param {*} id Id de usuario
-     * @returns Resultado de query
+     * @param {*} idUser Id del usuario que realiza la operación
+     * @returns Resultado de la operación en formato JSON
      */
-    async deleteUsers(id){
-        const userDelete = await pool.query(
+    async deleteUsers(id, idUser){
+        if(id==idUser){
+            return ResponseUtil.fail('El usuario no se puede eliminar a si mismo, elija otro')
+        }
+        await pool.query(
             'SELECT * FROM eliminar_usuario($1)',
             [id]
         )
-        return userDelete
+        return ResponseUtil.success('Usuario eliminado con éxito')
+
     }
 
     /**

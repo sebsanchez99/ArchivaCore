@@ -1,4 +1,5 @@
 const AdminHelper = require('../helpers/admin.helper')
+const ResponseUtil = require('../utils/response.util')
 
 /**
  * Controlador que permite listar los usuarios desde la BD
@@ -8,17 +9,10 @@ const AdminHelper = require('../helpers/admin.helper')
 const listUsers = async(req, res) => {
     try {
         const adminHelper = new AdminHelper()
-        const usersList = await adminHelper.listUsers()
-        res.json({
-            result: true,
-            message: "Usuarios listados exitosamente",
-            data: usersList
-        })
+        const result= await adminHelper.listUsers()
+        res.json(result)
     } catch (error) {
-        res.status(500).send({
-            result: false,
-            message: error.message
-        })
+        res.status(500).send(ResponseUtil.fail(error.message))
     }
 }
 
@@ -32,17 +26,12 @@ const createUsers = async(req, res) => {
         const { username, password, rolUser } = req.body
         const adminHelper = new AdminHelper()
         const idRol = await adminHelper.obtenerRol(rolUser)
-        await adminHelper.createUsers(username, password, idRol)
-        res.json({
-            result: true,
-            message: "Usuario creado exitosamente"
-        })
+        
+        
+        const result = await adminHelper.createUsers(username, password, idRol)
+        res.json(result)
     } catch (error) {
-        const status = error.message == 'El usuario ya existe' ? 400 : 500
-        res.status(status).send({
-            result: false,
-            message: error.message
-        })
+        res.status(500).send(ResponseUtil.fail(error.message))
     }
 }
 
@@ -57,17 +46,10 @@ const userUpdate = async(req, res) => {
         const { id, username, password, rolUser } = req.body
         const adminHelper = new AdminHelper()
         const idRol = await adminHelper.obtenerRol(rolUser)
-        await adminHelper.userUpdate(id, username, password, idRol)
-        res.json({
-            result: true,
-            message: "usuario actualizado exitosamente"
-            
-        })
+        const result = await adminHelper.userUpdate(id, username, password, idRol)
+        res.json(result)
     } catch (error) {
-        res.status(500).send({
-            result: false,
-            message: error.message
-        })
+        res.status(500).send(ResponseUtil.fail(error.message))
     }
 }
 
@@ -78,18 +60,13 @@ const userUpdate = async(req, res) => {
  */
 const deleteUser = async(req, res) => {
     try {
+        const idUser = req.user.id
         const { id } = req.body
         const adminHelper = new AdminHelper()
-        await adminHelper.deleteUsers(id)
-        res.json({
-            result: true,
-            message: "Usuario eliminado exitosamente"
-        })        
+        const result = await adminHelper.deleteUsers(id,idUser)
+        res.json(result)        
     } catch (error) {
-        res.status(500).send({
-            result: false,
-            message: error.message
-        })
+        res.status(500).send(ResponseUtil.fail(error.message))
     }
 }
 

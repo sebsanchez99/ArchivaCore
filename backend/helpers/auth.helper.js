@@ -1,12 +1,14 @@
 const jwt = require('jsonwebtoken')
 const { configToken } = require("../config/config");
+const ResponseUtil = require('../utils/response.util');
 
 class AuthHelper {
 
     /**
      * Método que genera token de usuario con datos incluidos
      * @param idUser - Id de usuario
-     * @returns Token de sesión 
+     * @param userRole - Rol de usuario
+     * @returns Respuesta en formato JSON
      */
     generateToken(idUser, userRole){
         const payload = {
@@ -17,7 +19,7 @@ class AuthHelper {
             expiresIn: configToken.expireToken
         }
         const token = jwt.sign(payload, configToken.secretKey , options)
-        return token
+        return ResponseUtil.success('Inicio de sesión exitoso', token)
     }
 }
 
