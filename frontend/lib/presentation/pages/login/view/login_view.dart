@@ -49,14 +49,11 @@ class LoginView extends StatelessWidget {
                         left: Radius.circular(12),
                       ),
                     ),
-                    child: const Center(
-                      child: Text(
-                        "ArchivaCore",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    child: Center(
+                      child: Image.asset(
+                        'assets/images/logoNombre.png',
+                        width: 250,
+                        height: 250,
                       ),
                     ),
                   ),
@@ -77,7 +74,7 @@ class LoginView extends StatelessWidget {
                         buildWhen:
                             (previous, current) =>
                                 previous.blocking != current.blocking,
-                                
+
                         builder:
                             (context, state) => AbsorbPointer(
                               absorbing: state.blocking,
@@ -88,7 +85,7 @@ class LoginView extends StatelessWidget {
                                   children: [
                                     const Text(
                                       "Iniciar sesión",
-                                      
+
                                       style: TextStyle(
                                         fontSize: 35,
                                         fontWeight: FontWeight.bold,
@@ -98,21 +95,34 @@ class LoginView extends StatelessWidget {
 
                                     CustomInput(
                                       labeltext: 'Usuario',
-                                      onChanged: (text) => context.read<LoginBloc>().add(LoginEvents.usernameChanged(text.trim())),
+                                      onChanged:
+                                          (text) =>
+                                              context.read<LoginBloc>().add(
+                                                LoginEvents.usernameChanged(
+                                                  text.trim(),
+                                                ),
+                                              ),
                                       isPassword: false,
                                     ),
                                     const SizedBox(height: 10),
-                                    CustomInput(labeltext:  'Contraseña', 
-                                      onChanged:(text) => context.read<LoginBloc>().add( LoginEvents.passwordChanged(text.trim(),),),
+                                    CustomInput(
+                                      labeltext: 'Contraseña',
+                                      onChanged:
+                                          (text) =>
+                                              context.read<LoginBloc>().add(
+                                                LoginEvents.passwordChanged(
+                                                  text.trim(),
+                                                ),
+                                              ),
                                       isPassword: true,
                                       onSubmitted: (_) => _submit(context),
                                     ),
-                                     
+
                                     const SizedBox(height: 15),
                                     state.blocking
                                         ? const Center(
                                           child: CircularProgressIndicator(
-                                          color: Color(0xFFBCDFFE,),
+                                            color: Color(0xFFBCDFFE),
                                           ),
                                         )
                                         : Builder(
@@ -139,6 +149,3 @@ class LoginView extends StatelessWidget {
     );
   }
 }
-
-
-
