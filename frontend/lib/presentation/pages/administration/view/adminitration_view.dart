@@ -6,6 +6,7 @@ import 'package:frontend/presentation/constants/shema_colors.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_bloc.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_events.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_state.dart';
+import 'package:frontend/presentation/pages/administration/widgets/create_user_window.dart';
 import 'package:frontend/presentation/widgets/states/failure_state.dart';
 import 'package:frontend/presentation/pages/administration/utils/utils.dart';
 import 'package:frontend/presentation/widgets/states/loading_state.dart';
@@ -48,7 +49,7 @@ class AdministrationView extends StatelessWidget {
                           width: 185,
                           height: 40,
                           child: FilledButton.tonalIcon(
-                            onPressed: () {},
+                            onPressed: () => showCreateDialog(context),
                             label: Text('Agregar usuario'),
                             icon: Icon(Icons.add),
                             iconAlignment: IconAlignment.end,
