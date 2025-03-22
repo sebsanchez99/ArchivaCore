@@ -16,8 +16,8 @@ class EdituserWindow extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "Actualiza la información de Juan Pérez",
-              style: TextStyle(color: const Color.fromARGB(255, 78, 78, 78)),
+              "Nombre de usuario",
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
             Text(
@@ -40,12 +40,13 @@ class EdituserWindow extends StatelessWidget {
                 onChanged: (value) {},
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 7),
             Text(
               "Cambiar contraseña",
               style: TextStyle(fontWeight: FontWeight.bold, height: 3),
             ),
             CustomInput(isPassword: true, labeltext: "Nueva contraseña"),
+            SizedBox(height: 16),
             CustomInput(isPassword: true, labeltext: "Confirmar contraseña"),
           ],
         ),
@@ -55,10 +56,7 @@ class EdituserWindow extends StatelessWidget {
           message: 'Cancelar',
           onPressed: () => Navigator.pop(context),
         ),
-        CustomButton(
-          message: 'Guardar',
-          onPressed: (){}
-        ),
+        CustomButton(message: 'Guardar', onPressed: () {}),
       ],
     );
   }

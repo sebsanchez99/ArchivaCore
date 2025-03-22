@@ -6,11 +6,8 @@ import 'package:frontend/presentation/widgets/custom_input.dart';
 
 class CreateUserWindow extends StatelessWidget {
   final AdministrationBloc bloc;
-  
-  const CreateUserWindow({
-    super.key, 
-    required this.bloc
-  });
+
+  const CreateUserWindow({super.key, required this.bloc});
 
   @override
   Widget build(BuildContext context) {
@@ -27,26 +24,20 @@ class CreateUserWindow extends StatelessWidget {
             Text(
               "Complete el formulario para crear un nuevo usuario en el sistema",
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
             Text(
               "Nombre de usuario",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
+            SizedBox(height: 10),
             CustomInput(
               labeltext: "Ingrese el nombre de usuario",
               isPassword: false,
             ),
-            Text(
-              "El nombre de usuario debe tener al menos 3 caracteres y solo puede contener letras, números, guiones y guiones bajos.",
-              style: TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
             Text(
               "Rol del usuario",
               style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            Text(
-              "El rol determina los permisos que tendrá el usuario en el sistema.",
             ),
             ListTile(
               title: Text("Usuario"),
@@ -70,19 +61,32 @@ class CreateUserWindow extends StatelessWidget {
             ),
             SizedBox(height: 20),
             Text("Contraseña", style: TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(height: 20),
             CustomInput(isPassword: true, labeltext: "Contraseña"),
+            SizedBox(height: 20),
             CustomInput(isPassword: true, labeltext: "Confirmar contraseña"),
           ],
         ),
       ),
       actions: [
         CustomButton(
-          message: 'Crear Usuario', 
+          message: 'Cancelar',
+          onPressed: () => Navigator.pop(context),
+        ),
+        CustomButton(
+          message: 'Crear Usuario',
           onPressed: () {
             Navigator.pop(context);
-            bloc.add(CreateUserEvent(username: 'admin2', password: '12345', rolUser: 'Administration'));
-          } 
-        )],
+            bloc.add(
+              CreateUserEvent(
+                username: 'admin2',
+                password: '12345',
+                rolUser: 'Administration',
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }
