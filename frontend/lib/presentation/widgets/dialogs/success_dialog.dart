@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
 
-// Diálogo de error
-class ErrorDialog extends StatelessWidget {
+// Diálogo de éxito
+class SuccessDialog extends StatelessWidget {
   final String message;
-  const ErrorDialog({super.key, required this.message});
+  const SuccessDialog({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -12,17 +12,17 @@ class ErrorDialog extends StatelessWidget {
       title: Title(
         color: const Color.fromARGB(255, 0, 0, 0),
         child: const Text(
-          "Error",
-          style: TextStyle(fontSize: 30, color: Colors.red),
+          "Éxito",
+          style: TextStyle(fontSize: 30, color: Colors.green),
         ),
       ),
       content: Text(message, textAlign: TextAlign.center),
-      icon: Icon(Icons.cancel_outlined, color: Colors.red, size: 50),
+      icon: Icon(Icons.check_circle_outline, color: Colors.green, size: 50),
       actions: [
         Center(
           child: CustomButton(
             message: 'Aceptar',
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ),
       ],
