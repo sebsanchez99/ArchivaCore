@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/presentation/pages/administration/bloc/administration_bloc.dart';
+import 'package:frontend/presentation/pages/administration/bloc/administration_events.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
 import 'package:frontend/presentation/widgets/custom_input.dart';
 
 class CreateUserWindow extends StatelessWidget {
-  const CreateUserWindow({super.key});
+  final AdministrationBloc bloc;
+  
+  const CreateUserWindow({
+    super.key, 
+    required this.bloc
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +63,9 @@ class CreateUserWindow extends StatelessWidget {
               leading: Radio(
                 value: "admin",
                 groupValue: 'role',
-                onChanged: (value) {},
+                onChanged: (value) {
+                  print(value);
+                },
               ),
             ),
             SizedBox(height: 20),
@@ -66,7 +75,14 @@ class CreateUserWindow extends StatelessWidget {
           ],
         ),
       ),
-      actions: [CustomButton(message: 'Crear Usuario', onPressed: () {})],
+      actions: [
+        CustomButton(
+          message: 'Crear Usuario', 
+          onPressed: () {
+            Navigator.pop(context);
+            bloc.add(CreateUserEvent(username: 'admin2', password: '12345', rolUser: 'Administration'));
+          } 
+        )],
     );
   }
 }
