@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/domain/models/server_response_model.dart';
 import 'package:frontend/domain/models/user_model.dart';
 import 'package:frontend/domain/repositories/administration_repository.dart';
 import 'package:frontend/presentation/constants/shema_colors.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_bloc.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_events.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_state.dart';
+import 'package:frontend/presentation/pages/administration/widgets/create_user_window.dart';
+import 'package:frontend/presentation/pages/administration/widgets/edit_user_window.dart';
+import 'package:frontend/presentation/widgets/dialogs/error_dialog.dart';
 import 'package:frontend/presentation/widgets/states/failure_state.dart';
-import 'package:frontend/presentation/pages/administration/utils/utils.dart';
 import 'package:frontend/presentation/widgets/states/loading_state.dart';
+
+part '../utils/utils.dart';
 
 class AdministrationView extends StatelessWidget {
   const AdministrationView({super.key});
@@ -21,7 +26,17 @@ class AdministrationView extends StatelessWidget {
             AdministrationState.loading(),
             administrationRepository: context.read<AdministrationRepository>(),
           )..add(InitializeEvent()),
-      child: BlocBuilder<AdministrationBloc, AdministrationState>(
+      child: BlocConsumer<AdministrationBloc, AdministrationState>(
+        listener: (context, state) {
+          state.mapOrNull(
+            loaded: (value) {
+              final response = value.response; 
+              if (response != null) {
+                _showResult(context, response);
+              }
+            }
+          );
+        },
         builder: (context, state) {
           final bloc = context.read<AdministrationBloc>();
 
@@ -48,7 +63,7 @@ class AdministrationView extends StatelessWidget {
                           width: 185,
                           height: 40,
                           child: FilledButton.tonalIcon(
-                            onPressed: () {},
+                            onPressed: () => _showCreateDialog(context),
                             label: Text('Agregar usuario'),
                             icon: Icon(Icons.add),
                             iconAlignment: IconAlignment.end,
@@ -117,8 +132,10 @@ class AdministrationView extends StatelessWidget {
                 ),
               );
             },
-            failed:
-                (value) => FailureState(failure: value.failure, onRetry: () {}),
+            failed: (value) => FailureState(
+              failure: value.failure, 
+              onRetry: () => bloc.add(InitializeEvent()) 
+            ),
           );
         },
       ),
@@ -146,7 +163,7 @@ class TableRow extends DataTableSource {
             children: [
               IconButton(
                 icon: Icon(Icons.edit),
-                onPressed: () => showEditDialog(context),
+                onPressed: () => _showEditDialog(context),
               ),
               IconButton(icon: Icon(Icons.delete), onPressed: () {}),
             ],
