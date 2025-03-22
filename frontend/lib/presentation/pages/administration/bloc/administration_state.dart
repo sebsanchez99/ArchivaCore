@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/domain/failures/http_request_failure.dart';
+import 'package:frontend/domain/models/server_response_model.dart';
 import 'package:frontend/domain/models/user_model.dart';
 
 part 'administration_state.freezed.dart';
@@ -13,6 +14,7 @@ class AdministrationState with _$AdministrationState {
   factory AdministrationState.loaded({
     @Default([]) List<UserModel> users,
     @Default([]) List<UserModel> filteredUsers,
+    ServerResponseModel? response,
   }) = _LoadedState;
   //Estado de fallo
   factory AdministrationState.failed(HttpRequestFailure failure) = _FailedState;
