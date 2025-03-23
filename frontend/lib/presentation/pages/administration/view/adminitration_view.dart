@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/domain/models/server_response_model.dart';
 import 'package:frontend/domain/models/user_model.dart';
 import 'package:frontend/domain/repositories/administration_repository.dart';
-import 'package:frontend/presentation/constants/shema_colors.dart';
+import 'package:frontend/presentation/constants/schema_colors.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_bloc.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_events.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_state.dart';
@@ -23,11 +23,9 @@ class AdministrationView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AdministrationBloc>(
-      create:
-          (_) => AdministrationBloc(
-            AdministrationState.loading(),
-            administrationRepository: context.read<AdministrationRepository>(),
-          )..add(InitializeEvent()),
+      create: (_) => AdministrationBloc(AdministrationState.loading(),
+        administrationRepository: context.read<AdministrationRepository>(),
+      )..add(InitializeEvent()),
       child: BlocConsumer<AdministrationBloc, AdministrationState>(
         listener: (context, state) {
           state.mapOrNull(
@@ -68,8 +66,10 @@ class AdministrationView extends StatelessWidget {
                             onPressed: () => _showCreateDialog(context),
                             label: Text('Agregar usuario'),
                             icon: Icon(Icons.add),
-                            iconAlignment: IconAlignment.end,
+                            iconAlignment: IconAlignment.start,
                             style: ButtonStyle(
+                              backgroundColor: WidgetStatePropertyAll(SchemaColors.primary200),
+                              shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
                               elevation: WidgetStatePropertyAll(3),
                               iconSize: WidgetStatePropertyAll(30),
                             ),
@@ -82,10 +82,12 @@ class AdministrationView extends StatelessWidget {
                           width: 500,
                           height: 40,
                           child: SearchAnchor.bar(
+                            dividerColor: Color( 0xFF3A5A98),
                             viewConstraints: BoxConstraints(
                               minHeight: kToolbarHeight,
                               maxHeight: kToolbarHeight * 4,
                             ),
+                            barShape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
                             isFullScreen: false,
                             searchController: bloc.searchController,
                             suggestionsBuilder: (context, controller) {
@@ -166,7 +168,7 @@ class TableRow extends DataTableSource {
             children: [
               IconButton(
                 icon: Icon(Icons.edit),
-                onPressed: () => _showEditDialog(context),
+                onPressed: () => _showEditDialog(context, user),
               ),
               IconButton(
                 icon: Icon(Icons.delete),

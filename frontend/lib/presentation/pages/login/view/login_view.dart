@@ -75,8 +75,7 @@ class LoginView extends StatelessWidget {
                             (previous, current) =>
                                 previous.blocking != current.blocking,
 
-                        builder:
-                            (context, state) => AbsorbPointer(
+                        builder: (context, state) => AbsorbPointer(
                               absorbing: state.blocking,
                               child: Form(
                                 child: Column(
@@ -87,7 +86,7 @@ class LoginView extends StatelessWidget {
                                       "Iniciar sesión",
 
                                       style: TextStyle(
-                                        fontSize: 35,
+                                        fontSize: 40,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -95,30 +94,17 @@ class LoginView extends StatelessWidget {
 
                                     CustomInput(
                                       labeltext: 'Usuario',
-                                      onChanged:
-                                          (text) =>
-                                              context.read<LoginBloc>().add(
-                                                LoginEvents.usernameChanged(
-                                                  text.trim(),
-                                                ),
-                                              ),
+                                      onChanged: (text) => context.read<LoginBloc>().add(LoginEvents.usernameChanged(text.trim())),
                                       isPassword: false,
                                     ),
-                                    const SizedBox(height: 10),
                                     CustomInput(
                                       labeltext: 'Contraseña',
-                                      onChanged:
-                                          (text) =>
-                                              context.read<LoginBloc>().add(
-                                                LoginEvents.passwordChanged(
-                                                  text.trim(),
-                                                ),
-                                              ),
+                                      onChanged: (text) => context.read<LoginBloc>().add(LoginEvents.passwordChanged(text)),
                                       isPassword: true,
                                       onSubmitted: (_) => _submit(context),
                                     ),
 
-                                    const SizedBox(height: 15),
+                                    const SizedBox(height: 10),
                                     state.blocking
                                         ? const Center(
                                           child: CircularProgressIndicator(
@@ -127,9 +113,12 @@ class LoginView extends StatelessWidget {
                                         )
                                         : Builder(
                                           builder: (ctx) {
-                                            return CustomButton(
-                                              message: 'Iniciar sesión',
-                                              onPressed: () => _submit(context),
+                                            return SizedBox(
+                                              width: double.infinity,
+                                              child: CustomButton(
+                                                message: 'Iniciar sesión',
+                                                onPressed: () => _submit(context),
+                                              ),
                                             );
                                           },
                                         ),

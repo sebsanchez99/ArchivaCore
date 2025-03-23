@@ -36,11 +36,9 @@ class HomeView extends StatelessWidget {
                       vertical: 10,
                     ),
                     child: PageView(
+                      physics: NeverScrollableScrollPhysics(),
                       controller: sideMenuCubit.pageController,
-                      children:
-                          menuItems.values
-                              .map((item) => item['widget'] as Widget)
-                              .toList(),
+                      children: menuItems.values.map((item) => item['widget'] as Widget).toList(),
                     ),
                   ),
                 ),
