@@ -14,6 +14,10 @@ class AdministrationState with _$AdministrationState {
   factory AdministrationState.loaded({
     @Default([]) List<UserModel> users,
     @Default([]) List<UserModel> filteredUsers,
+    @Default(['Administrador', 'Usuario']) List<String> roles,
+    @Default('Usuario') String selectedRole,
+    @Default('') String username,
+    @Default('') String password,
     ServerResponseModel? response,
   }) = _LoadedState;
   //Estado de fallo

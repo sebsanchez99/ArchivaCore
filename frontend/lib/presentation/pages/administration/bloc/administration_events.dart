@@ -18,14 +18,22 @@ class AdministrationEvents with _$AdministrationEvents {
   }) = PutUserEvent;
 
   //Evento que crea a los usuarios
-  factory AdministrationEvents.createUsers({
-    required String username,
-    required String password,
-    required String rolUser,
-  }) = CreateUserEvent;
+  factory AdministrationEvents.createUsers() = CreateUserEvent;
 
   //Evento que elimina a los usuarios
   factory AdministrationEvents.deleteUsers({
     required String userID,
   }) = DeleteUserEvent;
+
+  factory AdministrationEvents.changeRole({
+    required String role,
+  }) = ChangeRoleEvent;
+
+  factory AdministrationEvents.changePassword({
+    required String password,
+  }) = ChangePasswordEvent;
+
+  factory AdministrationEvents.changeUsername({
+    required String username,
+  }) = ChangeUsernameEvent;
 }

@@ -21,6 +21,9 @@ class AdministrationBloc
     on<CreateUserEvent>(_onCreateUser);
     on<PutUserEvent>(_onPutUser);
     on<DeleteUserEvent>(_onDelete);
+    on<ChangeRoleEvent>(_onChangeRole);
+    on<ChangePasswordEvent>(_onChangePassword);
+    on<ChangeUsernameEvent>(_onChangeUsername);
   }
 
   final AdministrationRepository _administrationRepository;
@@ -68,20 +71,25 @@ class AdministrationBloc
     CreateUserEvent event,
     Emitter<AdministrationState> emit,
   ) async {
-    emit(AdministrationState.loading());
-    final result = await _administrationRepository.createUsers(
-      'admin8',
-      '12345',
-      'Administrador',
-    );
-    emit(
-      result.when(
-        left: (failure) => AdministrationState.failed(failure),
-        right: (response) {
-          add(AdministrationEvents.initialize());
-          return AdministrationState.loaded(response: response);
-        },
-      ),
+    state.mapOrNull(
+      loaded: (value) async {
+        emit(AdministrationState.loading());
+        await Future.delayed(Duration(seconds: 2));
+        final result = await _administrationRepository.createUsers(
+          value.username,
+          value.password,
+          value.selectedRole,
+        );
+        emit(
+          result.when(
+            left: (failure) => AdministrationState.failed(failure),
+            right: (response) {
+              add(AdministrationEvents.initialize());
+              return AdministrationState.loaded(response: response);
+            },
+          ),
+        );
+      },
     );
   }
 
@@ -123,6 +131,33 @@ class AdministrationBloc
         },
         left: (failure) => AdministrationState.failed(failure),
       ),
+    );
+  }
+
+  Future<void> _onChangeRole(
+    ChangeRoleEvent event,
+    Emitter<AdministrationState> emit,
+  ) async {
+    state.mapOrNull(
+      loaded: (value) => emit(value.copyWith(selectedRole: event.role)),
+    );
+  }
+
+  Future<void> _onChangePassword(
+    ChangePasswordEvent event,
+    Emitter<AdministrationState> emit,
+  ) async {
+    state.mapOrNull(
+      loaded: (value) => emit(value.copyWith(password: event.password)),
+    );
+  }
+
+  Future<void> _onChangeUsername(
+    ChangeUsernameEvent event,
+    Emitter<AdministrationState> emit,
+  ) async {
+    state.mapOrNull(
+      loaded: (value) => emit(value.copyWith(username: event.username)),
     );
   }
 }
