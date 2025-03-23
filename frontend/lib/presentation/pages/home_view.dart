@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/presentation/constants/menu_items.dart';
+import 'package:frontend/presentation/constants/schema_colors.dart';
 import 'package:frontend/presentation/widgets/menu/side_menu_cubit.dart';
 import 'package:frontend/presentation/widgets/menu/side_menu_state.dart';
 import 'package:frontend/presentation/widgets/menu/side_menu_widget.dart';
@@ -17,13 +18,13 @@ class HomeView extends StatelessWidget {
           final sideMenuCubit = context.read<SideMenuCubit>();
           return Scaffold(
             appBar: AppBar(
-              backgroundColor: Color(0xFFE7E9ED),
+              backgroundColor: SchemaColors.primary,
               leading: IconButton(
                 onPressed: () => sideMenuCubit.toggleMenu(),
-                icon: Icon(Icons.menu),
+                icon: Icon(Icons.menu, color: SchemaColors.neutral),
               ),
               actions: [
-                IconButton(onPressed: () {}, icon: Icon(Icons.notifications)),
+                IconButton(onPressed: () {}, icon: Icon(Icons.notifications, color: SchemaColors.neutral)),
               ],
             ),
             body: Row(
@@ -32,8 +33,8 @@ class HomeView extends StatelessWidget {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
+                      horizontal: 30,
+                      vertical: 20,
                     ),
                     child: PageView(
                       physics: NeverScrollableScrollPhysics(),

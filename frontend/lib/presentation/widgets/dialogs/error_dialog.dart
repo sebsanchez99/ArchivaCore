@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/presentation/constants/schema_colors.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
 
 // Diálogo de error
@@ -13,11 +14,11 @@ class ErrorDialog extends StatelessWidget {
         color: const Color.fromARGB(255, 0, 0, 0),
         child: const Text(
           "Error",
-          style: TextStyle(fontSize: 30, color: Colors.red),
+          style: TextStyle(fontSize: 30, color: SchemaColors.error),
         ),
       ),
       content: Text(message, textAlign: TextAlign.center),
-      icon: Icon(Icons.cancel_outlined, color: Colors.red, size: 50),
+      icon: Icon(Icons.cancel_outlined, color: SchemaColors.error, size: 50),
       actions: [
         Center(
           child: CustomButton(

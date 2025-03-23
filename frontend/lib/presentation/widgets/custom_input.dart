@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/presentation/constants/schema_colors.dart';
 
 // widget de input personalizado
 class CustomInput extends StatefulWidget {
@@ -31,10 +32,10 @@ class _CustomInputState extends State<CustomInput> {
       obscureText: widget.isPassword ? _obscureText : false,
       focusNode: FocusNode(),
       style: TextStyle(
-        color: const Color.fromARGB(211, 0, 0, 0),
+        color: SchemaColors.textPrimary,
         fontSize: 15
       ), 
-      cursorColor: const Color.fromARGB(110, 0, 0, 0),
+      cursorColor: SchemaColors.textSecondary,
       decoration: InputDecoration(
         isDense: true,
         // si es un campo de contraseña, mostrar icono de visibilidad
@@ -42,7 +43,7 @@ class _CustomInputState extends State<CustomInput> {
             ? IconButton(
                 icon: Icon(
                   _obscureText ? Icons.visibility_off : Icons.visibility,
-                  color: Color( 0xFF3A5A98),
+                  color: _obscureText? SchemaColors.neutral900 : SchemaColors.primary400,
                 ),
                 onPressed: () {
                   // cambiar visibilidad del texto
@@ -54,14 +55,14 @@ class _CustomInputState extends State<CustomInput> {
             : null,
         labelText: widget.labeltext,
         labelStyle: TextStyle(
-          color: const Color.fromARGB(211, 0, 0, 0),
+          color: SchemaColors.textSecondary,
           fontSize: 15
         ),
         enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: const Color.fromARGB(248, 128, 128, 128)), 
+        borderSide: BorderSide(color: SchemaColors.border), 
         ),
         focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Color( 0xFF3A5A98)),
+        borderSide: BorderSide(color: SchemaColors.primary500),
         ),
         border: OutlineInputBorder(),
         contentPadding: EdgeInsets.symmetric(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/domain/repositories/auth_repository.dart';
+import 'package:frontend/presentation/constants/schema_colors.dart';
 import 'package:frontend/presentation/pages/login/bloc/login_bloc.dart';
 import 'package:frontend/presentation/pages/login/bloc/login_events.dart';
 import 'package:frontend/presentation/pages/login/bloc/login_state.dart';
@@ -22,17 +23,17 @@ class LoginView extends StatelessWidget {
             authRepository: context.read<AuthRepository>(),
           ),
       child: Scaffold(
-        backgroundColor: const Color(0xFFEFF3FA),
+        backgroundColor: SchemaColors.background,
         body: Center(
           child: Container(
             width: 700,
             height: 450,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: SchemaColors.neutral500,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black12,
+                  color: SchemaColors.shadow,
                   blurRadius: 10,
                   spreadRadius: 2,
                 ),
@@ -44,7 +45,7 @@ class LoginView extends StatelessWidget {
                   flex: 3,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFF3A5A98),
+                      color: SchemaColors.primary,
                       borderRadius: const BorderRadius.horizontal(
                         left: Radius.circular(12),
                       ),
@@ -63,7 +64,7 @@ class LoginView extends StatelessWidget {
                   flex: 3,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 244, 244, 244),
+                      color: SchemaColors.background,
                       borderRadius: const BorderRadius.horizontal(
                         right: Radius.circular(12),
                       ),
@@ -84,10 +85,10 @@ class LoginView extends StatelessWidget {
                                   children: [
                                     const Text(
                                       "Iniciar sesión",
-
                                       style: TextStyle(
                                         fontSize: 40,
-                                        fontWeight: FontWeight.bold,
+                                        color: SchemaColors.textPrimary,
+                                        fontWeight: FontWeight.w700,
                                       ),
                                     ),
                                     const SizedBox(height: 10),
@@ -103,12 +104,11 @@ class LoginView extends StatelessWidget {
                                       isPassword: true,
                                       onSubmitted: (_) => _submit(context),
                                     ),
-
                                     const SizedBox(height: 10),
                                     state.blocking
                                         ? const Center(
                                           child: CircularProgressIndicator(
-                                            color: Color(0xFFBCDFFE),
+                                            color: SchemaColors.primary300,
                                           ),
                                         )
                                         : Builder(

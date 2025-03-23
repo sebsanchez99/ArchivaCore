@@ -52,27 +52,42 @@ class AdministrationView extends StatelessWidget {
                     data: Theme.of(context).copyWith(
                       cardTheme: CardTheme(
                         elevation: 4,
-                        surfaceTintColor: Colors.blueAccent,
+                        surfaceTintColor: SchemaColors.primary100,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        ),
                       ),
+                      dataTableTheme: DataTableThemeData(
+                        headingRowAlignment: MainAxisAlignment.center,
+                        headingRowColor: WidgetStatePropertyAll(SchemaColors.primary400),
+                        headingTextStyle: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: SchemaColors.neutral,
+                        ),
+                        dataTextStyle: const TextStyle(
+                          color: SchemaColors.primary800,
+                        ),
+                        dividerThickness: 1.2,
+                      )
                     ),
                     child: PaginatedDataTable(
                       showFirstLastButtons: true,
-                      arrowHeadColor: Colors.blue,
+                      arrowHeadColor: SchemaColors.primary800,
                       actions: [
-                        SizedBox(
-                          width: 185,
-                          height: 40,
-                          child: FilledButton.tonalIcon(
-                            onPressed: () => _showCreateDialog(context),
-                            label: Text('Agregar usuario'),
-                            icon: Icon(Icons.add),
-                            iconAlignment: IconAlignment.start,
-                            style: ButtonStyle(
-                              backgroundColor: WidgetStatePropertyAll(SchemaColors.primary200),
-                              shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
-                              elevation: WidgetStatePropertyAll(3),
-                              iconSize: WidgetStatePropertyAll(30),
-                            ),
+                        FilledButton.tonalIcon(
+                          onPressed: () => _showCreateDialog(context),
+                          label: Text(
+                            'Agregar usuario',
+                            style: TextStyle(color: SchemaColors.neutral),
+                          ),
+                          icon: Icon(Icons.add, color: SchemaColors.neutral),
+                          iconAlignment: IconAlignment.start,
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStatePropertyAll(SchemaColors.primary400),
+                            elevation: WidgetStatePropertyAll(3),
+                            iconSize: WidgetStatePropertyAll(30),
+                            padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 20, vertical: 15)),
+                            shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)))
                           ),
                         ),
                       ],
@@ -82,7 +97,8 @@ class AdministrationView extends StatelessWidget {
                           width: 500,
                           height: 40,
                           child: SearchAnchor.bar(
-                            dividerColor: Color( 0xFF3A5A98),
+                            barBackgroundColor: WidgetStatePropertyAll(SchemaColors.neutral),
+                            dividerColor: SchemaColors.primary500,
                             viewConstraints: BoxConstraints(
                               minHeight: kToolbarHeight,
                               maxHeight: kToolbarHeight * 4,
@@ -102,7 +118,10 @@ class AdministrationView extends StatelessWidget {
                                 return SizedBox(
                                   child: ListTile(
                                     dense: true,
-                                    title: Text(user.name),
+                                    title: Text(
+                                      user.name,
+                                      style: TextStyle(color: SchemaColors.textPrimary)
+                                    ),
                                     onTap: () {
                                       controller.closeView(user.name);
                                       bloc.searchController.text = user.name;
@@ -119,15 +138,12 @@ class AdministrationView extends StatelessWidget {
                       columns: [
                         DataColumn(
                           label: Text('Usuario'),
-                          headingRowAlignment: MainAxisAlignment.center,
                         ),
                         DataColumn(
                           label: Text('Rol'),
-                          headingRowAlignment: MainAxisAlignment.center,
                         ),
                         DataColumn(
                           label: Text('Acciones'),
-                          headingRowAlignment: MainAxisAlignment.center,
                         ),
                       ],
                       source: tableRow,
@@ -167,11 +183,11 @@ class TableRow extends DataTableSource {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                icon: Icon(Icons.edit),
+                icon: Icon(Icons.edit, color: SchemaColors.primary800),
                 onPressed: () => _showEditDialog(context, user),
               ),
               IconButton(
-                icon: Icon(Icons.delete),
+                icon: Icon(Icons.delete, color: SchemaColors.error),
                 onPressed: () => _showInfoDialog(context, user.id),
               ),
             ],

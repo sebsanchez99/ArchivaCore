@@ -16,6 +16,10 @@ class CreateUserWindow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      backgroundColor: SchemaColors.neutral100,
       title: Text(
         "Crear Nuevo Usuario",
         style: TextStyle(fontWeight: FontWeight.bold),
@@ -34,6 +38,7 @@ class CreateUserWindow extends StatelessWidget {
                     children: [
                       Text(
                         "Complete el formulario para crear un nuevo usuario en el sistema",
+                        style: TextStyle(color: SchemaColors.textSecondary)
                       ),
                       SizedBox(height: 10),
                       Text(
@@ -52,10 +57,10 @@ class CreateUserWindow extends StatelessWidget {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       ...value.roles.map((role) => RadioListTile<String>(
-                        title: Text(role), 
+                        title: Text(role, style: TextStyle(color: SchemaColors.textPrimary)), 
                         value: role, 
                         dense: true,
-                        activeColor: SchemaColors.neutral700,
+                        activeColor: SchemaColors.primary700,
                         groupValue: value.selectedRole, 
                         onChanged: (value) => bloc.add(ChangeRoleEvent(role: value!)))
                       ),

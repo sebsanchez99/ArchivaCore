@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/presentation/constants/schema_colors.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
 
 // Diálogo de información
@@ -14,11 +15,11 @@ class InfoDialog extends StatelessWidget {
         color: const Color.fromARGB(255, 0, 0, 0),
         child: const Text(
           "Alerta",
-          style: TextStyle(fontSize: 30, color: Colors.blue),
+          style: TextStyle(fontSize: 30, color: SchemaColors.info),
         ),
       ),
       content: Text(message, textAlign: TextAlign.center),
-      icon: Icon(Icons.info_outline, color: Colors.blue, size: 50),
+      icon: Icon(Icons.info_outline, color: SchemaColors.info, size: 50),
       actions: [
         CustomButton(
           message: 'Aceptar',

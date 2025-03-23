@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/presentation/constants/schema_colors.dart';
 
 //Botón personalizado
 class CustomButton extends StatelessWidget {
@@ -12,7 +13,7 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color( 0xFF3A5A98),
+        backgroundColor: SchemaColors.primary,
         padding: EdgeInsets.symmetric(horizontal: 25, vertical: 18),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))  
       ),
@@ -20,7 +21,7 @@ class CustomButton extends StatelessWidget {
       child: Text(
         message,
         style: TextStyle(
-          color:  Colors.white,
+          color:  SchemaColors.neutral,
         ),
       ),
     );
