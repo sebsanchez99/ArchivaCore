@@ -11,7 +11,6 @@ router.use('/auth',authRouter)
 // Ruta de administración
 router.use('/admin', passport.authenticate('jwt', {session: false}), checkRole, adminRouter)
 
-
 module.exports = router
 
 

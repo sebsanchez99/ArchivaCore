@@ -42,7 +42,7 @@ class AdminHelper{
     async createUsers(username, password, rolUser){
         const userExist = await this.#verifyUser(username)
         if (userExist) {
-           return ResponseUtil.fail('El usuario ya existe')
+           return ResponseUtil.fail('El nombre de usuario ya existe, por favor modificarlo')
         }
         const hashPassword =  await bcrypt.hash( password ,  10 )
         await pool.query(            
@@ -62,10 +62,6 @@ class AdminHelper{
      * @returns Resultado de la operación en formato JSON
      */
     async userUpdate(id, username, password, rolUser){
-        const userExist = await this.#verifyUser(username)
-        if (userExist) {
-            return ResponseUtil.fail('El nombre de usuario ya existe, por favor modificarlo')
-        }
         const hashPassword = await bcrypt.hash( password ,  10 )
         await pool.query(
             'SELECT * FROM actualizar_usuario( $1, $2, $3, $4 )',
