@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 
-class ShemaColors {
+class SchemaColors {
   //Este es la paleta de colores primarios
   static const Color primary100 = Color(0xFFECF1F7);
   static const Color primary200 = Color(0xFFC3D5E7);
