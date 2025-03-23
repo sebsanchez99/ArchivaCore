@@ -14,7 +14,6 @@ class AdministrationEvents with _$AdministrationEvents {
   //Evento que actualiza a los usuarios 
   factory AdministrationEvents.putUsers({
     required UserModel user,
-    required String userpassword,
   }) = PutUserEvent;
 
   //Evento que crea a los usuarios
