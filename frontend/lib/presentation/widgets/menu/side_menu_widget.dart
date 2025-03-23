@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/presentation/constants/menu_items.dart';
+import 'package:frontend/presentation/constants/schema_colors.dart';
 import 'package:frontend/presentation/widgets/menu/side_menu_cubit.dart';
 import 'package:frontend/presentation/widgets/menu/side_menu_state.dart';
 
@@ -22,7 +23,7 @@ class SideMenuWidget extends StatelessWidget {
                 constraints: BoxConstraints(maxWidth: 150, maxHeight: 150),
                 child: Image.asset('assets/images/logo.png'),
               ),
-              Divider(indent: 8, endIndent: 8),
+              Divider(indent: 8, endIndent: 8, color: SchemaColors.neutral),
             ],
           ),
           displayModeToggleDuration: Duration(milliseconds: 250),
@@ -30,30 +31,30 @@ class SideMenuWidget extends StatelessWidget {
           style: SideMenuStyle(
             displayMode: state.displayMode,
             openSideMenuWidth: 250,
-            backgroundColor: Color(0xFFE7E9ED),
-            hoverColor: Color(0xFFF3F4F6),
-            selectedColor: Color(0xFFD1D5DB),
-            selectedTitleTextStyle: TextStyle(
+            backgroundColor: SchemaColors.primary,
+            hoverColor: SchemaColors.primary400,
+            selectedColor: SchemaColors.primary400,
+            selectedTitleTextStyle: const TextStyle(
               fontWeight: FontWeight.bold,
-              color: Color(0xFF2B3642),
+              color: SchemaColors.primary700,
             ),
-            selectedIconColor: Color(0xFF3A5A98),
-            unselectedIconColor: Colors.grey,
-            unselectedTitleTextStyle: TextStyle(color: Color(0xFF394958)),
+            selectedIconColor: SchemaColors.primary800,
+            unselectedIconColor: SchemaColors.neutral,
+            unselectedTitleTextStyle: const TextStyle(
+              color: SchemaColors.neutral,
+              fontWeight: FontWeight.bold, 
+            ),
             itemBorderRadius: BorderRadius.circular(12),
-            itemOuterPadding: EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+            itemOuterPadding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
           ),
 
-          items:
-              menuItems.entries.map((item) {
-                return SideMenuItem(
-                  title: item.value["title"],
-                  icon: item.value["icon"],
-                  onTap:
-                      (index, sideMenuController) =>
-                          sideMenuCubit.selectIndex(index),
-                );
-              }).toList(),
+          items: menuItems.entries.map((item) {
+          return SideMenuItem(
+              title: item.value["title"],
+              icon: item.value["icon"],
+              onTap: (index, sideMenuController) => sideMenuCubit.selectIndex(index),
+            );
+          }).toList(),
         );
       },
     );
