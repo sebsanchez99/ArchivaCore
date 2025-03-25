@@ -19,10 +19,10 @@
   </template>
   
   <script lang="ts" setup>
-  import HomeSection from "@/components/landing/HomeSection.vue";
-  import NavBarSection from "@/components/landing/NavBarSection.vue";
-  import FeaturesSection from "@/components/landing/FeaturesSection.vue";
-  import PricingSection from "@/components/landing/PricingSection.vue";
-  import ContactSection from "@/components/landing/ContactSection.vue";
+  import HomeSection from "@/layouts/HomeSection.vue"; 
+  import NavBarSection from "@/layouts/NavBarSection.vue";
+  import FeaturesSection from "@/layouts/FeaturesSection.vue";
+  import PricingSection from "@/layouts/PricingSection.vue";
+  import ContactSection from "@/layouts/ContactSection.vue";
   </script>
   
