@@ -13,3 +13,7 @@
     --color-primary-900: #495466;
     --color-primary-950: #2b313b;
 }
+
+.footer-link {
+    @apply text-gray-700 hover:text-gray-900 hover:underline;
+}
