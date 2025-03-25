@@ -1,5 +1,5 @@
 <template>
-  <LandingPage />
+  <RouterView />
 </template>
 
 <script lang="ts" setup>

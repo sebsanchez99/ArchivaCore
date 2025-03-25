@@ -1,5 +1,5 @@
 <template>
-  <header class="w-full border-b border-primary-300">
+  <header class="fixed w-full border-b border-primary-300 bg-white">
     <div class="flex items-center justify-between h-14 px-4 sm:h-16 md:px-6 lg:px-8 max-w-7xl mx-auto w-full">
       <!-- Logo a la izquierda -->
       <div class="flex items-center gap-2 font-semibold">
@@ -25,10 +25,10 @@
       <div class="hidden md:flex flex-1 items-center justify-between">
         <!-- Opciones de navegación -->
         <nav class="flex items-center space-x-4 sm:space-x-6 mx-auto h-10">
-          <RouterLink to="/" class="text-sm font-medium hover:text-primary-700">Inicio</RouterLink>
-          <RouterLink to="/features" class="text-sm font-medium hover:text-primary-700">Características</RouterLink>
-          <RouterLink to="/pricing" class="text-sm font-medium hover:text-primary-700">Planes</RouterLink>
-          <RouterLink to="/contact" class="text-sm font-medium hover:text-primary-700">Contacto</RouterLink>
+          <button @click="$emit('scrollTo', 'home')" class=" cursor-pointer text-sm font-medium hover:text-primary-700">Inicio</button>
+          <button @click="$emit('scrollTo', 'features')" class=" cursor-pointer text-sm font-medium hover:text-primary-700">Características</button>
+          <button @click="$emit('scrollTo', 'pricing')" class=" cursor-pointer text-sm font-medium hover:text-primary-700">Planes</button>
+          <button @click="$emit('scrollTo', 'contact')" class=" cursor-pointer text-sm font-medium hover:text-primary-700">Contacto</button>
         </nav>
 
         <!-- Botones -->
@@ -43,10 +43,10 @@
     <transition name="fade">
       <div v-if="isMobileMenuOpen" class="sm:hidden px-4 pt-2 pb-4 space-y-2 bg-white border-t border-primary-200">
         <nav class="flex flex-col items-center space-y-2">
-          <RouterLink to="/" class="text-sm font-medium hover:text-primary-700">Inicio</RouterLink>
-          <RouterLink to="/features" class="text-sm font-medium hover:text-primary-700">Características</RouterLink>
-          <RouterLink to="/pricing" class="text-sm font-medium hover:text-primary-700">Planes</RouterLink>
-          <RouterLink to="/contact" class="text-sm font-medium hover:text-primary-700">Contacto</RouterLink>
+          <button @click="scrollAndClose('home')" class=" cursor-pointer text-sm font-medium hover:text-primary-700">Inicio</button>
+          <button @click="scrollAndClose('features')" class=" cursor-pointer text-sm font-medium hover:text-primary-700">Características</button>
+          <button @click="scrollAndClose('pricing')" class=" cursor-pointer text-sm font-medium hover:text-primary-700">Planes</button>
+          <button @click="scrollAndClose('contact')" class=" cursor-pointer text-sm font-medium hover:text-primary-700">Contacto</button>
         </nav>
 
         <div class="pt-2 flex flex-col gap-2">
@@ -63,6 +63,15 @@ import { ref } from 'vue';
 import NavButton from '@/components/buttons/NavButton.vue';
 
 const isMobileMenuOpen = ref(false);
+
+defineEmits(["scrollTo"]);
+
+const scrollAndClose = (sectionId) => {
+  isMobileMenuOpen.value = false;
+  setTimeout(() => {
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+  }, 200);
+};
 </script>
 
 <style scoped>
