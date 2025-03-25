@@ -33,8 +33,8 @@
 
         <!-- Botones -->
         <div class="flex items-center gap-2">
-          <NavButton label="Iniciar sesión">Iniciar Sesión</NavButton>
-          <NavButton primary label="Registrarse">Registrarse</NavButton>
+          <NavButton to="/login" label="Iniciar sesión">Iniciar Sesión</NavButton>
+          <NavButton to="/register" primary label="Registrarse">Registrarse</NavButton>
         </div>
       </div>
     </div>
@@ -50,8 +50,8 @@
         </nav>
 
         <div class="pt-2 flex flex-col gap-2">
-          <NavButton label="Iniciar sesión">Iniciar Sesión</NavButton>
-          <NavButton primary label="Registrarse">Registrarse</NavButton>
+          <NavButton to="/login" label="Iniciar sesión">Iniciar Sesión</NavButton>
+          <NavButton to="/register" primary label="Registrarse">Registrarse</NavButton>
         </div>
       </div>
     </transition>
