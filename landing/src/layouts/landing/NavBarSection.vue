@@ -1,5 +1,5 @@
 <template>
-  <header class="fixed w-full border-b border-primary-300 bg-white">
+  <header class="fixed w-full border-b border-primary-300 bg-white/95 backdrop-blur-sm z-50">
     <div class="flex items-center justify-between h-14 px-4 sm:h-16 md:px-6 lg:px-8 max-w-7xl mx-auto w-full">
       <!-- Logo a la izquierda -->
       <div class="flex items-center gap-2 font-semibold">
