@@ -4,7 +4,7 @@
                   <!-- Logo a la izquierda -->
             <div class="flex items-center gap-2 font-semibold">
               <img alt="Logo de ArchivaCore" src="@/assets/logo.png" class="w-8 h-8 sm:w-10 sm:h-10" />
-              <span class="text-lg font-bold">ArchivaCore</span>
+              <span class="text-lg font-bold text-black">ArchivaCore</span>
             </div>
         </div>
     </header>

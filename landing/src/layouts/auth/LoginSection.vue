@@ -1,5 +1,5 @@
 <template>
-    <section class="flex flex-col justify-center items-center pt-15">
+    <section class="flex flex-col justify-center items-center pt-15 text-black">
       <div class="bg-white shadow-md rounded-lg py-7 px-10 max-w-md w-full">
         <h2 class="text-2xl font-bold text-gray-900 mb-2">Iniciar Sesión</h2>
         <p class="text-sm text-gray-500 mb-6">Ingrese sus credenciales para acceder a su cuenta</p>
@@ -43,7 +43,8 @@
           </div>
   
           <button
-            type="submit"
+            @click="login"
+            type="button"
             class="w-full bg-primary-600 text-white py-2 rounded-lg font-semibold shadow-sm hover:bg-primary-700 transition cursor-pointer">
             Iniciar Sesión
           </button>
@@ -55,15 +56,18 @@
         </p>
       </div>
     </section>
-  </template>
+</template>
   
-  <script setup>
-  import { ref } from "vue";
-  import { EyeIcon, EyeSlashIcon } from "@heroicons/vue/24/outline";
+<script setup>
+import { ref } from "vue";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/vue/24/outline";
+import { useRouter } from "vue-router";
   
   const email = ref("");
   const password = ref("");
   const showPassword = ref(false);
+
+  const router = useRouter()
   
   const togglePassword = () => {
     showPassword.value = !showPassword.value;
@@ -71,6 +75,9 @@
   
   const login = () => {
     console.log("Correo:", email.value, "Contraseña:", password.value);
+    router.replace({
+      name: 'dashboard'
+    })
   };
-  </script>
+</script>
   

@@ -5,7 +5,7 @@
     <!-- Fin Header -->
 
     <!-- Main -->
-    <main class="flex-1 flex-col items-center justify-center py-6">
+    <main class="flex-1 flex-col items-center justify-center pt-6">
       <section id="home">
         <HomeSection />
       </section>

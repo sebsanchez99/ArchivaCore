@@ -1,6 +1,6 @@
 <template>
-  <section class="flex flex-col items-center text-center py-20 px-6">
-    <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-6">
+  <section class="flex flex-col items-center text-center py-20 px-6 bg-white">
+    <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-6 text-black">
       Gestión de Archivos <span class="text-primary-800">Simplificada</span>
     </h1>
 

@@ -1,6 +1,6 @@
 <template>
     <section class="bg-primary-200 py-12 px-6 md:px-20">
-      <h2 class="text-4xl font-bold text-center mb-10">Características Principales</h2>
+      <h2 class="text-4xl font-bold text-center mb-10 text-black">Características Principales</h2>
       <div class="flex flex-col md:flex-row md:flex-wrap justify-center gap-6">
         <FeatureCard
           :icon="ServerStackIcon"

@@ -4,7 +4,7 @@
       <!-- Logo a la izquierda -->
       <div class="flex items-center gap-2 font-semibold">
         <img alt="Logo de ArchivaCore" src="@/assets/logo.png" class="w-8 h-8 sm:w-10 sm:h-10" />
-        <span class="text-lg font-bold">ArchivaCore</span>
+        <span class="text-lg font-bold text-black">ArchivaCore</span>
       </div>
 
       <!-- Menú hamburguesa (móvil) -->
@@ -24,7 +24,7 @@
       <!-- Menú y botones (desktop) -->
       <div class="hidden md:flex flex-1 items-center justify-between">
         <!-- Opciones de navegación -->
-        <nav class="flex items-center space-x-4 sm:space-x-6 mx-auto h-10">
+        <nav class="flex items-center space-x-4 sm:space-x-6 mx-auto h-10 text-black">
           <button @click="$emit('scrollTo', 'home')" class=" cursor-pointer text-sm font-medium hover:text-primary-700">Inicio</button>
           <button @click="$emit('scrollTo', 'features')" class=" cursor-pointer text-sm font-medium hover:text-primary-700">Características</button>
           <button @click="$emit('scrollTo', 'pricing')" class=" cursor-pointer text-sm font-medium hover:text-primary-700">Planes</button>
@@ -33,7 +33,7 @@
 
         <!-- Botones -->
         <div class="flex items-center gap-2">
-          <NavButton to="/login" label="Iniciar sesión">Iniciar Sesión</NavButton>
+          <NavButton to="/login" label="Iniciar sesión" class="text-black">Iniciar Sesión</NavButton>
           <NavButton to="/register" primary label="Registrarse">Registrarse</NavButton>
         </div>
       </div>
