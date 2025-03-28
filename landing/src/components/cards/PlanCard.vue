@@ -1,5 +1,5 @@
 <template>
-    <div class="border rounded-lg p-6 shadow-md relative flex flex-col">
+    <div class="border border-gray-400 rounded-lg p-6 shadow-2xl relative flex flex-col">
       <!-- Etiqueta "Recomendado" opcional -->
       <span
         v-if="recommended"
