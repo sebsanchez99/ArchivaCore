@@ -6,15 +6,9 @@
 
     <!-- Main -->
     <main class="flex-1 flex-col items-center justify-center pt-6">
-      <section id="home">
-        <HomeSection />
-      </section>
-      <section id="features">
-        <FeaturesSection />
-      </section>
-      <section id="pricing">
-        <PricingSection />
-      </section>
+        <HomeSection id="home"/>
+        <FeaturesSection id="features"/>
+        <PricingSection id="pricing"/>
     </main>
     <!-- Fin Main -->
 
