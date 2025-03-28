@@ -1,38 +1,10 @@
 <template>
-    <section class="flex flex-col justify-center items-center p-15">
+    <section class="flex flex-col justify-center items-center p-15 text-black">
       <div class="bg-white shadow-md rounded-lg py-7 px-10 max-w-130 w-full">
         <h2 class="text-2xl font-bold text-gray-900 mb-2">Registrarse</h2>
         <p class="text-sm text-gray-500 mb-6">Ingrese sus datos para crear una cuenta en ArchivaCore</p>
   
         <form @submit.prevent="register">
-          <!-- Nombre y Apellido -->
-          <div class="mb-4">
-            <label for="firstName" class="block text-sm font-semibold">Nombre</label>
-            <div class="mt-1 flex items-center rounded-lg bg-white border border-gray-300 shadow-sm pl-3 has-[input:focus-within]:border-primary-500">
-              <input
-                id="firstName"
-                v-model="firstName"
-                type="text"
-                placeholder="Ingrese su nombre"
-                class="w-full p-2 border-0 focus:ring-0 focus:outline-none text-gray-900"
-                required
-              />
-            </div>
-          </div>
-  
-          <div class="mb-4">
-            <label for="lastName" class="block text-sm font-semibold">Apellido</label>
-            <div class="mt-1 flex items-center rounded-lg bg-white border border-gray-300 shadow-sm pl-3 has-[input:focus-within]:border-primary-500">
-              <input
-                id="lastName"
-                v-model="lastName"
-                type="text"
-                placeholder="Ingrese su apellido"
-                class="w-full p-2 border-0 focus:ring-0 focus:outline-none text-gray-900"
-                required
-              />
-            </div>
-          </div>
   
           <!-- Correo Electrónico -->
           <div class="mb-4">
