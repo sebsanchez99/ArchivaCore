@@ -1,10 +1,19 @@
 import os
 import joblib
 import torch
+import spacy
+import nltk
+from nltk.corpus import wordnet
 from transformers import (
     T5Tokenizer, T5ForConditionalGeneration,
     BertTokenizer, BertModel, pipeline
 )
+
+# 📌 Descargar recursos de NLP
+nltk.download('wordnet')
+
+# 📌 Cargar modelo de lenguaje en inglés de spaCy
+nlp = spacy.load("en_core_web_sm")
 
 # 📌 Definir rutas
 MODEL_SUMMARY_PATH = os.path.abspath(os.path.join('models', 'resume_summarizer.pt'))
@@ -32,6 +41,44 @@ classifier = joblib.load(MODEL_CLASSIFIER_PATH)
 # 🔹 Modelo de generación de texto (T5 para justificación)
 justification_model = pipeline("text2text-generation", model="t5-small")
 
+# 🔹 Diccionario de habilidades con sinónimos
+TECH_SKILLS = {
+    "python": {"python", "py"},
+    "data": {"data", "dataset", "big data"},
+    "machine learning": {"machine learning", "ml", "deep learning", "artificial intelligence"},
+    "cloud": {"cloud", "cloud computing", "aws", "azure", "gcp"},
+    "computing": {"computing", "distributed systems", "high-performance computing"},
+    "analysis": {"analysis", "data analysis", "analytics", "business intelligence"},
+    "kubernetes": {"kubernetes", "k8s", "container orchestration"}
+}
+
+# 🔹 Función para extraer sinónimos desde WordNet
+def get_synonyms(word):
+    synonyms = set()
+    for syn in wordnet.synsets(word):
+        for lemma in syn.lemmas():
+            synonyms.add(lemma.name().lower())
+    return synonyms
+
+# 🔹 Función para extraer habilidades del texto con spaCy y sinónimos
+def extract_skills(text):
+    doc = nlp(text.lower())
+    found_skills = set()
+
+    # Verificar palabras exactas
+    for token in doc:
+        for key, synonyms in TECH_SKILLS.items():
+            if token.text in synonyms:
+                found_skills.add(key)
+
+    # Verificar entidades nombradas
+    for ent in doc.ents:
+        for key, synonyms in TECH_SKILLS.items():
+            if ent.text.lower() in synonyms:
+                found_skills.add(key)
+
+    return found_skills
+
 # 🔹 Función para generar resumen del CV
 def summarize_resume(text):
     input_text = "summarize: " + text
@@ -55,18 +102,18 @@ def predict_resume_category(text):
 
 # 🔹 Función para analizar compatibilidad
 def analyze_compatibility(cv_text, job_text):
-    """Identifica los requisitos cumplidos y faltantes comparando palabras clave."""
-    cv_words = set(cv_text.lower().split())
-    job_words = set(job_text.lower().split())
+    """Identifica los requisitos cumplidos y faltantes comparando palabras clave y habilidades detectadas."""
+    cv_skills = extract_skills(cv_text)
+    job_skills = extract_skills(job_text)
 
-    matched = cv_words.intersection(job_words)
-    missing = job_words - cv_words
+    matched = cv_skills.intersection(job_skills)
+    missing = job_skills - cv_skills
 
-    compatibility = len(matched) / len(job_words) * 100 if job_words else 0
+    compatibility = len(matched) / len(job_skills) * 100 if job_skills else 0
 
     return round(compatibility, 2), list(matched), list(missing)
 
-# 🔹 Nueva función para generar una justificación con T5
+# 🔹 Función para generar una justificación con T5
 def generate_ai_justification(cv_text, job_text, compatibility):
     prompt = f"Given a resume: {cv_text} and a job offer: {job_text}, explain if the candidate is suitable. The compatibility is {compatibility} percent."
     response = justification_model(prompt, max_length=100, do_sample=True)
@@ -74,10 +121,10 @@ def generate_ai_justification(cv_text, job_text, compatibility):
 
 # 📝 Ejemplo de CV y oferta de trabajo
 resume_text = """
-Experienced Data Scientist specializing in Machine Learning, NLP, and AI projects.
-Worked in various industries applying data science to solve complex problems.
-Familiar with Python, Deep Learning, and TensorFlow.
+Experienced software engineer with expertise in artificial intelligence, cloud technologies, and software development. 
+Strong background in deep learning, automation, and distributed systems.
 """
+
 job_offer_text = """
 Looking for a Machine Learning Engineer with expertise in Python, Data Analysis, Cloud Computing, and Kubernetes.
 """

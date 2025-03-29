@@ -43,10 +43,21 @@ summary_tokenizer = T5Tokenizer.from_pretrained("t5-small")
 
 # 🔹 Función para generar resumen
 def summarize_resume(text):
-    input_text = "summarize: " + text
-    inputs = summary_tokenizer(input_text, return_tensors="pt", truncation=True, padding=True, max_length=512)
-    summary_ids = summary_model.generate(inputs.input_ids, max_length=100, min_length=30, length_penalty=2.0, num_beams=4, early_stopping=True)
+    prompt = (
+        "Summarize this resume by highlighting key skills, work experience, "
+        "achievements, and technical expertise in a concise way: " + text
+    )
+    inputs = summary_tokenizer(prompt, return_tensors="pt", truncation=True, padding=True, max_length=512)
+    summary_ids = summary_model.generate(
+        inputs.input_ids, 
+        max_length=150,   
+        min_length=50,    
+        length_penalty=1.5,
+        num_beams=5,      
+        early_stopping=True
+    )
     return summary_tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+
 
 # 🔹 Mostrar algunos resúmenes de prueba
 sample_resumes = df["Resume_clean"].sample(3, random_state=42)

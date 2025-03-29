@@ -2,12 +2,14 @@ import os
 import pandas as pd
 import joblib
 import torch
+import numpy as np
 from transformers import (
-    T5Tokenizer, T5ForConditionalGeneration, 
+    BartTokenizer, BartForConditionalGeneration,  # 🔹 Corrección aquí (BART en vez de T5)
     BertTokenizer, BertModel
 )
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
+from sklearn.decomposition import PCA
 from sklearn.metrics import accuracy_score, classification_report
 
 # 📌 Definir rutas
@@ -20,48 +22,56 @@ BERT_MODEL_PATH = os.path.abspath(os.path.join('models', 'bert_model.pt'))
 df = pd.read_csv(CLEAN_DATA_PATH)
 
 # 🔹 División de datos para clasificación
-X_train, X_test, y_train, y_test = train_test_split(df['Resume_clean'], df['Category'], test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(df['Resume_clean'], df['Category'], 
+                                                    test_size=0.2, stratify=df['Category'], random_state=42)
 
-# 🚀 1️⃣ Modelo de resumen con T5/BART (NO necesita entrenamiento)
-print("Cargando modelo de resumen...")
-summary_model = T5ForConditionalGeneration.from_pretrained("t5-small")
-summary_tokenizer = T5Tokenizer.from_pretrained("t5-small")
+# 🚀 1️⃣ **Modelo de resumen mejorado con BART**
+print("📌 Cargando modelo de resumen BART...")
+summary_model = BartForConditionalGeneration.from_pretrained("facebook/bart-large-cnn")  # ✅ Corrección aquí
+summary_tokenizer = BartTokenizer.from_pretrained("facebook/bart-large-cnn")  # ✅ Corrección aquí
 
-# Guardar modelo de resumen (Torch)
+# Guardar modelo de resumen
 os.makedirs(os.path.dirname(MODEL_SUMMARY_PATH), exist_ok=True)
 torch.save(summary_model.state_dict(), MODEL_SUMMARY_PATH)
 print(f"✔️ Modelo de resumen guardado en: {MODEL_SUMMARY_PATH}")
 
-# 🚀 2️⃣ Modelo de clasificación con BERT + RandomForest
-print("Entrenando modelo de clasificación...")
+# 🚀 2️⃣ **Modelo de clasificación con BERT + RandomForest**
+print("📌 Entrenando modelo de clasificación...")
+
+# 🔹 Cargar modelo BERT y tokenizer
 bert_tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
 bert_model = BertModel.from_pretrained("bert-base-uncased")
 
-# 🔹 Extraer embeddings de BERT
+# 🔹 Función para extraer embeddings de BERT
 def extract_bert_embeddings(text_list, tokenizer, model):
-    inputs = tokenizer(text_list, padding=True, truncation=True, return_tensors="pt")
+    inputs = tokenizer(text_list, padding=True, truncation=True, return_tensors="pt", max_length=512)
     with torch.no_grad():
         outputs = model(**inputs)
-    return outputs.last_hidden_state[:, 0, :].numpy()  # Solo el embedding [CLS]
+    return outputs.last_hidden_state.mean(dim=1).numpy()  # Promediar todas las palabras
 
 # 🔹 Convertir textos en embeddings
-X_train_emb = extract_bert_embeddings(X_train.tolist(), bert_tokenizer, bert_model)
-X_test_emb = extract_bert_embeddings(X_test.tolist(), bert_tokenizer, bert_model)
+X_train_emb = np.vstack([extract_bert_embeddings([text], bert_tokenizer, bert_model) for text in X_train.tolist()])
+X_test_emb = np.vstack([extract_bert_embeddings([text], bert_tokenizer, bert_model) for text in X_test.tolist()])
 
-# 🔹 Entrenar clasificador Random Forest
-classifier = RandomForestClassifier(n_estimators=100, random_state=42)
+# 🔹 Reducir dimensiones con PCA (de 768 a 256)
+pca = PCA(n_components=256)
+X_train_emb = pca.fit_transform(X_train_emb)
+X_test_emb = pca.transform(X_test_emb)
+
+# 🔹 Entrenar clasificador Random Forest mejorado
+classifier = RandomForestClassifier(n_estimators=500, max_depth=20, random_state=42, class_weight="balanced")
 classifier.fit(X_train_emb, y_train)
 
 # 🔹 Evaluación del modelo
 y_pred = classifier.predict(X_test_emb)
 accuracy = accuracy_score(y_test, y_pred)
 print(f'✔️ Precisión del modelo de clasificación: {accuracy:.4f}')
-print('\nReporte de clasificación:\n', classification_report(y_test, y_pred))
+print('\n📊 Reporte de clasificación:\n', classification_report(y_test, y_pred, zero_division=1))
 
 # Guardar modelo de clasificación
 joblib.dump(classifier, MODEL_CLASSIFIER_PATH)
 print(f"✔️ Modelo de clasificación guardado en: {MODEL_CLASSIFIER_PATH}")
 
-# Guardar modelo BERT (necesario para extracción de embeddings en producción)
+# Guardar modelo BERT
 torch.save(bert_model.state_dict(), BERT_MODEL_PATH)
 print(f"✔️ Modelo BERT guardado en: {BERT_MODEL_PATH}")
