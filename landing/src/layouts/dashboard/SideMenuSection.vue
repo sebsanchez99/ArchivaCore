@@ -1,70 +1,43 @@
 <template>
-  <div class="drawer lg:drawer-open">
-    <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
-    
-    <!-- Contenido Principal -->
-    <div class="drawer-content flex flex-col justify-start">
-      <label for="my-drawer-2" class="drawer-button lg:hidden">
-        <Bars3Icon class="btn" />
-      </label>
-    </div>
+  <div class="drawer-side">
+    <!-- Overlay para cerrar al tocar fuera -->
+    <label for="sidebar" class="drawer-overlay lg:hidden"></label>
 
     <!-- Sidebar -->
-    <div class="drawer-side">
-      <label for="my-drawer-2" aria-label="Cerrar Sidebar" class="drawer-overlay"></label>
-      <ul 
-        :class="['menu text-base-content min-h-full p-4 bg-primary-500 transition-all duration-300 ease-in-out', isCompact ? 'w-20' : 'w-64']">
-        
-        <!-- Encabezado del Sidebar -->
-        <div class="mb-5 mt-1 flex justify-between items-center">
-          <img :class="isCompact ? 'w-10' : 'w-20'" src="@/assets/logo.png" alt="Logo">
-          <button @click="toggleCompact" class="btn btn-sm btn-ghost" aria-label="Alternar Sidebar">
-            <Bars3Icon class="w-6 h-6" />
-          </button>
+    <aside class="menu p-4 w-70 text-white min-h-full bg-primary-500">
+      <div class="flex flex-col mb-6">
+        <label for="sidebar" class="ml-auto btn btn-sm btn-ghost lg:hidden hover:bg-primary-400 border-none shadow-2xl">✕</label>
+        <div class="flex items-center gap-2">
+          <img src="@/assets/logoPrincipal.png" alt="Logo" class="w-20 h-20" />
+          <h2 class="text-2xl font-bold">ArchivaCore</h2>
         </div>
+      </div>
 
-        <!-- Elementos del Sidebar -->
-        <li v-for="item in sidebarItems" :key="item.label"
-          class="cursor-pointer flex flex-row items-center space-x-2 p-2 rounded-lg hover:bg-primary-600 transition-all duration-300 ease-in-out">
-          <component :is="item.icon" class="w-8 h-8 p-0 stroke-black pointer-events-none" />
-          <span v-show="!isCompact" class="pointer-events-none">
-            {{ item.label }}
-          </span>
+      <ul>
+        <li v-for="item in sidebarItems" :key="item.label">
+          <RouterLink
+            :to="item.path"
+            class="flex items-center gap-2 p-2 rounded-lg hover:bg-primary-400 transition-colors duration-100 ease-in-out"
+            active-class="bg-primary-700" 
+          >
+            <component :is="item.icon" class="w-6 h-6" />
+            <span>{{ item.label }}</span>
+          </RouterLink>
         </li>
       </ul>
-    </div>
+    </aside>
   </div>
 </template>
 
-<script lang="ts" setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue';
-import { Bars3Icon, HomeIcon, UserIcon } from "@heroicons/vue/24/outline";
+<script setup lang="ts">
+import { HomeIcon, CloudArrowDownIcon, Cog6ToothIcon, LifebuoyIcon, CreditCardIcon } from "@heroicons/vue/24/outline";
 
-const isCompact = ref(false);
+const sidebarItems = [
+  { label: "Inicio", icon: HomeIcon, path: "/dashboard/home" },
+  { label: "Descargar App", icon: CloudArrowDownIcon, path: "/dashboard/download" },
+  { label: "Configuración", icon: Cog6ToothIcon, path: "/dashboard/settings" },
+  { label: "Soporte", icon: LifebuoyIcon, path: "/dashboard/support" },
+  { label: "Planes y Facturación", icon: CreditCardIcon, path: "/dashboard/plans" },
+];
 
-// Menú del Sidebar
-const sidebarItems = ref([
-  { label: "Inicio", icon: HomeIcon },
-  { label: "Usuarios", icon: UserIcon },
-  { label: "Configuración", icon: Bars3Icon },
-]);
-
-// Alternar tamaño del Sidebar
-function toggleCompact() {
-  isCompact.value = !isCompact.value;
-}
-
-// Detectar tamaño de pantalla
-function handleResize() {
-  isCompact.value = window.innerWidth < 1024;
-}
-
-onMounted(() => {
-  window.addEventListener("resize", handleResize);
-  handleResize();
-});
-
-onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
-});
 </script>
