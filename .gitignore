@@ -302,3 +302,6 @@ poetry.toml
 pyrightconfig.json
 
 outputs
+
+ai-service/models/
+ai-service/data/
