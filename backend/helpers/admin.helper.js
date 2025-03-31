@@ -2,6 +2,10 @@ const pool = require("../libs/postgres");
 const bcrypt = require('bcrypt');
 const ResponseUtil = require('../utils/response.util')
 
+/**
+ * @class Esta clase contiene métodos para la gestión de usuarios en la base de datos.
+ * @description AdminHelper es una clase que proporciona métodos para listar, crear, actualizar y eliminar usuarios en la base de datos.
+ */
 class AdminHelper{
 
     /**

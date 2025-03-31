@@ -1,4 +1,7 @@
-
+/**
+ * @class Clase para construir respuestas estandarizadas en formato Json
+ * @description ResponseUtil es una clase que proporciona métodos para construir respuestas JSON estandarizadas para operaciones exitosas y fallidas.
+ */
 class ResponseUtil {
 
     /**

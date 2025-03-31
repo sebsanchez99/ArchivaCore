@@ -4,7 +4,13 @@ const { configServer } = require("../config/config");
 const router = require("../router/router");
 const passport = require("../middlewares/passport/passport");
 
+/**
+ * Representa el servidor Express.
+ * @class
+ * @description Esta clase inicializa el servidor Express y configura las rutas y middlewares.
+ */
 class Server {
+  
   constructor() {
     this.app = express();
     this.port = configServer.port;
