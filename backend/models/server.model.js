@@ -1,3 +1,7 @@
+/**
+ * @namespace Modelos
+ * @description Modelos de la aplicación.
+ */
 const express = require("express");
 const cors = require("cors");
 const { configServer } = require("../config/config");
@@ -6,6 +10,7 @@ const passport = require("../middlewares/passport/passport");
 
 /**
  * Representa el servidor Express.
+ * @memberof Modelos
  * @class
  * @description Esta clase inicializa el servidor Express y configura las rutas y middlewares.
  */

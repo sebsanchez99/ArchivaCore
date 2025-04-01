@@ -1,9 +1,20 @@
+/**
+ * @namespace Controladores
+ * @description Controladores de la API
+ */
 const AdminHelper = require('../helpers/admin.helper')
 const ResponseUtil = require('../utils/response.util')
 
 /**
- * @callback
- * Controlador que permite listar los usuarios desde la BD
+ * @namespace AdminController
+ * @memberof Controladores
+ * @description Controladores de administración.
+ */
+
+/**
+ * @memberof Controladores.AdminController
+ * @function listUsers
+ * @description Controlador que permite listar los usuarios desde la BD
  * @param {Object} req Petición
  * @param {Object} res Respuesta
  */
@@ -18,8 +29,9 @@ const listUsers = async(req, res) => {
 }
 
 /**
- * @callback
- * Controlador que permite crear usuario
+ * @memberof Controladores.AdminController
+ * @function createUsers
+ * @description Controlador que permite crear usuario
  * @param {Object} req Petición
  * @param {Object} res Respuesta
  */
@@ -39,8 +51,9 @@ const createUsers = async(req, res) => {
 
 
 /**
- * @callback
- * Controlador que permite Actualizar usuario
+ * @memberof Controladores.AdminController
+ * @function userUpdate
+ * @description Controlador que permite Actualizar usuario
  * @param {Object} req Petición 
  * @param {Object} res Respuesta
  */
@@ -57,8 +70,9 @@ const userUpdate = async(req, res) => {
 }
 
 /**
- * @callback
- * Controlador que permite eliminar usuario por id
+ * @function deleteUser
+ * @memberof Controladores.AdminController
+ * @description Controlador que permite eliminar usuario por id
  * @param {Object} req Petición
  * @param {Object} res Respuesta
  */

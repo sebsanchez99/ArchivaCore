@@ -4,7 +4,11 @@ const pool = require("../../../libs/postgres");
 
 /**  
  * @callback
- * Estrategia local de inicio de sesión que autentica usuario con bd
+ * @memberof Middlewares
+ * @description Estrategia local de inicio de sesión que autentica usuario con bd
+ * @param {string} username Nombre de usuario
+ * @param {string} password Contraseña del usuario
+ * @param {Function} done Callback para manejar el resultado de la autenticación
  * @returns {LocalStrategy} Configuración de estrategia local
  */
 const localStrategy = new LocalStrategy(

@@ -1,42 +1,36 @@
-/**
- * @module router/admin
- * @description Rutas de administración de usuarios
- */
-const { Router } = require('express')
-const { listUsers, createUsers, userUpdate, deleteUser } = require('../controllers/admin.controller.js')
+const { Router } = require('express');
+const { listUsers, createUsers, userUpdate, deleteUser } = require('../controllers/admin.controller.js');
 
-const router = Router()
+const router = Router();
+
+const adminRouter = router;
 
 /**
+ * @memberof Rutas.AdminRoutes
  * @name get/api/v1/admin/listUsers
- * @memberof module:router/admin~AdminRouter
- * @inner
  * @description Obtiene la lista de todos los usuarios.
  */
-router.get('/listUsers', listUsers)
+adminRouter.get('/listUsers', listUsers);
 
 /**
+ * @memberof Rutas.AdminRoutes
  * @name post/api/v1/admin/createUser
- * @memberof module:router/admin~AdminRouter
- * @inner
  * @description Crea un nuevo usuario en el sistema.
  */
-router.post('/createUser', createUsers)
+adminRouter.post('/createUser', createUsers);
 
 /**
+ * @memberof Rutas.AdminRoutes
  * @name put/api/v1/admin/updateUser
- * @memberof module:router/admin~AdminRouter
- * @inner
  * @description Actualiza la información de un usuario existente.
  */
-router.put('/updateUser', userUpdate)
+adminRouter.put('/updateUser', userUpdate);
 
 /**
+ * @memberof Rutas.AdminRoutes
  * @name delete/api/v1/admin/deleteUser
- * @memberof module:router/admin~AdminRouter
- * @inner
  * @description Elimina un usuario del sistema.
  */
-router.delete('/deleteUser', deleteUser)
+adminRouter.delete('/deleteUser', deleteUser);
 
-module.exports = router
+module.exports = adminRouter;

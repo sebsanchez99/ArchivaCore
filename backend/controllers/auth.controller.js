@@ -2,8 +2,15 @@ const AuthHelper = require('../helpers/auth.helper')
 const ResponseUtil = require('../utils/response.util')
 
 /**
- * @callback
- * Controlador que permite controlar la generación del token y enviarlo al usuario
+ * @namespace AuthController
+ * @memberof Controladores
+ * @description Controladores de autenticación.
+ */
+
+/**
+ * @function login
+ * @memberof Controladores.AuthController
+ * @description Controlador que permite controlar la generación del token y enviarlo al usuario
  * @param {Object} req petición 
  * @param {Object} res respuesta
  */

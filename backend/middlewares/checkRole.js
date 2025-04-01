@@ -1,6 +1,12 @@
 /**
- * Middleware que verifica rol de usuario
+ * @namespace Middlewares
+ * @description Grupo de middlewares de la API.
+ */
+
+/**
  * @callback
+ * @memberof Middlewares
+ * @description Verifica si el usuario tiene el rol de administrador.
  * @param {Object} req Petición
  * @param {Object} res Respuesta
  * @param {Function} next Función para pasar al siguiente middlware/controlador

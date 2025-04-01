@@ -4,6 +4,7 @@ const ResponseUtil = require('../utils/response.util');
 
 /**
  * @class Esta clase contiene métodos para la gestión de autenticación de usuarios.
+ * @memberof Helpers
  * @description AuthHelper es una clase que proporciona métodos para generar tokens de autenticación y verificar la validez de los mismos.
  */
 class AuthHelper {
