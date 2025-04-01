@@ -9,8 +9,9 @@ const ResponseUtil = require('../utils/response.util')
 class AdminHelper{
 
     /**
+     * @memberof AdminHelper
      * Método que lista usuarios
-     * @returns Resultado de la operación en formato JSON
+     * @returns {ResponseUtil} Resultado de la operación en formato JSON
      */
     async listUsers(){
         const result = await pool.query(
@@ -24,8 +25,8 @@ class AdminHelper{
 
     /**
      * Método que obtiene id de rol
-     * @param {*} rolName Nombre de rol del usuario  
-     * @returns Resultado de la operación en formato JSON
+     * @param {string} rolName Nombre de rol del usuario  
+     * @returns {ResponseUtil} Resultado de la operación en formato JSON
      */
     async obtenerRol(rolName){
         const result = await pool.query(
@@ -38,10 +39,10 @@ class AdminHelper{
 
     /**
      * Método que crea usuario
-     * @param {*} username Nombre de usuario
-     * @param {*} password Hash de usuario
-     * @param {*} rolUser Rol de usuario
-     * @returns Resultado de la operación en formato JSON
+     * @param {string} username Nombre de usuario
+     * @param {string} password Hash de usuario
+     * @param {number} rolUser Rol de usuario
+     * @returns {ResponseUtil} Resultado de la operación en formato JSON
      */
     async createUsers(username, password, rolUser){
         const userExist = await this.#verifyUser(username)
@@ -59,11 +60,11 @@ class AdminHelper{
 
     /**
      * Método que actualiza usuario
-     * @param {*} id Id de usuario  
-     * @param {*} username Nombre de usuario
-     * @param {*} password Hash de usuario
-     * @param {*} rolUser Rol de usuario
-     * @returns Resultado de la operación en formato JSON
+     * @param {string} id Id de usuario  
+     * @param {string} username Nombre de usuario
+     * @param {string} password Hash de usuario
+     * @param {number} rolUser Rol de usuario
+     * @returns {ResponseUtil} Resultado de la operación en formato JSON
      */
     async userUpdate(id, username, password, rolUser){
         const hashPassword = await bcrypt.hash( password ,  10 )
@@ -76,9 +77,9 @@ class AdminHelper{
 
     /**
      * Método que elimina usuario
-     * @param {*} id Id de usuario
-     * @param {*} idUser Id del usuario que realiza la operación
-     * @returns Resultado de la operación en formato JSON
+     * @param {string} id Id de usuario
+     * @param {string} idUser Id del usuario que realiza la operación
+     * @returns {ResponseUtil} Resultado de la operación en formato JSON
      */
     async deleteUsers(id, idUser){
         if(id==idUser){
@@ -93,9 +94,10 @@ class AdminHelper{
     }
 
     /**
+     * @private
      * Verifica la existencia del nombre de usuario en la base de datos
      * @param {*} username Nombre de usuario
-     * @returns Valor booleano indicando si el usuario existe
+     * @returns {boolean} Valor booleano indicando si el usuario existe
      */
     async #verifyUser(username) {
         const userExist = await pool.query(

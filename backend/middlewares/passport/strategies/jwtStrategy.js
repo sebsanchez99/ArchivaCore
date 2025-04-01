@@ -10,7 +10,9 @@ const options = {
 }
 
 /**
+ * @callback
  * Configura la estrategia por Jwt
+ * @returns {Strategy} Configuración de estrategia JWT
  */
 const jwtStrategy = new Strategy(options, (payload, done) => {
     return done(null, payload)

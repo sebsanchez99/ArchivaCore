@@ -11,6 +11,9 @@ const passport = require("../middlewares/passport/passport");
  */
 class Server {
   
+  /**
+   * @constructor
+   */
   constructor() {
     this.app = express();
     this.port = configServer.port;
@@ -20,7 +23,7 @@ class Server {
   }
 
   /**
-   *Activa los Middlewares del servidor
+   * Configura los Middlewares del servidor
    */
   middlewares() {
     this.app.use(express.json());
@@ -28,7 +31,7 @@ class Server {
   }
 
   /**
-   *Selecciona la ruta del App
+   * Configura las rutas de la aplicación
    */
   routes() {
     //http://localhost:3000/api/v1
@@ -36,7 +39,7 @@ class Server {
   }
 
   /**
-   *Inicializa el servidor
+   * Inicializa el servidor
    */
   init() {
     this.app.use(passport.initialize());

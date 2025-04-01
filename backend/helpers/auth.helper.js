@@ -10,9 +10,9 @@ class AuthHelper {
 
     /**
      * Método que genera token de usuario con datos incluidos
-     * @param idUser - Id de usuario
-     * @param userRole - Rol de usuario
-     * @returns Respuesta en formato JSON
+     * @param {string} idUser  Id de usuario
+     * @param {string} userRole  Rol de usuario
+     * @returns {ResponseUtil} Respuesta en formato JSON
      */
     generateToken(idUser, userRole){
         const payload = {

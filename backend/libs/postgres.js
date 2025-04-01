@@ -1,9 +1,10 @@
 const { Pool } = require('pg')
 const { configDB } = require('../config/config')
 
+// Cadena de conexión de base de datos
 const connectionString = `postgresql://${configDB.dbUser}:${configDB.dbPassword}@${configDB.dbHost}:${configDB.dbPort}/${configDB.dbName}`
 
-//Se configura el pool de conexiones a la BBDD
+// Se configura el pool de conexiones a la BBDD
 const pool = new Pool({
     connectionString: connectionString,
     idleTimeoutMillis: 30000,

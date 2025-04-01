@@ -2,9 +2,10 @@ const AuthHelper = require('../helpers/auth.helper')
 const ResponseUtil = require('../utils/response.util')
 
 /**
+ * @callback
  * Controlador que permite controlar la generación del token y enviarlo al usuario
- * @param {} req petición 
- * @param {} res respuesta
+ * @param {Object} req petición 
+ * @param {Object} res respuesta
  */
 const login = async (req, res) => {
     try {

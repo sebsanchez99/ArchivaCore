@@ -2,8 +2,11 @@ const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt");
 const pool = require("../../../libs/postgres");
 
-/**
- * Estrategia local de inicio de sesión que autentica usuario con bd*/
+/**  
+ * @callback
+ * Estrategia local de inicio de sesión que autentica usuario con bd
+ * @returns {LocalStrategy} Configuración de estrategia local
+ */
 const localStrategy = new LocalStrategy(
   async (username, password, done) => {
     try {
