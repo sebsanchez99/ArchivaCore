@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/presentation/pages/administration/view/adminitration_view.dart';
 
-//Sirve para guardar elementos de las vistas
+/// [Map] que contiene elementos que definen las vistas de la aplicación
 final Map<int, Map<String, dynamic>> menuItems = {
   0: {
     "title": "Administrar",

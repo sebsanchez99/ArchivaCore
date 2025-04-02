@@ -7,7 +7,7 @@ import 'package:frontend/domain/repositories/auth_repository.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
-// Lista de providers que se utilizarán dentro de la apliacción
+/// [List] de providers que se utilizarán dentro de la apliacción
 List<SingleChildWidget> appProviders = [
   Provider<AuthRepository>(
     create: (_) => AuthRepositoryImpl(AuthService()),

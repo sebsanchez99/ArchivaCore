@@ -1,10 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:frontend/utils/secure_storage.dart';
 
+/// Clase que crea y configura cliente [Dio]
 class DioClient {
+  /// Instancia privada de [Dio]
   final Dio _dio = Dio();
+  /// Instancia de [SecureStorage]
   final _secureStorage = SecureStorage();
 
+  /// Constructor que configura cliente [Dio]
   DioClient() {
     _dio.options = BaseOptions(
       baseUrl: 'http://localhost:3000/api/v1',
@@ -12,7 +16,8 @@ class DioClient {
       receiveTimeout: Duration(seconds: 10),
       headers: {'Content-Type': 'application/json'},
     );
-
+    
+    // Interceptor que obtiene y envía token en cada petición HTTP
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
@@ -30,8 +35,10 @@ class DioClient {
     );
   }
 
+  /// Getter de instancia privada de la clase
   Dio get client => _dio;
 
+  /// Obtiene token del storage
   Future<String?> _getToken() async {
     final token = await _secureStorage.getToken();
     return token;

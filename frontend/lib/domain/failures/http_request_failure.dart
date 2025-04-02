@@ -2,8 +2,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'http_request_failure.freezed.dart';
 
-// Clase que representa los diferentes tipos de errores que pueden ocurrir al realizar
-// una petición HTTP
+/// Enum que representa los diferentes tipos de errores que pueden ocurrir al realizar
+/// una petición HTTP
 @freezed
 class HttpRequestFailure with _$HttpRequestFailure {
   factory HttpRequestFailure.network()  = _Network;

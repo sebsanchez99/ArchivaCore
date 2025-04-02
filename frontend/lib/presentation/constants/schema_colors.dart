@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
+/// Clase que define paleta de colores de la aplicación
 class SchemaColors {
   // ============================================================
-  // 🎯 Color Primario Principal - #7488AD
+  /// 🎯 Color Primario Principal - #7488AD
   static const Color primary = Color(0xFF7488AD);
 
   // 🎨 Escala del Primario

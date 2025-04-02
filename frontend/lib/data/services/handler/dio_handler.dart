@@ -4,11 +4,13 @@ import 'package:frontend/domain/either/either.dart';
 import 'package:frontend/domain/failures/http_request_failure.dart';
 import 'package:frontend/domain/typedefs.dart';
 
+/// Clase auxiliar que maneja respuestas de peticiones HTTP
 class DioHandler {
-  // Constructor privado: evita que se instancie la clase, ya que todo se accede de forma estática.
+  /// Constructor privado: evita que se instancie la clase, ya que todo se accede de forma estática.
   const DioHandler._(); 
 
-  // Maneja una solicitud HTTP usando Dio y encapsula el resultado en un Either.
+  /// Maneja una solicitud HTTP usando [Dio] y encapsula el resultado en un Either
+  /// en caso de error retorna un enum [HttpRequestFailure] según el tipo de error.
   static HttpFuture<T> handleRequest<T>(
     Future<Response<dynamic>> Function() requestFunction,
     FutureOr<T> Function(dynamic responseBody) successHandler,

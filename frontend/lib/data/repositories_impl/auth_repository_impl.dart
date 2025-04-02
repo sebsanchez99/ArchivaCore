@@ -4,14 +4,16 @@ import 'package:frontend/domain/repositories/auth_repository.dart';
 import 'package:frontend/domain/typedefs.dart';
 import 'package:frontend/utils/secure_storage.dart';
 
-// Implementación de repositorio de autenticación
+/// Clase que implementa y gestiona operaciones de repositorio [AuthRepository]
 class AuthRepositoryImpl implements AuthRepository {
+  /// Instancia de servicio [AuthService]
   final AuthService _authService;
+  /// Instancia de [SecureStorage]
   final _secureStorage = SecureStorage();
 
   AuthRepositoryImpl(this._authService);
 
-  // Mètodo que autentica usuario y guarda el token en el storage 
+  /// Autentica usuario y guarda el token en el storage, retorna un objeto [ServerResponseModel] 
   @override
   HttpFuture<ServerResponseModel> logIn(
     String username,
