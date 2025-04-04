@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/presentation/pages/administration/view/adminitration_view.dart';
+import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_view.dart';
 
 /// [Map] que contiene elementos que definen las vistas de la aplicación
 final Map<int, Map<String, dynamic>> menuItems = {
@@ -9,13 +10,13 @@ final Map<int, Map<String, dynamic>> menuItems = {
     "widget": AdministrationView(),
   },
   1: {
-    "title": "Usuarios",
-    "icon": Icon(Icons.verified_user),
-    "widget": Text("Vista de Usuarios"),
+    "title": "Archivos",
+    "icon": Icon(Icons.folder),
+    "widget": FileExplorerView(),
   },
   2: {
     "title": "Cerrar Sesion",
     "icon": Icon(Icons.verified_user_outlined),
     "widget": Text("Vista de cerrar sesion"),
-  },  
+  },
 };
