@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-primary-200 rounded-lg shadow p-5">
+    <div class="bg-primary-100 rounded-lg shadow-sm p-5">
       <h2 class="font-bold text-lg text-primary-700">Almacenamiento</h2>
       <p class="text-sm text-primary-600">Espacio consumido</p>
       <div class="mt-2 text-sm font-semibold text-primary-600">
