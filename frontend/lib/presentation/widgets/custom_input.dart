@@ -8,12 +8,16 @@ class CustomInput extends StatefulWidget {
   final bool isPassword;
   final bool? enabled;
   final void Function(String)? onSubmitted;
+  final TextEditingController? controller;
+  final String? Function(String?)? validator;
   const CustomInput({
     super.key, 
     this.labeltext, 
     this.onChanged, 
     this.enabled, 
     this.onSubmitted,
+    this.validator, 
+    this.controller, 
     required this.isPassword, 
   });
 
@@ -25,12 +29,11 @@ class _CustomInputState extends State<CustomInput> {
   bool _obscureText = true;
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      
+    return TextFormField(
       enabled: widget.enabled, 
+      validator: widget.validator,
       // si es un campo de contraseña, ocultar texto
       obscureText: widget.isPassword ? _obscureText : false,
-      focusNode: FocusNode(),
       style: TextStyle(
         color: SchemaColors.textPrimary,
         fontSize: 15
@@ -69,9 +72,21 @@ class _CustomInputState extends State<CustomInput> {
           horizontal: 8,
           vertical: 14
         ),
+        errorStyle: TextStyle(
+          color: SchemaColors.error,
+          fontSize: 11
+        ),
+        errorBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: SchemaColors.error),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: SchemaColors.error),
+        ),
+        errorMaxLines: 2,
       ),
+      cursorErrorColor: SchemaColors.highlight,
       onChanged: widget.onChanged,
-      onSubmitted: widget.onSubmitted,  
+      onFieldSubmitted: widget.onSubmitted,  
     );
   }
 }
