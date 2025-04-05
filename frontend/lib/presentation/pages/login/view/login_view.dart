@@ -8,6 +8,8 @@ import 'package:frontend/presentation/pages/login/bloc/login_state.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
 import 'package:frontend/presentation/widgets/custom_input.dart';
 import 'package:frontend/presentation/widgets/dialogs/error_dialog.dart';
+import 'package:frontend/utils/validator/form_validator_extension.dart';
+import 'package:frontend/utils/validator/form_validator.dart';
 
 part '../utils/utils.dart';
 
@@ -16,6 +18,7 @@ class LoginView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
     return BlocProvider(
       create:
           (_) => LoginBloc(
@@ -79,6 +82,7 @@ class LoginView extends StatelessWidget {
                         builder: (context, state) => AbsorbPointer(
                               absorbing: state.blocking,
                               child: Form(
+                                key: formKey,
                                 child: Column(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
@@ -97,12 +101,14 @@ class LoginView extends StatelessWidget {
                                       labeltext: 'Usuario',
                                       onChanged: (text) => context.read<LoginBloc>().add(LoginEvents.usernameChanged(text.trim())),
                                       isPassword: false,
+                                      validator: (value) => value.validateWith([FormValidator.notEmpty(message: 'El campo usuario no puede estar vacío')]),
                                     ),
                                     CustomInput(
                                       labeltext: 'Contraseña',
                                       onChanged: (text) => context.read<LoginBloc>().add(LoginEvents.passwordChanged(text)),
                                       isPassword: true,
                                       onSubmitted: (_) => _submit(context),
+                                      validator: (value) => value.validateWith([FormValidator.notEmpty(message: 'El campo contraseña no puede estar vacío')]),
                                     ),
                                     const SizedBox(height: 10),
                                     state.blocking
@@ -117,7 +123,13 @@ class LoginView extends StatelessWidget {
                                               width: double.infinity,
                                               child: CustomButton(
                                                 message: 'Iniciar sesión',
-                                                onPressed: () => _submit(context),
+                                                onPressed: () {
+                                                  if (formKey.currentState!.validate() == true) {
+                                                    _submit(context);
+                                                  } else {
+                                                    return;
+                                                  }
+                                                },
                                               ),
                                             );
                                           },
