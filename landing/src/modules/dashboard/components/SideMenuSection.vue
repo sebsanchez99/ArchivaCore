@@ -14,10 +14,10 @@
       </div>
       <div class="divider before:bg-primary-100 after:bg-primary-100"></div>
       <ul>
-        <li v-for="item in sidebarItems" :key="item.label">
+        <li v-for="item in sidebarItems" :key="item.label" class="mb-2">
           <RouterLink
             :to="item.path"
-            class="flex items-center gap-2 p-2 rounded-lg hover:bg-primary-400 transition-colors duration-100 ease-in-out"
+            class="btn btn-ghost flex items-center justify-start hover:bg-primary-400 border-none hover:shadow-2xl"
             active-class="bg-primary-700" 
           >
             <component :is="item.icon" class="w-6 h-6" />
