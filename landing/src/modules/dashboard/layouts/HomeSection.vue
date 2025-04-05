@@ -1,0 +1,24 @@
+<template>
+    <div class="space-y-6">
+      <AlertSubscription />
+  
+      <div class="my-6">
+        <h1 class="text-xl font-bold text-primary-600">Bienvenido, nombreEmpresa</h1>
+        <p class="text-sm text-gray-500">Panel de Administración de su cuenta ArchivaCore</p>
+      </div>
+  
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <StorageCard />
+        <AccountStatusCard />
+        <QuickAccessCard />
+      </div>
+    </div>
+  </template>
+  
+  <script setup lang="ts">
+  import AlertSubscription from "@/modules/dashboard/components/AlertSubscription.vue";
+  import StorageCard from "@/modules/dashboard/components/StorageCard.vue";
+  import AccountStatusCard from "@/modules/dashboard/components/AccountStatusCard.vue";
+  import QuickAccessCard from "@/modules/dashboard/components/QuickAccessCard.vue";
+  </script>
+  
