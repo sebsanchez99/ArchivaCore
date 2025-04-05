@@ -1,18 +1,18 @@
 <template>
   <div class="drawer-side">
     <!-- Overlay para cerrar al tocar fuera -->
-    <label for="sidebar" class="drawer-overlay lg:hidden"></label>
+    <label for="sidebar" class="drawer-overlay lg:hidden border"></label>
 
     <!-- Sidebar -->
-    <aside class="menu p-4 w-70 text-white min-h-full bg-primary-500">
-      <div class="flex flex-col mb-6">
+    <aside class="menu p-4 w-70 text-white min-h-full bg-primary-500 border-r border-primary-100">
+      <div class="flex flex-col">
         <label for="sidebar" class="ml-auto btn btn-sm btn-ghost lg:hidden hover:bg-primary-400 border-none shadow-2xl">✕</label>
         <div class="flex items-center gap-2">
           <img src="@/assets/logoPrincipal.png" alt="Logo" class="w-20 h-20" />
           <h2 class="text-2xl font-bold">ArchivaCore</h2>
         </div>
       </div>
-
+      <div class="divider before:bg-primary-100 after:bg-primary-100"></div>
       <ul>
         <li v-for="item in sidebarItems" :key="item.label">
           <RouterLink
@@ -35,9 +35,9 @@ import { HomeIcon, CloudArrowDownIcon, Cog6ToothIcon, LifebuoyIcon, CreditCardIc
 const sidebarItems = [
   { label: "Inicio", icon: HomeIcon, path: "/dashboard/home" },
   { label: "Descargar App", icon: CloudArrowDownIcon, path: "/dashboard/download" },
-  { label: "Configuración", icon: Cog6ToothIcon, path: "/dashboard/settings" },
   { label: "Soporte", icon: LifebuoyIcon, path: "/dashboard/support" },
   { label: "Planes y Facturación", icon: CreditCardIcon, path: "/dashboard/plans" },
+  { label: "Configuración", icon: Cog6ToothIcon, path: "/dashboard/settings" },
 ];
 
 </script>

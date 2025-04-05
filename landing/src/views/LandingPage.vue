@@ -19,11 +19,11 @@
 </template>
 
 <script setup>
-import HomeSection from "@/layouts/landing/HomeSection.vue"; 
-import NavBarSection from "@/layouts/landing/NavBarSection.vue";
-import FeaturesSection from "@/layouts/landing/FeaturesSection.vue";
-import PricingSection from "@/layouts/landing/PricingSection.vue";
-import ContactSection from "@/layouts/landing/ContactSection.vue";
+import HomeSection from "@/modules/landing/layouts/HomeSection.vue"; 
+import NavBarSection from "@/modules/landing/layouts/NavBarSection.vue";
+import FeaturesSection from "@/modules/landing/layouts/FeaturesSection.vue";
+import PricingSection from "@/modules/landing/layouts/PricingSection.vue";
+import ContactSection from "@/modules/landing/layouts/ContactSection.vue";
 
 const scrollTo = (sectionId) => {
   const section = document.getElementById(sectionId);

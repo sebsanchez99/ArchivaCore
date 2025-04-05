@@ -8,5 +8,5 @@
 </template>
 
 <script setup>
-import NavBarAuthSection from "@/layouts/auth/NavBarAuthSection.vue";
+import NavBarAuthSection from "@/modules/auth/components/NavBarAuthSection.vue";
 </script>

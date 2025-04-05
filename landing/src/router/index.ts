@@ -1,4 +1,4 @@
-import NotFound404 from '@/layouts/error/NotFound404.vue'
+import NotFound404 from '@/modules/error/NotFound404.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -24,12 +24,12 @@ const router = createRouter({
         {
           path: '/login',
           name: 'login',
-          component: () => import('@/layouts/auth/LoginSection.vue')
+          component: () => import('@/modules/auth/layouts/LoginSection.vue')
         },
         {
           path: '/register',
           name: 'register',
-          component: () => import('@/layouts/auth/RegisterSection.vue')
+          component: () => import('@/modules/auth/layouts/RegisterSection.vue')
         }
       ]
     },
@@ -38,32 +38,33 @@ const router = createRouter({
     {
       path: '/dashboard',
       name: 'dashboard',
+      redirect: '/dashboard/home',
       component: () => import('@/views/DashboardPage.vue'),
       children: [
         {
           path: 'home',
           name: 'home',
-          component: () => import('@/layouts/dashboard/HomeSection.vue')
+          component: () => import('@/modules/dashboard/layouts/HomeSection.vue')
         },
         {
           path: 'download',
           name: 'download',
-          component: () => import('@/layouts/dashboard/DownloadSection.vue')
+          component: () => import('@/modules/dashboard/layouts/DownloadSection.vue')
         },
         {
           path: 'settings',
           name: 'settings',
-          component: () => import('@/layouts/dashboard/SettingsSection.vue')
+          component: () => import('@/modules/dashboard/layouts/SettingsSection.vue')
         },
         {
           path: 'support',
           name: 'support',
-          component: () => import('@/layouts/dashboard/SupportSection.vue')
+          component: () => import('@/modules/dashboard/layouts/SupportSection.vue')
         },
         {
           path: 'plans',
           name: 'plans',
-          component: () => import('@/layouts/dashboard/PlansSection.vue')
+          component: () => import('@/modules/dashboard/layouts/PlansSection.vue')
         }
       ]
     }

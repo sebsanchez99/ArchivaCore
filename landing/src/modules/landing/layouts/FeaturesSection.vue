@@ -28,6 +28,6 @@
   
   <script setup>
   import { FolderIcon, LockClosedIcon, CpuChipIcon, ServerStackIcon } from '@heroicons/vue/24/outline';
-  import FeatureCard from '@/components/cards/FeatureCard.vue';
+  import FeatureCard from '@/modules/landing/components/FeatureCard.vue';
   </script>
   

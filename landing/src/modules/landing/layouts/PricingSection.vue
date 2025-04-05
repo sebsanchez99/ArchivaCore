@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import PlanCard from '@/components/cards/PlanCard.vue';
+import PlanCard from '@/modules/landing/components/PlanCard.vue';
 
 const plans = [
   {
