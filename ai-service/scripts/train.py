@@ -2,76 +2,68 @@ import os
 import pandas as pd
 import joblib
 import torch
-import numpy as np
-from transformers import (
-    BartTokenizer, BartForConditionalGeneration,  # 🔹 Corrección aquí (BART en vez de T5)
-    BertTokenizer, BertModel
-)
-from sklearn.ensemble import RandomForestClassifier
+from transformers import T5Tokenizer, T5ForConditionalGeneration
 from sklearn.model_selection import train_test_split
-from sklearn.decomposition import PCA
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import Pipeline
 from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics.pairwise import cosine_similarity
 
-# 📌 Definir rutas
+# 📁 Rutas
 CLEAN_DATA_PATH = os.path.abspath(os.path.join('data', 'Resume_clean.csv'))
-MODEL_SUMMARY_PATH = os.path.abspath(os.path.join('models', 'resume_summarizer.pt'))
 MODEL_CLASSIFIER_PATH = os.path.abspath(os.path.join('models', 'resume_classifier.pkl'))
-BERT_MODEL_PATH = os.path.abspath(os.path.join('models', 'bert_model.pt'))
+MODEL_SUMMARIZER_PATH = os.path.abspath(os.path.join('models', 'resume_summarizer.pt'))
 
-# 📌 Cargar datos limpios
+# 📌 Cargar dataset limpio
 df = pd.read_csv(CLEAN_DATA_PATH)
 
-# 🔹 División de datos para clasificación
-X_train, X_test, y_train, y_test = train_test_split(df['Resume_clean'], df['Category'], 
-                                                    test_size=0.2, stratify=df['Category'], random_state=42)
+# 🔹 División de datos
+X_train, X_test, y_train, y_test = train_test_split(df['Resume_str'], df['Category'], test_size=0.2, random_state=42)
 
-# 🚀 1️⃣ **Modelo de resumen mejorado con BART**
-print("📌 Cargando modelo de resumen BART...")
-summary_model = BartForConditionalGeneration.from_pretrained("facebook/bart-large-cnn")  # ✅ Corrección aquí
-summary_tokenizer = BartTokenizer.from_pretrained("facebook/bart-large-cnn")  # ✅ Corrección aquí
+# 🚀 1️⃣ Modelo de clasificación (TF-IDF + Naive Bayes)
+pipeline = Pipeline([
+    ('tfidf', TfidfVectorizer(max_features=5000)),
+    ('classifier', MultinomialNB())
+])
+pipeline.fit(X_train, y_train)
 
-# Guardar modelo de resumen
-os.makedirs(os.path.dirname(MODEL_SUMMARY_PATH), exist_ok=True)
-torch.save(summary_model.state_dict(), MODEL_SUMMARY_PATH)
-print(f"✔️ Modelo de resumen guardado en: {MODEL_SUMMARY_PATH}")
-
-# 🚀 2️⃣ **Modelo de clasificación con BERT + RandomForest**
-print("📌 Entrenando modelo de clasificación...")
-
-# 🔹 Cargar modelo BERT y tokenizer
-bert_tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
-bert_model = BertModel.from_pretrained("bert-base-uncased")
-
-# 🔹 Función para extraer embeddings de BERT
-def extract_bert_embeddings(text_list, tokenizer, model):
-    inputs = tokenizer(text_list, padding=True, truncation=True, return_tensors="pt", max_length=512)
-    with torch.no_grad():
-        outputs = model(**inputs)
-    return outputs.last_hidden_state.mean(dim=1).numpy()  # Promediar todas las palabras
-
-# 🔹 Convertir textos en embeddings
-X_train_emb = np.vstack([extract_bert_embeddings([text], bert_tokenizer, bert_model) for text in X_train.tolist()])
-X_test_emb = np.vstack([extract_bert_embeddings([text], bert_tokenizer, bert_model) for text in X_test.tolist()])
-
-# 🔹 Reducir dimensiones con PCA (de 768 a 256)
-pca = PCA(n_components=256)
-X_train_emb = pca.fit_transform(X_train_emb)
-X_test_emb = pca.transform(X_test_emb)
-
-# 🔹 Entrenar clasificador Random Forest mejorado
-classifier = RandomForestClassifier(n_estimators=500, max_depth=20, random_state=42, class_weight="balanced")
-classifier.fit(X_train_emb, y_train)
-
-# 🔹 Evaluación del modelo
-y_pred = classifier.predict(X_test_emb)
+# 📊 Evaluación
+y_pred = pipeline.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
-print(f'✔️ Precisión del modelo de clasificación: {accuracy:.4f}')
-print('\n📊 Reporte de clasificación:\n', classification_report(y_test, y_pred, zero_division=1))
+print(f'✔️ Precisión del modelo: {accuracy:.4f}')
+print('\n📊 Reporte de clasificación:\n', classification_report(y_test, y_pred))
 
-# Guardar modelo de clasificación
-joblib.dump(classifier, MODEL_CLASSIFIER_PATH)
-print(f"✔️ Modelo de clasificación guardado en: {MODEL_CLASSIFIER_PATH}")
+# 💾 Guardar modelo
+os.makedirs(os.path.dirname(MODEL_CLASSIFIER_PATH), exist_ok=True)
+joblib.dump(pipeline, MODEL_CLASSIFIER_PATH)
+print(f'✔️ Modelo de clasificación guardado en: {MODEL_CLASSIFIER_PATH}')
 
-# Guardar modelo BERT
-torch.save(bert_model.state_dict(), BERT_MODEL_PATH)
-print(f"✔️ Modelo BERT guardado en: {BERT_MODEL_PATH}")
+# 🚀 2️⃣ Modelo de resumen con T5
+print("Cargando modelo T5 para resumen...")
+summarizer_model = T5ForConditionalGeneration.from_pretrained("t5-small")
+summarizer_tokenizer = T5Tokenizer.from_pretrained("t5-small")
+
+# 💾 Guardar modelo T5
+torch.save(summarizer_model.state_dict(), MODEL_SUMMARIZER_PATH)
+print(f'✔️ Modelo de resumen guardado en: {MODEL_SUMMARIZER_PATH}')
+
+# 🧠 3️⃣ Función para analizar idoneidad a una oferta
+def evaluate_fit(resume_text, job_description, vectorizer):
+    vectors = vectorizer.transform([resume_text, job_description])
+    similarity = cosine_similarity(vectors[0], vectors[1])[0][0]
+    return similarity
+
+# ✅ 4️⃣ Función para dar explicación
+def explain_fit(score, threshold=0.35):
+    if score >= threshold:
+        return f"👍 Este perfil es adecuado para la oferta (similaridad: {score:.2f})."
+    else:
+        return f"👎 Este perfil no es muy adecuado para la oferta (similaridad: {score:.2f})."
+
+# 🔍 Ejemplo rápido
+example_resume = X_test.iloc[0]
+job_offer = "Looking for a software engineer with Python, REST APIs and cloud experience."
+
+similarity_score = evaluate_fit(example_resume, job_offer, pipeline.named_steps['tfidf'])
+print(explain_fit(similarity_score))
