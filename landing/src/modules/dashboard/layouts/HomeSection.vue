@@ -16,9 +16,9 @@
   </template>
   
   <script setup lang="ts">
-  import AlertSubscription from "@/modules/dashboard/components/AlertSubscription.vue";
-  import StorageCard from "@/modules/dashboard/components/StorageCard.vue";
-  import AccountStatusCard from "@/modules/dashboard/components/AccountStatusCard.vue";
-  import QuickAccessCard from "@/modules/dashboard/components/QuickAccessCard.vue";
+  import AlertSubscription from "@/modules/dashboard/components/homeSection/AlertSubscription.vue";
+  import StorageCard from "@/modules/dashboard/components/homeSection/StorageCard.vue";
+  import AccountStatusCard from "@/modules/dashboard/components/homeSection/AccountStatusCard.vue";
+  import QuickAccessCard from "@/modules/dashboard/components/homeSection/QuickAccessCard.vue";
   </script>
   
