@@ -65,6 +65,16 @@ const router = createRouter({
           path: 'plans',
           name: 'plans',
           component: () => import('@/modules/dashboard/layouts/PlansSection.vue')
+        },
+        {
+          path: 'chat',
+          name: 'chat',
+          component: () => import('@/modules/dashboard/layouts/ClientsChatSection.vue')
+        },
+        {
+          path: 'clients',
+          name: 'clients',
+          component: () => import('@/modules/dashboard/layouts/ClientsSection.vue')
         }
       ]
     }
