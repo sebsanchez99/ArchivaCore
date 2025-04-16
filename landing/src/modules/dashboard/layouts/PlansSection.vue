@@ -1,67 +1,84 @@
 <template>
-    <div class="max-w-6xl mx-auto">
-        <div>
-            <h2 class="text-2xl font-bold text-primary-800 mb-1">Planes y facturación</h2>
-            <p class="text-sm text-primary-600 mb-6">Gestione su suscripción y actualice su plan</p>
-            <div class="bg-primary-50 border border-primary-100 rounded-xl shandow-sm p-6">
-                <div class="flex justify-between">
-                    <h3 class="text-xl font-semibold text-primary-800">Su plan actual</h3>
-                    <span class="badge badge-outline font-semibold border border-primary-500 text-primary-500">{{ actualPLan.shortName }}</span>
-                </div>
-                <p class=" text-sm text-primary-600 mb-6 border-b border-primary-300 pb-4 ">Detalles de su suscripción
-                    actual</p>
-                <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-4 px-4 py-4">
-                    <div>
-                        <h4 class="text-xl mb-1 font-bold text-primary-600">{{ actualPLan.name }}</h4>
-                        <p class="text-sm text-primary-600 mb-2">{{ actualPLan.description }}</p>
-                        <ul class="space-y-4 text-sm text-primary-800">
-                            <li v-for="(feature, index) in actualPLan.features" :key="index"
-                                class="flex items-center gap-3">
-                                <span class="bg-white rounded-full p-1 shadow-sm">
-                                    <CheckCircleIcon class="w-5 text-primary-500" />
-                                </span>
-                                <div>
-                                    <p>{{ feature }}</p>
-                                </div>
-                            </li>
-                        </ul>
-                        <button class="w-full btn mt-4 bg-primary-500 shadow-sm text-white hover:bg-primary-400">Cambiar plan</button>
-                    </div>
-                    <div>
-                        <h4 class="text-xl mb-4 font-bold text-primary-600">Preguntas frecuentes</h4>
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div class="max-w-6xl mx-auto">
+    <div class="mb-8" ref="plansSection">
+      <h2 class="text-2xl font-bold text-primary-800 mb-1">Planes y Facturación</h2>
+      <p class="text-sm text-primary-600 mb-6">Administra tu suscripción y actualiza tu plan</p>
+      <CurrentPlan :currentPlan="currentPlan" :scrollToPayment="scrollToPayment" />
     </div>
+    <div v-if="isEditingPlan" ref="tabsSection" class="mt-8 px-4">
+      <div class="tabs tabs-border" role="tablist">
+        <a role="tab"
+          :class="['tab', activeTab === 'plans' ? 'tab-active text-primary-700 font-bold bg-primary-100 hover:text-primary-400' : '']"
+          @click="activeTab = 'plans'">
+          Planes disponibles
+        </a>
+        <a role="tab"
+          :class="['tab', activeTab === 'payment' ? 'tab-active text-primary-700 font-bold bg-primary-100 hover:text-primary-400' : '']"
+          @click="activeTab = 'payment'">
+          Método de pago
+        </a>
+      </div>
+      <PlanSelection v-if="activeTab === 'plans'" :plans="plans" v-model="selectedPlan" :scrollToPlans="scrollToPlans"
+        :goToPayment="goToPayment" />
+        <PaymentMethod
+  v-if="activeTab === 'payment'"
+  v-model="paymentMethod"
+  :selectedPlan="selectedPlan"
+  @cancel="scrollToPlans"
+/>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import CurrentPlan from "../components/plansSection/CurrentPlan.vue";
+import PlanSelection from "../components/plansSection/PlanSelection.vue";
+import PaymentMethod from "../components/plansSection/PaymentMethod.vue";
+
+import { nextTick, ref } from "vue";
 import type { Plan } from "@/interfaces/plan";
-import { CheckCircleIcon } from "@heroicons/vue/24/outline";
+
+const tabsSection = ref<HTMLElement | null>(null);
+const plansSection = ref<HTMLElement | null>(null);
+const isEditingPlan = ref(false);
+const activeTab = ref<"plans" | "payment">("plans");
 
 const demoPlan: Plan = {
-    name: 'Plan DEMO',
-    shortName: 'DEMO',
-    description: 'Está utilizando una versión de prueba gratuita de ArchivaCore con funcionalidades limitadas.',
-    features: [
-        'Almacenamiento de 2 GB',
-        'Hasta 3 usuarios',
-        'Soporte por email',
-    ]
-}
+  name: "Plan DEMO",
+  shortName: "DEMO",
+  description: "Estás usando la versión gratuita de ArchivaCore con funciones limitadas.",
+  features: ["2 GB de almacenamiento", "Hasta 3 usuarios", "Soporte por correo electrónico"],
+  price: "Gratis",
+};
+const currentPlan = ref<Plan>(demoPlan);
 
-const demoPro: Plan = {
-    name: 'Plan PRO',
-    shortName: 'PRO',
-    description: 'Esta utilizando una versión PRO de ArchivCore con características ilimitadas.',
-    features: [
-        'Almacenamiento ilimitado',
-        'Usuarios ilimitados',
-        'Soporte prioritario 24/7',
-    ]
-}
-const actualPLan = ref<Plan>(demoPlan)
+const selectedPlan = ref("Plan DEMO");
+const plans: Plan[] = [
+  {
+    name: "Plan PRO",
+    shortName: "PRO",
+    description: "Acceso ilimitado a todas las funciones.",
+    features: ["Almacenamiento ilimitado", "Usuarios ilimitados", "Soporte prioritario 24/7"],
+    price: "$1'000.000",
+  },
+];
+
+const paymentMethod = ref<"card" | "paypal" | "transfer">("card");
+
+const scrollToPlans = () => {
+  isEditingPlan.value = false;
+  nextTick(() => {
+    plansSection.value?.scrollIntoView({ behavior: "smooth" });
+  });
+};
+const scrollToPayment = () => {
+  isEditingPlan.value = true;
+  nextTick(() => {
+    tabsSection.value?.scrollIntoView({ behavior: "smooth" });
+  });
+};
+
+const goToPayment = () => {
+  activeTab.value = "payment";
+};
 </script>
