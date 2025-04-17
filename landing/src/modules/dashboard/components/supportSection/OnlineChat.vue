@@ -76,7 +76,7 @@
                 <div ref="chatContainer" class="flex-1 overflow-y-auto py-4 space-y-2">
                     <div v-for="(msg, index) in messages" :key="index" :class="getMessageClass(msg.from)">
                         <div v-if="msg.from === 'agent'" class="chat-image avatar pa-3">
-                            <div class="bg-primary-500 text-white rounded-full p-3 shadow">
+                            <div class="bg-primary-500 text-white rounded-full p-3 shadow font-bold">
                                 AS
                             </div>
                         </div>
@@ -168,5 +168,3 @@ watch(messages, async () => {
     }
 })
 </script>
-
-<style scoped></style>
