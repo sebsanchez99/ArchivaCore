@@ -1,10 +1,10 @@
 <template>
-    <div class="bg-primary-100 p-6 rounded shadow w-full max-w-lg mx-auto h-[500px]">
+    <div class="bg-primary-50 p-6 rounded shadow w-full max-w-lg mx-auto h-[500px]">
         <div class="flex items-center gap-2">
-            <EnvelopeIcon class="w-5 text-primary-700" />
-            <h2 class="text-xl font-semibold text-primary-700 mb-1">Enviar una consulta</h2>
+            <EnvelopeIcon class="w-5 text-accent-500" />
+            <h2 class="text-xl font-semibold text-text-500 mb-1">Enviar una consulta</h2>
         </div>
-        <p class="text-sm text-primary-600 mb-6">
+        <p class="text-sm text-text-400 mb-6">
             Nuestro equipo de soporte le responderá lo antes posible
         </p>
 
@@ -36,7 +36,7 @@
                 class="textarea bg-white w-full border border-primary-500 min-h-[125px]" placeholder="Describa su consulta en detalle..."></textarea>
         </div>
 
-        <button class="btn btn-block bg-primary-500 border-none hover:bg-primary-400">
+        <button class="btn btn-block bg-primary-500 border-none hover:bg-primary-600">
             Enviar consulta
         </button>
     </div>

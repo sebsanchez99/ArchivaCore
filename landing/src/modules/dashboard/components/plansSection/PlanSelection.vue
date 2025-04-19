@@ -1,7 +1,7 @@
 <!-- filepath: c:\dev\ArchivaCore\landing\src\modules\dashboard\components\plansSection\PlanSelection.vue -->
 <template>
   <div class="border rounded-xl border-primary-400 p-6">
-    <h2 class="text-xl font-semibold mb-2 text-primary-700">Selecciona un plan</h2>
+    <h2 class="text-xl font-semibold mb-2 text-text-500">Selecciona un plan</h2>
     <div class="space-y-4">
       <label
         v-for="(plan, index) in plans"

@@ -5,8 +5,8 @@
     :class="[
       'cursor-pointer px-4 py-1.5 rounded text-sm font-semibold transition',
       primary
-        ? 'bg-primary-500 text-white hover:bg-primary-700'
-        : 'border border-black hover:bg-primary-100'
+        ? 'bg-primary-500 text-white hover:bg-primary-600'
+        : 'bg-secondary-300 text-white hover:bg-secondary-400'
     ]"
     :aria-label="label"
     @click="handleClick"

@@ -1,6 +1,6 @@
 <template>
   <div class="py-12 px-6 md:px-20 bg-white text-black">
-    <h2 class="text-3xl font-bold text-center mb-10">Nuestros Planes</h2>
+    <h2 class="text-4xl font-bold text-center mb-10">Nuestros Planes</h2>
     <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
       <PlanCard
         v-for="(plan, index) in plans"
@@ -27,6 +27,7 @@ const plans = [
     ],
     buttonText: 'Probar Gratis',
     recommended: false,
+    color: 'bg-primary-100',
   },
   {
     title: 'ANUAL',
@@ -41,6 +42,7 @@ const plans = [
     ],
     buttonText: 'Suscribirse',
     recommended: true,
+    color: 'bg-secondary-100',
   },
 ];
 </script>

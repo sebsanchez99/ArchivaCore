@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-primary-200 text-gray-800 py-10 pt-4 px-10">
+  <footer class="bg-secondary-100 text-gray-800 py-10 pt-4 px-10">
     <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
       <!-- Logo + Empresa -->
       <div class="flex flex-col items-center md:items-start text-center md:text-left space-y-4">
@@ -12,23 +12,22 @@
       <!-- Enlaces -->
       <div class="flex flex-col items-center md:items-start text-center md:text-left space-y-2">
         <h4 class="text-lg font-semibold text-gray-900">Enlaces</h4>
-        <a href="#" @click.prevent="scrollTo('home')" class="footer-link">Inicio</a>
-        <a href="#" @click.prevent="scrollTo('features')" class="footer-link">Características</a>
-        <a href="#" @click.prevent="scrollTo('pricing')" class="footer-link">Planes</a>
+        <a href="#" @click.prevent="scrollTo('home')" class="hover:text-primary-500">Inicio</a>
+        <a href="#" @click.prevent="scrollTo('features')" class="hover:text-primary-500">Características</a>
+        <a href="#" @click.prevent="scrollTo('pricing')" class="hover:text-primary-500">Planes</a>
       </div>
 
       <!-- Contacto -->
       <div class="flex flex-col items-center md:items-start text-center md:text-left space-y-2">
         <h4 class="text-lg font-semibold text-gray-900">Contacto</h4>
-        <a href="mailto:info@devcore.com" class="hover:underline">info@devcore.com</a>
-        <a href="tel:+57345464645645" class="hover:underline">+57 345 464 645645</a>
-        <a href="#" @click.prevent="scrollTo('contact')" class="hover:underline">Contáctanos</a>
-        <p>Bogotá</p>
+        <a href="mailto:info@devcore.com" class="hover:text-primary-500">info@devcore.com</a>
+        <a href="tel:+57345464645645" class="hover:text-primary-500">+57 345 464 645645</a>
+        <p>Bogotá D.C</p>
       </div>
     </div>
 
     <!-- Línea divisoria -->
-    <div class="mt-10 border-t border-gray-400 pt-4 text-center text-gray-600 text-sm">
+    <div class="mt-10 border-t border-primary-600 pt-4 text-center text-primary-600 text-sm">
       © {{ new Date().getFullYear() }} DevCore. Todos los derechos reservados.
     </div>
   </footer>

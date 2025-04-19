@@ -9,7 +9,7 @@
           <!-- Correo Electrónico -->
           <div class="mb-4">
             <label for="email" class="block text-sm font-semibold">Correo Electrónico</label>
-            <div class="mt-1 flex items-center rounded-lg bg-white border border-gray-300 shadow-sm pl-3 has-[input:focus-within]:border-primary-500">
+            <div class="mt-1 flex items-center rounded-lg bg-white border border-gray-300 shadow-sm pl-3 has-[input:focus-within]:border-secondary-500">
               <input
                 id="email"
                 v-model="email"
@@ -24,7 +24,7 @@
           <!-- Empresa -->
           <div class="mb-4">
             <label for="company" class="block text-sm font-semibold">Empresa</label>
-            <div class="mt-1 flex items-center rounded-lg bg-white border border-gray-300 shadow-sm pl-3 has-[input:focus-within]:border-primary-500">
+            <div class="mt-1 flex items-center rounded-lg bg-white border border-gray-300 shadow-sm pl-3 has-[input:focus-within]:border-secondary-500">
               <input
                 id="company"
                 v-model="company"
@@ -39,7 +39,7 @@
           <!-- Contraseña -->
           <div class="mb-4">
             <label for="password" class="block text-sm font-semibold">Contraseña</label>
-            <div class="mt-1 flex items-center rounded-lg bg-white border border-gray-300 shadow-sm pl-3 has-[input:focus-within]:border-primary-500">
+            <div class="mt-1 flex items-center rounded-lg bg-white border border-gray-300 shadow-sm pl-3 has-[input:focus-within]:border-secondary-500">
               <input
                 id="password"
                 v-model="password"
@@ -48,7 +48,7 @@
                 class="w-full p-2 border-0 focus:ring-0 focus:outline-none text-gray-900"
                 required
               />
-              <button type="button" @click="togglePassword" class="cursor-pointer p-2 text-gray-500 focus:outline-none">
+              <button type="button" @click="togglePassword" class="cursor-pointer p-2 text-secondary-500 focus:outline-none">
                 <EyeSlashIcon v-if="showPassword" class="w-5 h-5" />
                 <EyeIcon v-else class="w-5 h-5" />
               </button>
@@ -58,7 +58,7 @@
           <!-- Confirmar Contraseña -->
           <div class="mb-4">
             <label for="confirmPassword" class="block text-sm font-semibold">Confirmar Contraseña</label>
-            <div class="mt-1 flex items-center rounded-lg bg-white border border-gray-300 shadow-sm pl-3 has-[input:focus-within]:border-primary-500">
+            <div class="mt-1 flex items-center rounded-lg bg-white border border-gray-300 shadow-sm pl-3 has-[input:focus-within]:border-secondary-500">
               <input
                 id="confirmPassword"
                 v-model="confirmPassword"
@@ -67,7 +67,7 @@
                 class="w-full p-2 border-0 focus:ring-0 focus:outline-none text-gray-900"
                 required
               />
-              <button type="button" @click="toggleConfirmPassword" class="cursor-pointer p-2 text-gray-500 focus:outline-none">
+              <button type="button" @click="toggleConfirmPassword" class="cursor-pointer p-2 text-secondary-500 focus:outline-none">
                 <EyeSlashIcon v-if="showConfirmPassword" class="w-5 h-5" />
                 <EyeIcon v-else class="w-5 h-5" />
               </button>
@@ -77,7 +77,7 @@
           <!-- Plan -->
           <div class="mb-4">
             <label for="plan" class="block text-sm font-semibold">Plan</label>
-            <div class="mt-1 flex items-center rounded-lg bg-white border border-gray-300 shadow-sm pr-3 has-[select:focus-within]:border-primary-500">
+            <div class="mt-1 flex items-center rounded-lg bg-white border border-gray-300 shadow-sm pr-3 has-[select:focus-within]:border-secondary-500">
               <select
                 id="plan"
                 v-model="plan"
@@ -93,7 +93,7 @@
           <!-- Botón de Registro -->
           <button
             type="submit"
-            class="w-full bg-primary-600 text-white py-2 rounded-lg font-semibold shadow-sm hover:bg-primary-700 transition cursor-pointer">
+            class="w-full bg-primary-500 text-white py-2 rounded-lg font-semibold shadow-sm hover:bg-primary-600 transition cursor-pointer">
             Registrarse
           </button>
         </form>

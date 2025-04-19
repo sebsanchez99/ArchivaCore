@@ -1,10 +1,10 @@
 <template>
   <section class="flex flex-col items-center text-center py-20 px-6 bg-white">
-    <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-6 text-black">
-      Gestión de Archivos <span class="text-primary-800">Simplificada</span>
+    <h1 class="text-5xl md:text-6xl font-bold tracking-tight mb-6 text-primary-800">
+      Gestión de Archivos <span class="text-accent-500">Simplificada</span>
     </h1>
 
-    <p class="max-w-3xl text-primary-600 text-lg md:text-xl mb-8">
+    <p class="max-w-3xl text-text-600 font-extralight text-lg md:text-xl mb-8">
       ArchivaCore es la solución integral para la gestión, almacenamiento y recuperación
       de documentos empresariales. Optimice sus procesos y mejore la productividad.
     </p>

@@ -1,19 +1,19 @@
 <template>
   <div class="max-w-6xl mx-auto">
     <div class="mb-8" ref="plansSection">
-      <h2 class="text-2xl font-bold text-primary-800 mb-1">Planes y Facturación</h2>
-      <p class="text-sm text-primary-600 mb-6">Administra tu suscripción y actualiza tu plan</p>
+      <h2 class="text-2xl font-bold text-text-500 mb-1">Planes y Facturación</h2>
+      <p class="text-sm text-text-400 mb-6">Administra tu suscripción y actualiza tu plan</p>
       <CurrentPlan :currentPlan="currentPlan" :scrollToPayment="scrollToPayment" />
     </div>
     <div v-if="isEditingPlan" ref="tabsSection" class="mt-8 px-4">
       <div class="tabs tabs-border" role="tablist">
         <a role="tab"
-          :class="['tab', activeTab === 'plans' ? 'tab-active text-primary-700 font-bold bg-primary-100 hover:text-primary-400' : '']"
+          :class="['tab', activeTab === 'plans' ? 'tab-active text-text-300 font-bold bg-primary-100 hover:text-primary-500' : '']"
           @click="activeTab = 'plans'">
           Planes disponibles
         </a>
         <a role="tab"
-          :class="['tab', activeTab === 'payment' ? 'tab-active text-primary-700 font-bold bg-primary-100 hover:text-primary-400' : '']"
+          :class="['tab', activeTab === 'payment' ? 'tab-active text-text-300 font-bold bg-primary-100 hover:text-primary-500' : '']"
           @click="activeTab = 'payment'">
           Método de pago
         </a>

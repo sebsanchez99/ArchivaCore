@@ -1,8 +1,8 @@
 <template>
-    <ul class="space-y-4 text-sm text-primary-800">
+    <ul class="space-y-4 text-sm text-text-500">
       <li v-for="(feature, index) in features" :key="index" class="flex items-start gap-3 transition-all duration-200 hover:scale-[1.01]">
         <span class="bg-white rounded-full p-1 shadow-sm">
-          <CheckCircleIcon class="h-5 w-5 text-primary-500" />
+          <CheckCircleIcon class="h-5 w-5 text-secondary-600" />
         </span>
         <div>
           <strong>{{ feature.title }}</strong><br />
