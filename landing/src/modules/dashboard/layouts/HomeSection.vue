@@ -3,7 +3,7 @@
       <AlertSubscription />
   
       <div class="my-6">
-        <h1 class="text-xl font-bold text-text-500">Bienvenido, nombreEmpresa</h1>
+        <h1 class="text-xl font-semibold text-text-500">Bienvenido, nombreEmpresa</h1>
         <p class="text-sm text-text-400">Panel de Administración de su cuenta ArchivaCore</p>
       </div>
   

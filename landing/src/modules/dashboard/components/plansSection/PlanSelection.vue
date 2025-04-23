@@ -19,28 +19,28 @@
             @change="$emit('update:modelValue', plan.name)"
           />
           <div>
-            <h3 class="text-md font-bold text-primary-700">{{ plan.name }}</h3>
-            <p class="text-sm text-gray-600">{{ plan.description }}</p>
+            <h3 class="text-md font-semibold text-text-400">{{ plan.name }}</h3>
+            <p class="text-sm text-text-400">{{ plan.description }}</p>
             <ul class="mt-2 text-sm text-gray-700 space-y-1">
               <li v-for="(feature, i) in plan.features" :key="i" class="flex gap-2">
                 <span class="bg-white rounded-full p-1 shadow-sm">
-                  <CheckCircleIcon class="w-5 text-green-500" />
+                  <CheckCircleIcon class="w-5 text-secondary-500" />
                 </span>
                 <span>{{ feature }}</span>
               </li>
             </ul>
           </div>
         </div>
-        <div class="text-lg font-bold text-primary-800">
+        <div class="text-lg font-semibold text-text-400">
           {{ plan.price }}
         </div>
       </label>
     </div>
     <div class="flex justify-end mt-6 gap-3">
-      <button class="btn border-none bg-red-500 hover:bg-red-400" @click="scrollToPlans">
+      <button class="btn border-none text-white bg-red-500 hover:bg-red-600" @click="scrollToPlans">
         Cancelar
       </button>
-      <button class="btn text-white bg-primary-500 border-none hover:bg-primary-400" @click="goToPayment">
+      <button class="btn text-white bg-primary-500 border-none hover:bg-primary-600" @click="goToPayment">
         Continuar
       </button>
     </div>

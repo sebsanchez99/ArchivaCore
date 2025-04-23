@@ -36,7 +36,7 @@
                 class="textarea bg-white w-full border border-primary-500 min-h-[125px]" placeholder="Describa su consulta en detalle..."></textarea>
         </div>
 
-        <button class="btn btn-block bg-primary-500 border-none hover:bg-primary-600">
+        <button class="btn btn-block bg-primary-500 border-none hover:bg-primary-600 text-white">
             Enviar consulta
         </button>
     </div>

@@ -8,7 +8,7 @@
                     <h2 class="text-lg font-semibold">Chat en vivo</h2>
                 </div>
                 <span class="badge text-xs border-none"
-                    :class="chatStarted ? 'bg-green-500 text-white' : 'bg-primary-500'">
+                    :class="chatStarted ? 'bg-green-500 text-white' : 'bg-primary-500 text-white'">
                     {{ chatStarted ? 'En línea' : 'Desconectado' }}
                 </span>
             </div>
@@ -55,11 +55,11 @@
                 <!-- Cabecera del agente -->
                 <div class="pb-2 border-b border-primary-500 flex justify-between items-center">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-accent-100 p-1 rounded-full">
+                        <div class="w-8 h-8 bg-primary-100 p-1 rounded-full">
                             <UserIcon class="text-primary-500" />
                         </div>
                         <div>
-                            <p class="font-semibold text-text-400">Agente de soporte</p>
+                            <p class="font-semibold">Agente de soporte</p>
                             <p class="text-xs text-green-500">En línea</p>
                         </div>
                     </div>

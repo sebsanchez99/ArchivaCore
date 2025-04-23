@@ -2,8 +2,8 @@
     <div class="card bg-white shadow rounded border-primary-100 flex flex-col">
       <!-- Header -->
       <div class="p-4 bg-primary-100">
-        <h2 class="text-xl font-semibold text-primary-700">Cambiar contraseña</h2>
-        <p class="text-sm text-primary-600">Actualice su contraseña para mantener la seguridad de su cuenta</p>
+        <h2 class="text-xl font-semibold text-text-400">Cambiar contraseña</h2>
+        <p class="text-sm text-text-300">Actualice su contraseña para mantener la seguridad de su cuenta</p>
       </div>
   
       <!-- Formulario -->
@@ -18,7 +18,7 @@
               v-model="currentPassword"
             />
             <button type="button" class="absolute right-2 top-2.5 text-primary-500 cursor-pointer" @click="showCurrent = !showCurrent">
-              <component :is="showCurrent ? EyeSlashIcon : EyeIcon" class="h-5 w-5" />
+              <component :is="showCurrent ? EyeSlashIcon : EyeIcon" class="h-5 w-5 text-accent-500" />
             </button>
           </div>
         </div>
@@ -33,7 +33,7 @@
               v-model="newPassword"
             />
             <button type="button" class="absolute right-2 top-2.5 text-primary-500 cursor-pointer" @click="showNew = !showNew">
-              <component :is="showNew ? EyeSlashIcon : EyeIcon" class="h-5 w-5" />
+              <component :is="showNew ? EyeSlashIcon : EyeIcon" class="h-5 w-5 text-accent-500" />
             </button>
           </div>
         </div>
@@ -48,7 +48,7 @@
               v-model="confirmPassword"
             />
             <button type="button" class="absolute right-2 top-2.5 text-primary-500 cursor-pointer" @click="showConfirm = !showConfirm">
-              <component :is="showConfirm ? EyeSlashIcon : EyeIcon" class="h-5 w-5" />
+              <component :is="showConfirm ? EyeSlashIcon : EyeIcon" class="h-5 w-5 text-accent-500" />
             </button>
           </div>
         </div>
@@ -56,7 +56,7 @@
   
       <!-- Botón -->
       <div class="px-4 pb-4 flex justify-end">
-        <button class="btn btn-block bg-primary-500 border-none hover:bg-primary-400 text-white">
+        <button class="btn btn-block bg-primary-500 border-none hover:bg-primary-600 text-white">
           <LockClosedIcon class="w-5 mr-2" />
           Actualizar contraseña
         </button>

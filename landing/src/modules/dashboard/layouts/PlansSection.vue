@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-6xl mx-auto">
     <div class="mb-8" ref="plansSection">
-      <h2 class="text-2xl font-bold text-text-500 mb-1">Planes y Facturación</h2>
+      <h2 class="text-2xl font-semibold text-text-500 mb-1">Planes y Facturación</h2>
       <p class="text-sm text-text-400 mb-6">Administra tu suscripción y actualiza tu plan</p>
       <CurrentPlan :currentPlan="currentPlan" :scrollToPayment="scrollToPayment" />
     </div>
@@ -20,12 +20,8 @@
       </div>
       <PlanSelection v-if="activeTab === 'plans'" :plans="plans" v-model="selectedPlan" :scrollToPlans="scrollToPlans"
         :goToPayment="goToPayment" />
-        <PaymentMethod
-  v-if="activeTab === 'payment'"
-  v-model="paymentMethod"
-  :selectedPlan="selectedPlan"
-  @cancel="scrollToPlans"
-/>
+      <PaymentMethod v-if="activeTab === 'payment'" v-model="paymentMethod" :selectedPlan="selectedPlan"
+        @cancel="scrollToPlans" />
     </div>
   </div>
 </template>

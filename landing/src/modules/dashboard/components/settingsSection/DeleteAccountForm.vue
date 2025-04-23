@@ -1,7 +1,7 @@
 <template>
-    <div class="card bg-white shadow rounded border-primary-100 flex flex-col">
+    <div class="card bg-white shadow rounded border-red-100 flex flex-col">
       <!-- Header -->
-      <div class="p-4 bg-primary-100">
+      <div class="p-4 bg-red-100">
         <h2 class="text-xl font-semibold text-red-500">Eliminar cuenta</h2>
         <p class="text-sm text-red-400">Elimine permanentemente su cuenta y todos sus datos</p>
       </div>

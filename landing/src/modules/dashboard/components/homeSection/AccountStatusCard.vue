@@ -1,6 +1,6 @@
 <template>
     <div class="bg-accent-100 rounded-lg shadow-sm p-5">
-      <h2 class="font-bold text-lg text-text-500">Estado de la cuenta</h2>
+      <h2 class="font-semibold text-lg text-text-500">Estado de la cuenta</h2>
       <p class="text-sm text-text-500">Infomación de la suscripción</p>
       <div class="mt-4 space-y-2 text-sm text-text-400">
         <div class="flex justify-between">
@@ -16,7 +16,7 @@
           <span class="font-semibold text-secondary-500">1 de 3</span>
         </div>
       </div>
-      <button class="btn bg-primary-500 border-none btn-block mt-4 hover:bg-primary-600">
+      <button class="btn bg-primary-500 border-none btn-block mt-4 hover:bg-primary-600 text-white">
         Actualizar a plan completo
       </button>
     </div>

@@ -2,9 +2,9 @@
     <div class="max-w-6xl mx-auto">
       <!-- Encabezado -->
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
-        <h2 class="text-2xl font-semibold text-primary-700">Empresas Registradas</h2>
+        <h2 class="text-2xl font-semibold text-text-500">Empresas Registradas</h2>
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <span class="text-sm text-gray-500">
+          <span class="text-sm text-text-300">
             Total: {{ filteredCompanies.length }} empresa{{ filteredCompanies.length === 1 ? '' : 's' }}
           </span>
           <div class="input bg-white border-primary-500 w-full sm:w-auto">
@@ -23,7 +23,7 @@
       <div class="overflow-x-auto bg-primary-100 rounded-lg shadow border border-base-content/5">
         <table class="table w-full">
           <thead>
-            <tr class="text-left text-sm text-primary-600 bg-primary-300">
+            <tr class="text-left text-sm text-text-400 bg-primary-300">
               <th>Nombre</th>
               <th>Correo electrónico</th>
               <th>Plan</th>
@@ -75,8 +75,8 @@
       <!-- Modal Eliminar -->
       <dialog ref="deleteModal" class="modal">
         <div class="modal-box bg-white">
-          <h3 class="font-bold text-lg text-primary-700">Eliminar empresa</h3>
-          <p class="py-2 text-primary-500">
+          <h3 class="font-semibold text-lg text-text-400">Eliminar empresa</h3>
+          <p class="py-2 text-text-300 text-sm">
             ¿Está seguro de que desea eliminar la empresa <strong>{{ selectedCompany?.name }}</strong>? Esta acción no se
             puede deshacer.
           </p>
@@ -99,8 +99,8 @@
       <!-- Modal Cambiar Contraseña -->
       <dialog ref="changePasswordModal" class="modal">
         <div class="modal-box bg-white">
-          <h3 class="font-bold text-lg text-primary-700">Cambiar contraseña</h3>
-          <p class="py-2 text-primary-500">
+          <h3 class="font-semibold text-lg text-text-500">Cambiar contraseña</h3>
+          <p class="py-2 text-text-300 text-sm">
             Establecer nueva contraseña para la empresa <strong>{{ selectedCompany?.name }}</strong>.
           </p>
           <form class="space-y-4">
@@ -113,7 +113,7 @@
               <input type="password" id="confirm-password" class="input bg-white border-primary-500 w-full" required />
             </div>
           </form>
-          <p class="mt-3 text-sm text-primary-600">
+          <p class="mt-3 text-sm text-text-300">
             La nueva contraseña será enviada al correo electrónico principal de la empresa:
             {{ selectedCompany?.email }}
           </p>

@@ -10,7 +10,7 @@
             class="ml-auto btn btn-sm btn-ghost lg:hidden hover:bg-primary-400 border-none shadow-2xl">✕</label>
           <div class="flex items-center gap-2">
             <img src="@/assets/logoPrincipal.png" alt="Logo" class="w-15" />
-            <h2 class="text-2xl font-bold text-black">ArchivaCore</h2>
+            <h2 class="text-2xl font-semibold ">ArchivaCore</h2>
           </div>
         </div>
 
@@ -22,8 +22,8 @@
               class="btn btn-ghost flex items-center justify-start gap-2 border-none transition-all duration-300 group hover:shadow hover:bg-primary-600"
               active-class="bg-primary-600">
               <component :is="item.icon"
-                class="w-5 h-5  mr-2 transition-opacity duration-300 group-hover:opacity-100 opacity-70" />
-              <span class="text-white font-medium transition-opacity duration-300 group-hover:opacity-100">
+                class="w-5 h-5  mr-2 transition-opacity duration-300 hover:text-primary-800 opacity-70" />
+              <span class="text-white font-medium transition-opacity duration-300 ">
                 {{ item.label }}
               </span>
             </RouterLink>
@@ -33,7 +33,7 @@
       </div>
 
       <!-- Pie con usuario y botón cerrar sesión -->
-      <div class="mt-6  pt-4 text-black">
+      <div class="mt-6  pt-4 text-white">
         <div class="mb-2">
           <p class="text-sm font-semibold">Usuario Demo</p>
           <p class="text-xs">usuario@empresa.com</p>
@@ -72,7 +72,6 @@ const sidebarItems = [
 ];
 
 const cerrarSesion = () => {
-  // Aquí va la lógica real de cerrar sesión
   console.log("Sesión cerrada");
 };
 </script>

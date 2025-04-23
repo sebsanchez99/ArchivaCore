@@ -1,13 +1,13 @@
 <template>
     <div class="flex-1 flex flex-col h-full">
-        <div v-if="!chat" class="flex flex-col items-center justify-center flex-1 text-center text-primary-600">
+        <div v-if="!chat" class="flex flex-col items-center justify-center flex-1 text-center text-text-500">
             <div class="avatar mb-4">
                 <div class="w-20 rounded-full bg-primary-100 p-4">
                     <ChatBubbleBottomCenterTextIcon class="text-primary-600 w-12 h-12" />
                 </div>
             </div>
             <h3 class="text-xl font-semibold">Selecciona un chat</h3>
-            <p class="text-sm text-primary-500">Aquí podrás ver y responder mensajes de los clientes</p>
+            <p class="text-sm text-text-400">Aquí podrás ver y responder mensajes de los clientes</p>
         </div>
 
         <div v-else class="flex flex-col h-full">
@@ -18,7 +18,7 @@
                         <UserIcon class="text-primary-500" />
                     </div>
                     <div>
-                        <p class="font-semibold text-primary-600">{{ chat.name }}</p>
+                        <p class="font-semibold">{{ chat.name }}</p>
                         <p class="text-xs" :class="chat.online ? 'text-green-500' : 'text-gray-400'">
                             {{ chat.online ? 'En línea' : 'Desconectado' }}
                         </p>
@@ -37,7 +37,7 @@
                         <!-- Avatar del cliente -->
                         <div class="chat-image avatar mr-2">
                             <div
-                                class="bg-primary-500 text-white rounded-full font-bold p-3 shadow">
+                                class="bg-accent-200 text-white rounded-full font-bold p-3 shadow">
                                 {{ getInitials(chat.name) }}
                             </div>
                         </div>
@@ -50,7 +50,7 @@
                             <time class="ml-2">{{ msg.time }}</time>
                         </div>
                         <!-- Burbuja de mensaje -->
-                        <div class="chat-bubble text-primary-700 text-sm bg-primary-100">
+                        <div class="chat-bubble text-text-400 text-sm bg-primary-100">
                             {{ msg.text }}
                         </div>
                     </div>
@@ -62,7 +62,7 @@
             <div class="pt-2 border-t border-primary-500 flex gap-2 items-center">
                 <input v-model="input" @keyup.enter="sendMessage" type="text" placeholder="Escribe un mensaje..."
                     class="input w-full bg-white border border-primary-500" />
-                <button @click="sendMessage" class="btn btn-primary">
+                <button @click="sendMessage" class="btn btn-primary bg-primary-500 border-none">
                     <PaperAirplaneIcon class="w-5" />
                 </button>
             </div>

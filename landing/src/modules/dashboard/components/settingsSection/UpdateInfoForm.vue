@@ -1,8 +1,8 @@
 <template>
     <div class="card bg-white shadow rounded border-primary-100 flex flex-col ">
         <div class="p-4 bg-primary-100">
-            <h2 class="text-xl font-semibold text-primary-700">Información de la cuenta</h2>
-            <p class="text-sm text-primary-600">Actualice la información de su cuenta</p>
+            <h2 class="text-xl font-semibold text-text-400">Información de la cuenta</h2>
+            <p class="text-sm text-text-300">Actualice la información de su cuenta</p>
         </div>
         <div class="p-6">
             <div class="mb-4">
@@ -19,7 +19,7 @@
             </div>
         </div>
         <div class="p-5">
-            <button class="btn btn-block bg-primary-500 border-none hover:bg-primary-400">Actualizar
+            <button class="btn btn-block bg-primary-500 border-none hover:bg-primary-600 text-white">Actualizar
                 información</button>
         </div>
     </div>

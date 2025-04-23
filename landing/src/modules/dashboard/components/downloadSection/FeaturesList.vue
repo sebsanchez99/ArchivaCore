@@ -5,7 +5,7 @@
           <CheckCircleIcon class="h-5 w-5 text-secondary-600" />
         </span>
         <div>
-          <strong>{{ feature.title }}</strong><br />
+          <p class="font-semibold text-text-500">{{ feature.title }}</p>
           {{ feature.description }}
         </div>
       </li>
