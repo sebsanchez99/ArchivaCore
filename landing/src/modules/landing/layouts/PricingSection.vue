@@ -25,7 +25,6 @@ const plans = [
       'Funciones básicas',
       'Soporte por email',
     ],
-    buttonText: 'Probar Gratis',
     recommended: false,
     color: 'bg-primary-100',
   },
@@ -40,7 +39,7 @@ const plans = [
       'Soporte prioritario 24/7',
       'Integraciones personalizadas',
     ],
-    buttonText: 'Suscribirse',
+
     recommended: true,
     color: 'bg-secondary-100',
   },

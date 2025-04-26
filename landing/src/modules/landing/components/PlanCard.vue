@@ -18,10 +18,6 @@
           {{ feature }}
         </li>
       </ul>
-  
-      <button class="bg-primary-500 text-white rounded px-4 py-2 hover:bg-primary-600 mt-auto cursor-pointer">
-        {{ buttonText }}
-      </button>
     </div>
   </template>
   
@@ -33,7 +29,6 @@
     price: String,        
     description: String,  
     features: Array,      
-    buttonText: String,   
     recommended: Boolean, 
     color: String,
   });
