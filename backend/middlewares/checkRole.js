@@ -1,15 +1,16 @@
 /**
- * Middleware que verifica rol de usuario
- * @param {*} req Petición
- * @param {*} res Respuesta
- * @param {*} next Función para pasar al siguiente middlware/controlador
- * @returns Respuesta HTTP en caso de que el usuario no tenga rol de administrador
+ * Middleware que verifica el rol del usuario
+ * @param {...string} allowedRoles Roles permitidos para acceder a la ruta
+ * @returns Middleware que verifica si el usuario tiene uno de los roles permitidos
  */
-const checkRole = (req, res, next) => {
-    if (req.user.role !== "Administrador") {
-        return res.status(403).json({ message: "Acceso no autorizado" })
-    }
-    next()
-}
-
-module.exports = checkRole
+const checkRole = (...allowedRoles) => {
+    return (req, res, next) => {
+      // Verificar si el rol del usuario está en la lista de roles permitidos
+      if (!allowedRoles.includes(req.user.role)) {
+        return res.status(403).json({ message: "Acceso no autorizado" });
+      }
+      next();
+    };
+  };
+  
+  module.exports = checkRole;
