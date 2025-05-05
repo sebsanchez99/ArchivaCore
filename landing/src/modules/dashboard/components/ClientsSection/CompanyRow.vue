@@ -12,7 +12,7 @@
         <td>{{ company.users }}</td>
         <td class="flex gap-2">
             <button @click="$emit('delete', company)" class="btn btn-xs btn-error text-white">Eliminar</button>
-            <button @click="$emit('changePassword', company)" class="btn btn-xs text-white hover:bg-primary-600 hover:border-none bg-primary-500">
+            <button @click="$emit('changePassword', company)" class="btn btn-xs text-white hover:bg-primary-600 hover:border-none bg-primary-500 border-none">
                 Cambiar contraseña
             </button>
         </td>
