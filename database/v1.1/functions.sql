@@ -107,14 +107,13 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION agregar_empresa(
     p_nombre VARCHAR(150),
     p_correo VARCHAR(150),
-    p_hash TEXT,
-    p_plan INT
+    p_hash TEXT
 ) RETURNS UUID AS $$
 DECLARE
     v_id UUID;
 BEGIN
     INSERT INTO Empresa (Emp_ID, Emp_Nombre, Emp_Correo, Emp_Hash, Emp_Plan, Emp_Activo)
-    VALUES (uuid_generate_v4(), p_nombre, p_correo, p_hash, p_plan, TRUE)
+    VALUES (uuid_generate_v4(), p_nombre, p_correo, p_hash, 2, TRUE)
     RETURNING Emp_ID INTO v_id;
 
     RETURN v_id;
@@ -162,4 +161,22 @@ BEGIN
     FROM Empresa e
     JOIN Plan p ON e.Emp_Plan = p.Plan_ID;
 END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION obtener_empresa(p_nombre VARCHAR)
+RETURNS TABLE(
+    _Emp_ID UUID,
+    _Emp_Nombre VARCHAR(150),
+    _Emp_Hash VARCHAR(150),
+    _Emp_Correo VARCHAR(150),
+    _Emp_Activo BOOLEAN,
+    _Plan_Nombre VARCHAR(100)
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT e.Emp_ID, e.Emp_Nombre, e.Emp_Hash, e.Emp_Correo, e.Emp_Activo, p.Plan_Nombre
+    FROM Empresa e 
+    JOIN Plan p ON e.Emp_Plan = p.Plan_ID
+    WHERE e.Emp_Nombre = p_nombre;
+END; 
 $$ LANGUAGE plpgsql;
