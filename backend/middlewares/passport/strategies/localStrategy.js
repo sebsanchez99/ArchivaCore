@@ -28,4 +28,15 @@ const localStrategy = new LocalStrategy(
   }
 )
 
+const localCompanyStrategy = new LocalStrategy(
+  async (companyName, password, done) => {
+    const result = await pool.query(
+      'SELECT * FROM obtener_empresa($1)',
+      [companyName]
+    )
+    const company = result.rows[0]
+    const isMatch = await bcrypt.compare(password, company._company_)
+  }
+)
+
 module.exports= localStrategy
