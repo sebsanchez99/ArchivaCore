@@ -1,83 +1,97 @@
 <template>
-    <section class="flex flex-col justify-center items-center pt-15 text-black">
-      <div class="bg-white shadow-md rounded-lg py-7 px-10 max-w-md w-full">
-        <h2 class="text-2xl font-bold text-gray-900 mb-2">Iniciar Sesión</h2>
-        <p class="text-sm text-gray-500 mb-6">Ingrese sus credenciales para acceder a su cuenta</p>
-  
-        <form @submit.prevent="login">
-          <!-- Correo Electrónico -->
-          <div class="mb-4">
-            <label for="email" class="block text-sm font-semibold">Correo Electrónico</label>
-            <div class="mt-1 flex items-center rounded-lg bg-white border border-gray-300 shadow-sm pl-3 has-[input:focus-within]:border-secondary-500">
-              <input
-                id="email"
-                v-model="email"
-                type="email"
-                placeholder="ejemplo@correo.com"
-                class="w-full p-2 border-0 focus:ring-0 focus:outline-none text-gray-900"
-                required
-              />
-            </div>
-          </div>
-  
-          <!-- Contraseña -->
-          <div class="mb-4">
-            <label for="password" class="block text-sm font-semibold">Contraseña</label>
-            <div class="mt-1 flex items-center rounded-lg bg-white border border-gray-300 shadow-sm pl-3 has-[input:focus-within]:border-secondary-500">
-              <input
-                id="password"
-                v-model="password"
-                :type="showPassword ? 'text' : 'password'"
-                placeholder="••••••••"
-                class="w-full p-2 border-0 focus:ring-0 focus:outline-none text-gray-900"
-                required
-              />
-              <button type="button" @click="togglePassword" class="cursor-pointer p-2 text-primary-500 focus:outline-none">
-                <EyeSlashIcon v-if="showPassword" class="w-5 h-5 text-secondary-500" />
-                <EyeIcon v-else class="w-5 h-5 text-secondary-500" />
-              </button>
-            </div>
-            <router-link to="/forgot-password" class="text-sm text-primary-700 hover:underline ml-2">
-              ¿Olvidó su contraseña?
-            </router-link>
-          </div>
-  
-          <button
-            @click="login"
-            type="button"
-            class="w-full bg-primary-500 text-white py-2 rounded-lg font-semibold shadow-sm hover:bg-primary-600 transition cursor-pointer">
-            Iniciar Sesión
-          </button>
-        </form>
-  
-        <p class="text-center text-sm text-gray-600 mt-4">
-          ¿No tiene una cuenta? 
-          <router-link to="/register" class="text-primary-700 hover:underline">Registrarse</router-link>
-        </p>
-      </div>
-    </section>
-</template>
-  
-<script setup>
-import { ref } from "vue";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/vue/24/outline";
-import { useRouter } from "vue-router";
-  
-  const email = ref("");
-  const password = ref("");
-  const showPassword = ref(false);
+  <section class="flex flex-col justify-center items-center pt-15 text-black">
+    <div class="bg-white shadow-md rounded-lg py-7 px-10 max-w-md w-full">
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">Iniciar Sesión</h2>
+      <p class="text-sm text-gray-500 mb-3">Ingrese sus credenciales para acceder a su cuenta</p>
 
-  const router = useRouter()
-  
-  const togglePassword = () => {
-    showPassword.value = !showPassword.value;
-  };
-  
-  const login = () => {
-    console.log("Correo:", email.value, "Contraseña:", password.value);
-    router.replace({
-      name: 'dashboard'
-    })
-  };
+      <form @submit.prevent="login">
+        <!-- Correo Electrónico -->
+        <FormField id="email" label="Correo Electrónico" v-model="fields.companyEmail" :error="errors.companyEmail"
+          placeholder="ejemplo@correo.com" />
+
+        <!-- Contraseña -->
+        <PasswordField id="password" label="Contraseña" v-model="fields.password" :error="errors.password"
+          :show-password="showPassword" @toggle-password="togglePassword" />
+
+        <!-- Botón de Inicio de Sesión -->
+        <button type="submit"
+          class="w-full bg-primary-500 text-white py-2 mt-2 rounded-lg font-semibold shadow-sm hover:bg-primary-600 transition cursor-pointer"
+          :disabled="authStore.loading">
+          <template v-if="authStore.loading">
+            <svg class="animate-spin h-5 w-5 mr-2 inline-block text-white" xmlns="http://www.w3.org/2000/svg"
+              fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+            Iniciando...
+          </template>
+          <template v-else>
+            Iniciar Sesión
+          </template>
+        </button>
+
+        <!-- Mensaje de error -->
+        <p v-if="authStore.error" class="text-red-500 text-sm mt-2 text-center">
+          {{ authStore.error }}
+        </p>
+      </form>
+
+      <p class="text-center text-sm text-gray-600 mt-4">
+        ¿No tiene una cuenta?
+        <router-link to="/register" class="text-primary-700 hover:underline">Registrarse</router-link>
+      </p>
+    </div>
+  </section>
+</template>
+
+<script setup>
+import { useFormValidation } from "@/composables/useFormValidation";
+import { useTogglePassword } from "@/composables/useTogglePassword";
+import { useAuthStore } from "@/stores/authStore";
+import FormField from "@/components/inputs/FormField.vue";
+import PasswordField from "@/components/inputs/PasswordField.vue";
+import { onMounted } from "vue";
+import { useRouter } from "vue-router";
+
+// Form validation setup
+const { fields, errors, validateAll } = useFormValidation(
+  {
+    companyEmail: "",
+    password: "",
+  },
+  {
+    companyEmail: (value) => (!value.includes("@") ? "El correo electrónico debe ser válido" : null),
+    password: (value) => (value.length < 6 ? "La contraseña debe tener al menos 6 caracteres" : null),
+  }
+);
+
+// Toggle password visibility using the composable
+const { showPassword, togglePassword } = useTogglePassword();
+
+// Auth store
+const authStore = useAuthStore();
+
+const router = useRouter();
+
+// Limpiar el error al montar la vista
+onMounted(() => {
+  authStore.clearError();
+});
+
+// Función de inicio de sesión
+const login = async () => {
+  if (!validateAll()) {
+    console.log("Errores en el formulario:", errors);
+    return;
+  }
+  const response = await authStore.loginCompany({
+    companyEmail: fields.companyEmail,
+    password: fields.password,
+  });
+  if (response.result) {
+    console.log("Inicio de sesión exitoso");
+    router.replace({ name: "dashboard" });
+  }
+
+};
 </script>
-  

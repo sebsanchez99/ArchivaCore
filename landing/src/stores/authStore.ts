@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import authService from "@/services/authService";
-import type { RegisterPayload, LoginPayload } from "@/interfaces/authInterfaces";
 import type { ServerResponseModel } from "@/interfaces/serverResponseModel";
 
 export const useAuthStore = defineStore("auth", {
@@ -11,55 +10,47 @@ export const useAuthStore = defineStore("auth", {
     error: null as string | null,
   }),
   actions: {
-    async registerUser(payload: RegisterPayload) {
+    async registerCompany(payload: { companyName: string; companyEmail: string; password: string }) {
       this.loading = true;
       this.error = null;
       try {
-        const response = await authService.registerUser(payload);
-        const data = response.data as ServerResponseModel<{ user: any; token: string }>;
+        const response = await authService.registerCompany(payload);
 
-        if (data.result) {
-          this.user = data.data.user;
-          this.token = data.data.token;
+        const data = response.data as ServerResponseModel<null>;
 
-          // Guardar el token en localStorage si no es null
-          if (this.token) {
-            localStorage.setItem("authToken", this.token);
-          }
-        } else {
-          this.error = data.message;
+        if (!data.result) {
+          this.error = "No se pudo registrar la empresa";
         }
 
         return data;
       } catch (error: any) {
-        this.error = error.response?.data?.message || "Error al registrar el usuario";
+        this.error = "No se pudo registrar la empresa";
         throw error;
       } finally {
         this.loading = false;
       }
     },
-    async loginUser(payload: LoginPayload) {
+    async loginCompany(payload: { companyEmail: string; password: string }) {
       this.loading = true;
       this.error = null;
       try {
-        const response = await authService.loginUser(payload);
-        const data = response.data as ServerResponseModel<{ user: any; token: string }>;
+        const response = await authService.loginCompany(payload);
+        const data = response.data as ServerResponseModel<{ token: string }>;
 
         if (data.result) {
-          this.user = data.data.user;
           this.token = data.data.token;
 
-          // Guardar el token en localStorage si no es null
+          // Guardar el token en localStorage
           if (this.token) {
             localStorage.setItem("authToken", this.token);
           }
         } else {
-          this.error = data.message;
+          this.error = "Usuario o contraseña incorrectos";
         }
 
         return data;
       } catch (error: any) {
-        this.error = error.response?.data?.message || "Error al iniciar sesión";
+        this.error = error.response?.data?.message || "Usuario o contraseña incorrectos";
         throw error;
       } finally {
         this.loading = false;
@@ -68,9 +59,10 @@ export const useAuthStore = defineStore("auth", {
     logout() {
       this.user = null;
       this.token = null;
-
-      // Eliminar el token de localStorage
       localStorage.removeItem("authToken");
+    },
+    clearError() {
+      this.error = null;
     },
   },
 });

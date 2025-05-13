@@ -1,15 +1,11 @@
 import httpClient from "@/services/httpClient";
-import type { RegisterPayload, LoginPayload } from "@/interfaces/authInterfaces";
 import type { ServerResponseModel } from "@/interfaces/serverResponseModel";
 
 export default {
-  registerUser(payload: RegisterPayload) {
-    return httpClient.post<ServerResponseModel<{ user: any; token: string }>>("/auth/register", payload);
+  registerCompany(payload: { companyName: string; companyEmail: string; password: string }) {
+    return httpClient.post<ServerResponseModel<null>>("/api/v1/web/auth/register", payload);
   },
-  loginUser(payload: LoginPayload) {
-    return httpClient.post<ServerResponseModel<{ user: any; token: string }>>("/auth/login", payload);
-  },
-  getUserProfile() {
-    return httpClient.get<ServerResponseModel<{ user: any }>>("/auth/profile");
+  loginCompany(payload: { companyEmail: string; password: string }) {
+    return httpClient.post<ServerResponseModel<{ token: string }>>("/api/v1/web/auth/login", payload); // Nueva ruta
   },
 };
