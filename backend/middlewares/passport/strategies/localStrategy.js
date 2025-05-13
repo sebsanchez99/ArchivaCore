@@ -3,40 +3,51 @@ const bcrypt = require("bcrypt");
 const pool = require("../../../libs/postgres");
 
 /**
- * Estrategia local de inicio de sesión que autentica usuario con bd*/
-const localStrategy = new LocalStrategy(
-  async (username, password, done) => {
-    try {
-      const result = await pool.query(
-        "SELECT * FROM obtener_usuario($1)",
-        [username]
-      )
-
-      if (result.rows.length === 0) {
-        return done(null, false, { message: "Usuario no encontrado" })
-      }
-      const user = result.rows[0]
-      const isMatch = await bcrypt.compare(password, user._usu_hash)
-
-      if (!isMatch) {
-        return done(null, false, { message: "Contraseña incorrecta" })
-      }
-      done(null,user)
-    } catch (error) {
-        return done(error)
+ * Función reutilizable para validar entidades (usuarios/empresas)
+ */
+async function authenticateEntity({ query, identifier, password, fieldHash }, done) {
+  try {
+    const result = await pool.query(query, [identifier]);
+    if (result.rows.length === 0) {
+      return done(null, false, { message: "No encontrado" });
     }
+
+    const entity = result.rows[0];
+    const isMatch = await bcrypt.compare(password, entity[fieldHash]);
+    if (!isMatch) {
+      return done(null, false, { message: "Contraseña incorrecta" });
+    }
+
+    return done(null, entity);
+  } catch (error) {
+    return done(error);
   }
-)
+}
+
+const localStrategy = new LocalStrategy(async (username, password, done) => {
+  await authenticateEntity({
+    query: "SELECT * FROM obtener_usuario($1)",
+    identifier: username,
+    password,
+    fieldHash: "_usu_hash"
+  }, done);
+});
 
 const localCompanyStrategy = new LocalStrategy(
-  async (companyName, password, done) => {
-    const result = await pool.query(
-      'SELECT * FROM obtener_empresa($1)',
-      [companyName]
-    )
-    const company = result.rows[0]
-    const isMatch = await bcrypt.compare(password, company._company_)
-  }
-)
+  {
+    usernameField: 'companyEmail',
+    passwordField: 'password'
+  },
+  async (companyEmail, password, done) => {
+    await authenticateEntity({
+      query: "SELECT * FROM obtener_empresa_por_correo($1)",
+      identifier: companyEmail,
+      password,
+      fieldHash: "_emp_hash"
+    }, done);
+  });
 
-module.exports= localStrategy
+module.exports = {
+  localStrategy,
+  localCompanyStrategy
+};
