@@ -37,12 +37,10 @@ const listUsers = async(req, res) => {
  */
 const createUsers = async(req, res) => {
     try {
-        const { username, password, rolUser } = req.body
+        const { username, password, rolUser, idCompany } = req.body
         const adminHelper = new AdminHelper()
         const idRol = await adminHelper.obtenerRol(rolUser)
-        
-        
-        const result = await adminHelper.createUsers(username, password, idRol)
+        const result = await adminHelper.createUsers(username, password, idRol, idCompany)
         res.json(result)
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
@@ -59,10 +57,10 @@ const createUsers = async(req, res) => {
  */
 const userUpdate = async(req, res) => {
     try {
-        const { id, username, password, rolUser } = req.body
+        const { id, username, password, rolUser, idCompany } = req.body
         const adminHelper = new AdminHelper()
         const idRol = await adminHelper.obtenerRol(rolUser)
-        const result = await adminHelper.userUpdate(id, username, password, idRol)
+        const result = await adminHelper.userUpdate(id, username, password, idRol, idCompany)
         res.json(result)
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
