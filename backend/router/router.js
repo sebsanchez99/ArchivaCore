@@ -25,7 +25,7 @@ module.exports = router
  * @memberof Rutas
  * @description Rutas relacionadas con la autenticación (login, registro, etc.).
  */
-router.use('/auth', authRouter);
+router.use('/auth', authAppRouter);
 
 /**
  * @namespace AdminRoutes
@@ -34,6 +34,6 @@ router.use('/auth', authRouter);
  * @middleware {passport.authenticate} JWT Authentication
  * @middleware {checkRole} Verificación de rol del usuario.
  */
-router.use('/admin', passport.authenticate('jwt', { session: false }), checkRole, adminRouter);
+router.use('/admin', passport.authenticate('jwt', { session: false }), checkRole, adminAppRouter);
 
 module.exports = router;

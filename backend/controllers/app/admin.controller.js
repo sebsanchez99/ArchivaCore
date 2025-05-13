@@ -2,8 +2,8 @@
  * @namespace Controladores
  * @description Controladores de la API
  */
-const AdminHelper = require('../helpers/admin.helper')
-const ResponseUtil = require('../utils/response.util')
+const AdminHelper = require('../../helpers/admin.helper')
+const ResponseUtil = require('../../utils/response.util')
 
 /**
  * @namespace AdminController
