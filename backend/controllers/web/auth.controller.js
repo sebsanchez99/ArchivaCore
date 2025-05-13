@@ -14,13 +14,23 @@ const register =  async (req, res) => {
 
 const login = async (req, res) => {
     try {
-        const{} = req.body
-    
+        const { _emp_id, _emp_nombre, _emp_activo, _plan_nombre, _plan_duracion  } = req.user
+        const authHelper = new AuthHelper()
+        const payload = {
+            companyId: _emp_id,
+            companyName: _emp_nombre,
+            active: _emp_activo,
+            planName: _plan_nombre,
+            planDuration: _plan_duracion
+        }
+        const result = authHelper.generateToken(payload)
+        res.json(result)
     } catch (error) {
-        
+        res.status(500).send(ResponseUtil.fail(error.message))
     }
 }
 
 module.exports = {
-    register
+    register,
+    login
 }
