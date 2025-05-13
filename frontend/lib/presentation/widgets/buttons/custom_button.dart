@@ -6,7 +6,9 @@ class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String message;
   const CustomButton({
-    super.key, required this.message, required this.onPressed, 
+    super.key,
+    required this.message,
+    required this.onPressed,
   });
 
   @override
@@ -15,15 +17,10 @@ class CustomButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: SchemaColors.primary,
         padding: EdgeInsets.symmetric(horizontal: 25, vertical: 18),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))  
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       ),
       onPressed: onPressed,
-      child: Text(
-        message,
-        style: TextStyle(
-          color:  SchemaColors.neutral,
-        ),
-      ),
+      child: Text(message, style: TextStyle(color: SchemaColors.neutral)),
     );
   }
 }
