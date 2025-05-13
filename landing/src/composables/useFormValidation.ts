@@ -1,42 +1,43 @@
-import { ref, watch } from "vue";
+import { reactive, watch } from "vue";
 import type { ValidationErrors, Validators } from "@/interfaces/validationInterfaces.ts";
 
 export function useFormValidation(initialFields: Record<string, string>, validators: Validators = {}) {
-  const fields = ref<Record<string, string>>({ ...initialFields });
-  const errors = ref<ValidationErrors>({});
+  // Cambiado a reactive para simplificar el acceso a las propiedades
+  const fields = reactive({ ...initialFields });
+  const errors = reactive<ValidationErrors>({});
 
   const validateField = (fieldName: string) => {
-    const value = fields.value[fieldName];
+    const value = fields[fieldName]; // Acceso directo a las propiedades reactivas
     const validator = validators[fieldName];
     if (validator) {
-      const error = validator(value, fields.value);
+      const error = validator(value, fields);
       if (error) {
-        errors.value[fieldName] = error;
+        errors[fieldName] = error;
       } else {
-        delete errors.value[fieldName];
+        delete errors[fieldName];
       }
     }
   };
 
   const validateAll = () => {
-    Object.keys(fields.value).forEach((fieldName) => validateField(fieldName));
-    return Object.keys(errors.value).length === 0; // Retorna true si no hay errores
+    Object.keys(fields).forEach((fieldName) => validateField(fieldName));
+    return Object.keys(errors).length === 0; // Retorna true si no hay errores
   };
 
   const setFieldValue = (fieldName: string, value: string) => {
-    fields.value[fieldName] = value;
+    fields[fieldName] = value;
     validateField(fieldName);
   };
 
   const resetFields = () => {
-    fields.value = { ...initialFields };
-    errors.value = {};
+    Object.assign(fields, initialFields); // Reinicia los valores de los campos
+    Object.keys(errors).forEach((key) => delete errors[key]);
   };
 
   const watchFields = () => {
-    Object.keys(fields.value).forEach((fieldName) => {
+    Object.keys(fields).forEach((fieldName) => {
       watch(
-        () => fields.value[fieldName],
+        () => fields[fieldName],
         () => validateField(fieldName)
       );
     });
