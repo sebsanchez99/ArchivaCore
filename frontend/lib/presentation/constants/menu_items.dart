@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/presentation/pages/administration/view/adminitration_view.dart';
+import 'package:frontend/presentation/pages/file_explorer/view/file_explore3_view.dart';
+import 'package:frontend/presentation/pages/file_explorer/view/file_explorer2_view.dart';
 import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_view.dart';
 
 /// [Map] que contiene elementos que definen las vistas de la aplicación
@@ -15,8 +17,13 @@ final Map<int, Map<String, dynamic>> menuItems = {
     "widget": FileExplorerView(),
   },
   2: {
-    "title": "Cerrar Sesion",
-    "icon": Icon(Icons.verified_user_outlined),
-    "widget": Text("Vista de cerrar sesion"),
+    "title": "Archivos2",
+    "icon": Icon(Icons.folder),
+    "widget": FileExplorer2View(),
+  },
+  3: {
+    "title": "Archivos3",
+    "icon": Icon(Icons.folder),
+    "widget": FileExplorer3View(),
   },
 };
