@@ -1,5 +1,3 @@
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
 INSERT INTO Empresa (Emp_ID, Emp_Nombre, Emp_Correo, Emp_Hash, Emp_Plan, Emp_Activo)
 VALUES (
     uuid_generate_v4(),

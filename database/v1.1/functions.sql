@@ -163,20 +163,35 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION obtener_empresa(p_nombre VARCHAR)
-RETURNS TABLE(
+CREATE OR REPLACE FUNCTION obtener_empresa_por_correo(p_correo VARCHAR(150))
+RETURNS TABLE (
     _Emp_ID UUID,
     _Emp_Nombre VARCHAR(150),
-    _Emp_Hash VARCHAR(150),
     _Emp_Correo VARCHAR(150),
+    _Emp_Hash TEXT,
     _Emp_Activo BOOLEAN,
-    _Plan_Nombre VARCHAR(100)
+    _Plan_Nombre VARCHAR(100),
+    _Plan_Duracion INT,
+    _Plan_Almacenamiento BIGINT,
+    _Plan_MaxUsuarios INT,
+    _Plan_Precio DECIMAL(10, 2)
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT e.Emp_ID, e.Emp_Nombre, e.Emp_Hash, e.Emp_Correo, e.Emp_Activo, p.Plan_Nombre
-    FROM Empresa e 
+    SELECT 
+        e.Emp_ID,
+        e.Emp_Nombre,
+        e.Emp_Correo,
+        e.Emp_Hash,
+        e.Emp_Activo,
+        p.Plan_Nombre,
+        p.Plan_Duracion,
+        p.Plan_Almacenamiento,
+        p.Plan_MaxUsuarios,
+        p.Plan_Precio
+    FROM Empresa e
     JOIN Plan p ON e.Emp_Plan = p.Plan_ID
-    WHERE e.Emp_Nombre = p_nombre;
-END; 
+    WHERE e.Emp_Correo = p_correo;
+END;
 $$ LANGUAGE plpgsql;
+
