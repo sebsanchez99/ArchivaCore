@@ -6,6 +6,7 @@ const { Router } = require('express');
 const passport = require('passport');
 const authRouter = require('../router/auth.router');
 const adminRouter = require('../router/admin.router');
+const folderRouter = require('./folder.router')
 const checkRole = require('../middlewares/checkRole');
 
 const router = Router();
@@ -26,5 +27,13 @@ router.use('/auth', authRouter);
  * @middleware {checkRole} Verificación de rol del usuario.
  */
 router.use('/admin', passport.authenticate('jwt', { session: false }), checkRole, adminRouter);
+
+/**
+ * @namespace folderRouter
+ * @memberof Rutas
+ * @description Rutas relacionadas con el Storage Supabase
+ */
+router.use('/supa',folderRouter)
+
 
 module.exports = router;
