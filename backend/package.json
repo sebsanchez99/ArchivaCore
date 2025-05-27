@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@supabase/storage-js": "^2.7.2",
     "bcrypt": "^5.1.1",
-    "connect-sqlite3": "^0.9.15",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "dotenv": "^16.4.7",

@@ -21,7 +21,7 @@ const ResponseUtil = require('../../utils/response.util')
 const listUsers = async(req, res) => {
     try {
         const adminHelper = new AdminHelper()
-        const result= await adminHelper.listUsers()
+        const result = await adminHelper.listUsers()
         res.json(result)
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
@@ -32,8 +32,8 @@ const listUsers = async(req, res) => {
  * @memberof Controladores.AdminController
  * @function createUsers
  * @description Controlador que permite crear usuario
- * @param {Object} req Petición
- * @param {Object} res Respuesta
+ * @param {*} req Petición
+ * @param {*} res Respuesta
  */
 const createUsers = async(req, res) => {
     try {

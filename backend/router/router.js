@@ -36,4 +36,12 @@ router.use('/auth', authAppRouter);
  */
 router.use('/admin', passport.authenticate('jwt', { session: false }), checkRole, adminAppRouter);
 
+/**
+ * @namespace folderRouter
+ * @memberof Rutas
+ * @description Rutas relacionadas con el Storage Supabase
+ */
+router.use('/supa',folderRouter)
+
+
 module.exports = router;
