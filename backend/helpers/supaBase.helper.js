@@ -1,6 +1,8 @@
-const { StorageClient } = require("@supabase/storage-js")
+const path = require('path')
 const poolNewClient = require("../libs/supaBase")
 const ResponseUtil = require('../utils/response.util')
+const { type } = require('os')
+
 
 /**
  * @class Esta clase contiene métodos para la gestión de carpetas de usuarios
@@ -41,15 +43,16 @@ class SupaBaseHelper {
     return ResponseUtil.success('La operación se realizó con éxito', data)
   }
   
-  async folderListForUser(companyName, userName, folderName){
-    const prefix = `${userName}/${folderName}`
-    const { data, error } = await poolNewClient.from(companyName).list(prefix)
-    
-    if (error){
-      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error) 
+  async folderListForUser(companyName, userName){
+    const structure = await this.#builderStructure(companyName, userName, true)    
+    if (!structure){
+      return ResponseUtil.fail('No se pudo listar el contenido de las carpetas del usuario') 
     
     }
-    return ResponseUtil.success('La operación se realizó con éxito', data)
+    return ResponseUtil.success('La operación se realizó con éxito', { 
+      carpetas:structure.folders,
+      archivos: structure.files
+    })
     
   }
 
@@ -107,6 +110,46 @@ class SupaBaseHelper {
     
     }
     return ResponseUtil.success('La operación se realizó con éxito', data)
+  }
+
+  async #builderStructure(bucket, currentPath, omitCurrentFolder=false){
+    const { data, error } = await poolNewClient.from(bucket).list(currentPath,
+      {
+        limit:1000,
+        offset:0
+      }
+    )
+    if (error){
+      return null
+    }
+    const folders = []
+    const files = []
+
+    await Promise.all(data.map(async(item) =>{
+      const isFolder = item.metadata === null
+      if (isFolder) {
+        if (omitCurrentFolder && item.name === path.basename(currentPath)){
+          return
+        }
+        const newPath = path.posix.join(currentPath, item.name)
+        const structure = await this.#builderStructure(bucket, newPath)
+        if(structure){
+          folders.push({
+            nombreCarpeta: item.name,
+            archivos: structure.files,
+            subCarpeta: structure.folders
+          })
+        }
+      } else{
+        files.push({
+          nombreArchivo: item.name,
+          tamanoMB: (item.metadata.size/(1024*1024)).toFixed(2),
+          fecha: item.updated_at || '',
+          tipo: path.extname(item.name).substring(1)
+        })
+      }
+    }))
+    return {folders, files}
   }
 
 }

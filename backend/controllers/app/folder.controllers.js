@@ -2,8 +2,8 @@
  * @namespace Controladores
  * @description Controladores de la API
  */
-const SupaBaseHelper = require('../helpers/supaBase.helper')
-const ResponseUtil = require('../utils/response.util')
+const SupaBaseHelper = require('../../helpers/supaBase.helper')
+const ResponseUtil = require('../../utils/response.util')
 
 /**
  * @namespace FolderController
@@ -18,10 +18,10 @@ const ResponseUtil = require('../utils/response.util')
  * @param {*} req 
  * @param {*} res 
  */
-const listCompanyFolders = async(req, res) => { 
+const listCompany = async(req, res) => { 
     try {
         const supaBaseHelper = new SupaBaseHelper()
-        const result = await supaBaseHelper.listCompanyFolders()
+        const result = await supaBaseHelper.listCompany()
         res.json(result)
     }catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
@@ -120,7 +120,7 @@ const deleteFiles = async(req, res) => {
 
    
 module.exports = {
-    listCompanyFolders,
+    listCompany,
     fileList,
     fileListForUser,
     folderListForUser,

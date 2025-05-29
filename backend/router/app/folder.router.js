@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const { listCompanyFolders, fileList, fileListForUser, folderListForUser, createFile, downloadFile, deleteAllFiles, deleteCompany, deleteFiles} = require('../controllers/folder.controllers')
+const { listCompany, fileList, fileListForUser, folderListForUser, createFile, downloadFile, deleteAllFiles, deleteCompany, deleteFiles} = require('../../controllers/app/folder.controllers')
 
 const router = Router()
 
@@ -9,7 +9,7 @@ const router = Router()
  * @name get/api/v1/supa/listCompanyFolders
  * @description Obtiene la lista de todos los archivos
  */
-router.get('/listCompanyFolders', listCompanyFolders)
+router.get('/listCompany', listCompany)
 
 router.get('/listFiles', fileList)
 
