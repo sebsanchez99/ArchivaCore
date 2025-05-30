@@ -20,7 +20,7 @@ class SideMenuWidget extends StatelessWidget {
           title: Column(
             children: [
               ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: 150, maxHeight: 150),
+                constraints: BoxConstraints(maxWidth: 110, maxHeight: 110),
                 child: Image.asset('assets/images/logo.png'),
               ),
               Divider(indent: 8, endIndent: 8, color: SchemaColors.neutral),
@@ -29,6 +29,8 @@ class SideMenuWidget extends StatelessWidget {
           displayModeToggleDuration: Duration(milliseconds: 250),
 
           style: SideMenuStyle(
+            itemHeight: 40,
+            iconSize: 20,
             displayMode: state.displayMode,
             openSideMenuWidth: 250,
             backgroundColor: SchemaColors.primary,
@@ -45,9 +47,9 @@ class SideMenuWidget extends StatelessWidget {
               fontWeight: FontWeight.bold, 
             ),
             itemBorderRadius: BorderRadius.circular(12),
-            itemOuterPadding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+            itemOuterPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           ),
-
+          
           items: menuItems.entries.map((item) {
           return SideMenuItem(
               title: item.value["title"],
