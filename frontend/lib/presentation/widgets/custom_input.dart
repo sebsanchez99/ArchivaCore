@@ -3,7 +3,9 @@ import 'package:frontend/presentation/constants/schema_colors.dart';
 
 // widget de input personalizado
 class CustomInput extends StatefulWidget {
+  final int? maxLines;
   final String? labeltext;
+  final String? hintText;
   final void Function(String)? onChanged;
   final bool isPassword;
   final bool? enabled;
@@ -12,12 +14,14 @@ class CustomInput extends StatefulWidget {
   final String? Function(String?)? validator;
   const CustomInput({
     super.key, 
+    this.hintText,
     this.labeltext, 
     this.onChanged, 
     this.enabled, 
     this.onSubmitted,
     this.validator, 
     this.controller, 
+    this.maxLines,
     required this.isPassword, 
   });
 
@@ -30,13 +34,14 @@ class _CustomInputState extends State<CustomInput> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      maxLines: widget.maxLines ?? 1,
       enabled: widget.enabled, 
       validator: widget.validator,
       // si es un campo de contraseña, ocultar texto
       obscureText: widget.isPassword ? _obscureText : false,
       style: TextStyle(
         color: SchemaColors.textPrimary,
-        fontSize: 15
+        fontSize: 13
       ), 
       cursorColor: SchemaColors.textSecondary,
       decoration: InputDecoration(
@@ -56,10 +61,11 @@ class _CustomInputState extends State<CustomInput> {
                 },
               )
             : null,
+        hintText: widget.hintText,
         labelText: widget.labeltext,
         labelStyle: TextStyle(
           color: SchemaColors.textSecondary,
-          fontSize: 15
+          fontSize: 13
         ),
         enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(color: SchemaColors.border), 
