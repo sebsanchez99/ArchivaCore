@@ -1,6 +1,7 @@
 // Llama las variables de entorno
 require('dotenv').config()
 
+
 // Configura las variables de servidor
 const configServer = {
     port: process.env.PORT
@@ -21,9 +22,18 @@ const configToken = {
     expireToken: process.env.EXPIRE_TOKEN
 }
 
+// Configura las variables de SupaBase
+const configSupaBase = {
+    supaBaseUrl: process.env.SUPABASE_URL,
+    supaBaseKey: process.env.SERVICE_KEY,
+    storageBucket: process.env.SUPABASE_BUCKET
+}
+
+
 module.exports = {
     configServer,
     configDB,
-    configToken
+    configToken,
+    configSupaBase
 }
 

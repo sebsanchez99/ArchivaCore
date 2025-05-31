@@ -5,7 +5,7 @@ class SchemaColors {
   // ============================================================
   /// 🎯 Color Primario Principal - #7488AD
   static const Color primary = Color(0xFF7488AD);
-
+  
   // 🎨 Escala del Primario
   static const Color primary100 = Color(0xFFDDE2EC);
   static const Color primary200 = Color(0xFFC4CDDD);
@@ -17,6 +17,19 @@ class SchemaColors {
   static const Color primary800 = Color(0xFF2F4156);
   static const Color primary900 = Color(0xFF192839);
 
+  // 🎯 Color  Secundario - #5D7090
+  static const Color secondary = Color.fromARGB(255, 15, 65, 151);
+  // 🎨 Escala del Secundario
+  static const Color secondary100 = Color(0xFFD5DDF0);
+  static const Color secondary200 = Color(0xFFACBCE2);
+  static const Color secondary300 = Color(0xFF839BD3);
+  static const Color secondary400 = Color(0xFF5A7AC5);
+  static const Color secondary500 = Color(0xFF0F4197); // Base
+  static const Color secondary600 = Color(0xFF0C357B);
+  static const Color secondary700 = Color(0xFF09295F);
+  static const Color secondary800 = Color(0xFF061D43);
+  static const Color secondary900 = Color(0xFF031127);
+  
   // ============================================================
   // ⚪ Color Neutro Principal - #F0F1F1
   static const Color neutral = Color(0xFFF0F1F1);

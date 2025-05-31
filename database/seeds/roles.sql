@@ -1,3 +1,5 @@
 INSERT INTO rol (rol_nombre) VALUES
 ('Administrador'),
-('Usuario');
+('Usuario'),
+('Empresa'),
+('Superusuario');

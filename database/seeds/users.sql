@@ -6,5 +6,5 @@ VALUES (
   gen_random_uuid(), 
   'admin', 
   crypt('12345', gen_salt('bf', 10)), 
-  1
+  4
 );

@@ -12,11 +12,14 @@
  * @param {Function} next Función para pasar al siguiente middlware/controlador
  * @returns {Response} Respuesta HTTP en caso de que el usuario no tenga rol de administrador
  */
-const checkRole = (req, res, next) => {
-    if (req.user.role !== "Administrador") {
-        return res.status(403).json({ message: "Acceso no autorizado" })
-    }
-    next()
-}
-
-module.exports = checkRole
+const checkRole = (...allowedRoles) => {
+    return (req, res, next) => {
+      // Verificar si el rol del usuario está en la lista de roles permitidos
+      if (!allowedRoles.includes(req.user.role)) {
+        return res.status(403).json({ message: "Acceso no autorizado" });
+      }
+      next();
+    };
+  };
+  
+  module.exports = checkRole;

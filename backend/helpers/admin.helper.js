@@ -43,20 +43,22 @@ class AdminHelper{
 
     /**
      * Método que crea usuario
-     * @param {string} username Nombre de usuario
-     * @param {string} password Hash de usuario
-     * @param {number} rolUser Rol de usuario
-     * @returns {ResponseUtil} Resultado de la operación en formato JSON
+     * @param {*} username Nombre de usuario
+     * @param {*} password Hash de usuario
+     * @param {*} rolUser Rol de usuario
+     * @param {*} rolUser Rol de usuario
+     * @param {*} idCompany Id que corresponde a empresa de usuario
+     * @returns Resultado de la operación en formato JSON
      */
-    async createUsers(username, password, rolUser){
+    async createUsers(username, password, rolUser, idCompany){
         const userExist = await this.#verifyUser(username)
         if (userExist) {
            return ResponseUtil.fail('El nombre de usuario ya existe, por favor modificarlo')
         }
         const hashPassword =  await bcrypt.hash( password ,  10 )
         await pool.query(            
-            'SELECT * FROM agregar_usuario($1, $2, $3)',
-            [username, hashPassword, rolUser]
+            'SELECT * FROM agregar_usuario($1, $2, $3, $4)',
+            [username, hashPassword, rolUser, idCompany]
         )
         return ResponseUtil.success('EL usuario se creó con éxito')
         
@@ -64,17 +66,17 @@ class AdminHelper{
 
     /**
      * Método que actualiza usuario
-     * @param {string} id Id de usuario  
-     * @param {string} username Nombre de usuario
-     * @param {string} password Hash de usuario
-     * @param {number} rolUser Rol de usuario
-     * @returns {ResponseUtil} Resultado de la operación en formato JSON
+     * @param {*} id Id de usuario  
+     * @param {*} username Nombre de usuario
+     * @param {*} password Hash de usuario
+     * @param {*} idCompany Empresa de usuario
+     * @returns Resultado de la operación en formato JSON
      */
-    async userUpdate(id, username, password, rolUser){
+    async userUpdate(id, username, password, rolUser, idCompany){
         const hashPassword = await bcrypt.hash( password ,  10 )
         await pool.query(
-            'SELECT * FROM actualizar_usuario( $1, $2, $3, $4 )',
-            [id, username, hashPassword, rolUser]
+            'SELECT * FROM actualizar_usuario( $1, $2, $3, $4, $5 )',
+            [id, username, hashPassword, rolUser, idCompany]
         )
         return ResponseUtil.success('El usuario se actualizó con éxito')
     }
