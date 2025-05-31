@@ -82,19 +82,31 @@ class _FileExplorerViewState extends State<FileExplorerView> {
             loading: (_) => LoadingState(),
             loaded: (value) {
               return Scaffold(
+                appBar: AppBar(
+                  title: Text(
+                    "Carpetas",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  actions: [
+                    IconButton(
+                      icon: Icon(
+                        Icons.add_circle,
+                        color: SchemaColors.primary600,
+                        size: 35,
+                      ),
+
+                      tooltip: 'Agregar',
+                      onPressed: () {
+                        // Acción al presionar el botón de agregar
+                      },
+                    ),
+                  ],
+                ),
                 body: Padding(
                   padding: EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "Carpetas",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 20),
                       Row(
                         children: [
                           CustomButton2(onPressed: () {}, message: 'Tipo'),
