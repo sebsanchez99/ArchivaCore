@@ -16,144 +16,191 @@ class SupaBaseHelper {
    */
   async listCompanyFolders() {
     const { data, error } = await poolNewClient.listBuckets()
-  
-    if (error){
-    return ResponseUtil.fail('Hubo un error al conectar con Supabase', error) 
+
+    if (error) {
+      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error)
     }
     return ResponseUtil.success('La operación se realizó con éxito', data)
   }
 
-  async fileList(companyName){
+  async fileList(companyName) {
     const { data, error } = await poolNewClient.getBucket(companyName)
 
-  if (error){
-      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error) 
-    
+    if (error) {
+      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error)
+
     }
     return ResponseUtil.success('La operación se realizó con éxito', data)
   }
 
-  async fileListForUser(companyName, userName){
+  async fileListForUser(companyName, userName) {
     const { data, error } = await poolNewClient.from(companyName).list(userName)
-    
-  if (error){
-      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error) 
-    
+
+    if (error) {
+      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error)
+
     }
     return ResponseUtil.success('La operación se realizó con éxito', data)
   }
-  
-  async folderListForUser(companyName, userName){
-    const structure = await this.#builderStructure(companyName, userName, true)    
-    if (!structure){
-      return ResponseUtil.fail('No se pudo listar el contenido de las carpetas del usuario') 
-    
+
+  async folderListForUser(companyName, userName) {
+    const structure = await this.#builderStructure(companyName, userName, true)
+    if (!structure) {
+      return ResponseUtil.fail('No se pudo listar el contenido de las carpetas del usuario')
+
     }
-    return ResponseUtil.success('La operación se realizó con éxito', { 
-      carpetas:structure.folders,
+    return ResponseUtil.success('La operación se realizó con éxito', {
+      carpetas: structure.folders,
       archivos: structure.files
     })
-    
+
   }
 
-  async createFile(companyName, userName, folderName){
+  async createFile(companyName, userName, folderName) {
     const prefix = `/${userName}/${folderName}`
     const { data, error } = await poolNewClient.from(companyName).upload(prefix)
 
-    if (error){
-      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error) 
-    
+    if (error) {
+      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error)
+
     }
     return ResponseUtil.success('La operación se realizó con éxito', data)
   }
 
-  async downloadFile(companyName, userName, fileName){
+  async downloadFile(companyName, userName, fileName) {
     const prefix = `${companyName}`
     const prefix2 = `/${userName}/${fileName}`
     const { data, error } = await poolNewClient.from(prefix).download(prefix2)
 
-    if (error){
-      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error) 
-    
+    if (error) {
+      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error)
+
     }
     return ResponseUtil.success('La operación se realizó con éxito', data)
 
   }
 
-  async deleteAllFiles(companyName){
+  async deleteAllFiles(companyName) {
     const { data, error } = await poolNewClient.emptyBucket(companyName)
 
-    if (error){
-      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error) 
-    
-    }
-    return ResponseUtil.success('La operación se realizó con éxito', data)
-    }
+    if (error) {
+      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error)
 
-  async deleteCompany(companyName){
-    const { data, error } = await poolNewClient.deleteBucket(companyName)
-
-    if (error){
-      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error) 
-    
     }
     return ResponseUtil.success('La operación se realizó con éxito', data)
   }
-  
-  async deleteFiles(companyName, userName, fileName){
+
+  async deleteCompany(companyName) {
+    const { data, error } = await poolNewClient.deleteBucket(companyName)
+
+    if (error) {
+      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error)
+
+    }
+    return ResponseUtil.success('La operación se realizó con éxito', data)
+  }
+
+  async deleteFiles(companyName, userName, fileName) {
     const prefix = `/${companyName}`
     const prefix2 = `/${userName}/${fileName}`
     const { data, error } = await poolNewClient.from(prefix).remove(prefix2)
 
-    if (error){
-      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error) 
-    
+    if (error) {
+      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error)
+
     }
     return ResponseUtil.success('La operación se realizó con éxito', data)
   }
 
-  async #builderStructure(bucket, currentPath, omitCurrentFolder=false){
+  async calculateTotalStorage(companyName) {
+    const structure = await this.#builderStructure(companyName, '', true);
+    if (!structure) {
+      return ResponseUtil.fail('Could not calculate total storage');
+    }
+
+    const categories = this.#sumFileSizesByCategory(structure);
+    const totalMB = Object.values(categories).reduce((acc, val) => acc + val, 0);
+    const totalGB = totalMB / 1024;
+
+    return ResponseUtil.success('Total and categorized storage calculated successfully', {
+      totalMB: totalMB.toFixed(2),
+      totalGB: totalGB.toFixed(2),
+      categories: Object.fromEntries(
+        Object.entries(categories).map(([cat, val]) => [cat, val.toFixed(2)])
+      )
+    });
+  }
+
+  #sumFileSizesByCategory({ files = [], folders = [] }, categoryTotals = {}) {
+    for (const file of files) {
+      const category = this.#categorizeFile(file.tipo.toLowerCase());
+      const sizeMB = parseFloat(file.tamanoMB || 0);
+      categoryTotals[category] = (categoryTotals[category] || 0) + sizeMB;
+    }
+
+    for (const folder of folders) {
+      this.#sumFileSizesByCategory(
+        { files: folder.archivos, folders: folder.subCarpeta },
+        categoryTotals
+      );
+    }
+
+    return categoryTotals;
+  }
+
+  #categorizeFile(extension) {
+    const images = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'];
+    const documents = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'rtf'];
+    const videos = ['mp4', 'mov', 'avi', 'mkv', 'webm', 'flv'];
+
+    if (images.includes(extension)) return 'images';
+    if (documents.includes(extension)) return 'documents';
+    if (videos.includes(extension)) return 'videos';
+    return 'others';
+  }
+
+  async #builderStructure(bucket, currentPath, omitCurrentFolder = false) {
     const { data, error } = await poolNewClient.from(bucket).list(currentPath,
       {
-        limit:1000,
-        offset:0
+        limit: 1000,
+        offset: 0
       }
     )
-    if (error){
+    if (error) {
       return null
     }
     const folders = []
     const files = []
 
-    await Promise.all(data.map(async(item) =>{
+    await Promise.all(data.map(async (item) => {
       const isFolder = item.metadata === null
       if (isFolder) {
-        if (omitCurrentFolder && item.name === path.basename(currentPath)){
+        if (omitCurrentFolder && item.name === path.basename(currentPath)) {
           return
         }
         const newPath = path.posix.join(currentPath, item.name)
         const structure = await this.#builderStructure(bucket, newPath)
-        if(structure){
+        if (structure) {
           folders.push({
             nombreCarpeta: item.name,
             archivos: structure.files,
             subCarpeta: structure.folders
           })
         }
-      } else{
+      } else {
         files.push({
           nombreArchivo: item.name,
-          tamanoMB: (item.metadata.size/(1024*1024)).toFixed(2),
+          tamanoMB: (item.metadata.size / (1024 * 1024)).toFixed(2),
           fecha: item.updated_at || '',
           tipo: path.extname(item.name).substring(1)
         })
       }
     }))
-    return {folders, files}
+    return { folders, files }
   }
 
 }
-  
+
 
 
 module.exports = SupaBaseHelper
