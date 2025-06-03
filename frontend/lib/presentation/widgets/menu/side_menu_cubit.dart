@@ -25,10 +25,7 @@ class SideMenuCubit extends Cubit<SideMenuState> {
 
   //Método que cambia el estado del menú
   void toggleMenu() {
-    final displayMode =
-        (state.displayMode == SideMenuDisplayMode.auto)
-            ? SideMenuDisplayMode.compact
-            : SideMenuDisplayMode.auto;
+    final displayMode = (state.displayMode == SideMenuDisplayMode.auto) ? SideMenuDisplayMode.compact : SideMenuDisplayMode.auto;
     emit(state.copyWith(displayMode: displayMode));
   }
 

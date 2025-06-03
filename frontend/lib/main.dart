@@ -1,22 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/presentation/global/cubit/globalcubit.dart';
 import 'package:frontend/presentation/pages/home_view.dart';
 import 'package:frontend/presentation/pages/login/view/login_view.dart';
 import 'package:frontend/providers/providers.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  //Asegura que Flutter esté completamente inicializado antes de ejecutar la aplicación
   WidgetsFlutterBinding.ensureInitialized();
-  // Configura los Providers que se usarán dentro de la aplicación
-  runApp(MultiProvider(providers: appProviders, child: const MyApp()));
+
+  final navigatorKey = GlobalKey<NavigatorState>();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ...appProviders,
+        BlocProvider<Globalcubit>(
+          create: (_) => Globalcubit(navigatorKey),
+        ),
+      ],
+      child: MyApp(navigatorKey: navigatorKey),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, required this.navigatorKey});
+
+  final GlobalKey<NavigatorState> navigatorKey;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: 'ArchivaCore',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),

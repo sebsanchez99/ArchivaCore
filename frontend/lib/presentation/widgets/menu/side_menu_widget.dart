@@ -3,6 +3,7 @@ import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/presentation/constants/menu_items.dart';
 import 'package:frontend/presentation/constants/schema_colors.dart';
+import 'package:frontend/presentation/global/cubit/globalcubit.dart';
 import 'package:frontend/presentation/widgets/menu/side_menu_cubit.dart';
 import 'package:frontend/presentation/widgets/menu/side_menu_state.dart';
 
@@ -49,14 +50,25 @@ class SideMenuWidget extends StatelessWidget {
             itemBorderRadius: BorderRadius.circular(12),
             itemOuterPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           ),
-          
-          items: menuItems.entries.map((item) {
-          return SideMenuItem(
+
+          items: [
+            ...menuItems.entries.map((item) {
+            return SideMenuItem(
               title: item.value["title"],
               icon: item.value["icon"],
               onTap: (index, sideMenuController) => sideMenuCubit.selectIndex(index),
             );
-          }).toList(),
+            }),
+            SideMenuItem(             
+              builder: (context, displayMode) => SizedBox(height: 40),
+            ),
+            SideMenuItem(             
+              title: 'Cerrar sesión',
+              icon: Icon(Icons.logout),
+              onTap: (index, sideMenuController) => context.read<Globalcubit>().logout(),
+            ),
+          ],
+
         );
       },
     );
