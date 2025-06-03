@@ -25,8 +25,7 @@ const configToken = {
 // Configura las variables de SupaBase
 const configSupaBase = {
     supaBaseUrl: process.env.SUPABASE_URL,
-    supaBaseKey: process.env.SERVICE_KEY,
-    storageBucket: process.env.SUPABASE_BUCKET
+    supaBaseKey: process.env.SUPABASE_API_KEY,
 }
 
 
