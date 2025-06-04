@@ -10,17 +10,11 @@ part 'folder_model.g.dart';
 class FolderModel with _$FolderModel {
   factory FolderModel({
     /// Id de la carpeta
-    @JsonKey(name: '_carp_id') required String id,
+    @JsonKey(name: 'nombreCarpeta') required String name,
     /// Nombre de la carpeta
-    @JsonKey(name: '_carp_nombre') required String name,
+    @JsonKey(name: 'archivos') required List<FileModel> files,
     /// Id del padre de la carpeta
-    @JsonKey(name: '_carp_padre_id') required String? parentId,
-    /// Id del usuario que creo la carpeta
-    /// Este atributo es opcional, ya que puede ser [null] si la carpeta no tiene un usuario asociado
-    @JsonKey(name: '_carp_file') required List<FileModel>? files,
-    /// Lista de archivos contenidos en la carpeta
-    @JsonKey(name: '_usu_id') required String userId,
-    /// Nombre del usuario que creo la carpeta
+    @JsonKey(name: 'subCarpeta') required List<FolderModel> subFolders,
   }) = _FolderModel;
 
   /// Parsea los datos de la respuesta de tipo JSON y los transforma en un dato de tipo [Map]

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/presentation/constants/schema_colors.dart';
+import 'package:frontend/presentation/global/constants/schema_colors.dart';
 import 'package:frontend/presentation/pages/resume_analizer/widgets/dotted_borderbox.dart';
 import 'package:frontend/presentation/pages/resume_analizer/bloc/resume_analizer_bloc.dart';
 import 'package:frontend/presentation/pages/resume_analizer/bloc/resume_analizer_events.dart';

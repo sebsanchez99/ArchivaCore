@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/presentation/global/cubit/globalcubit.dart';
 import 'package:frontend/presentation/pages/home_view.dart';
 import 'package:frontend/presentation/pages/login/view/login_view.dart';
-import 'package:frontend/providers/providers.dart';
+import 'package:frontend/presentation/global/providers/providers.dart';
 import 'package:provider/provider.dart';
 
 void main() {

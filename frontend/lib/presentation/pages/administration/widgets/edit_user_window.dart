@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/domain/models/user_model.dart';
-import 'package:frontend/presentation/constants/schema_colors.dart';
+import 'package:frontend/presentation/global/constants/schema_colors.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_bloc.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_events.dart';
 import 'package:frontend/presentation/pages/administration/bloc/administration_state.dart';

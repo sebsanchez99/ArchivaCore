@@ -20,7 +20,7 @@ class AuthRepositoryImpl implements AuthRepository {
     String password,
   ) async {
     final result = await _authService.authUser(username, password);
-    result.whenOrNull(
+    await result.whenOrNull(
       right: (response) async {
         final token = response.data;
         await _secureStorage.setToken(token);
