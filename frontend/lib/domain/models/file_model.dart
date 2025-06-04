@@ -8,19 +8,16 @@ part 'file_model.g.dart';
 class FileModel with _$FileModel {
   factory FileModel({
     /// Id del archivo
-    @JsonKey(name: '_file_id') required String id,
+    @JsonKey(name: 'nombreArchivo') required String name,
     /// Nombre del archivo
-    @JsonKey(name: '_file_nombre') required String name,
+    @JsonKey(name: 'tamanoMB') required String size,
     /// Tipo de archivo
-    @JsonKey(name: '_file_tipo') required String type,
+    @JsonKey(name: 'fecha') required String date,
     /// Tamaño del archivo
-    @JsonKey(name: '_file_tamano') required String size,
-    /// Fecha de creación del archivo
-    @JsonKey(name: '_file_fecha_creacion') required String creationDate,
+    @JsonKey(name: 'tipo') required String type,
   }) = _FileModel;
 
   /// Parsea los datos de la respuesta de tipo JSON y los transforma en un dato de tipo [Map]
-  factory FileModel.fromJson(Map<String, dynamic> json) =>
-      _$FileModelFromJson(json);
+  factory FileModel.fromJson(Map<String, dynamic> json) => _$FileModelFromJson(json);
   
 }
