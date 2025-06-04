@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:frontend/presentation/global/enums/file_explorer_view_type.dart';
 
 part 'file_explorer_events.freezed.dart';
 
@@ -6,8 +7,8 @@ part 'file_explorer_events.freezed.dart';
 class FileExplorerEvents with _$FileExplorerEvents {
   //Evento inicial de la vista
   factory FileExplorerEvents.initialize() = InitializeEvent;
-  factory FileExplorerEvents.filterFiles({required String fileName}) =
-      FilterFilesEvent;
+  factory FileExplorerEvents.changeView({ required FileExplorerViewType viewType }) = ChangeViewTypeEvent;
+  factory FileExplorerEvents.filterFiles({required String fileName}) = FilterFilesEvent;
 
   //Evento que actualiza a los archivos
   factory FileExplorerEvents.putFiles({
@@ -16,10 +17,8 @@ class FileExplorerEvents with _$FileExplorerEvents {
   }) = PutFileEvent;
 
   //Evento que crea a los archivos
-  factory FileExplorerEvents.createFiles({required String fileName}) =
-      CreateFileEvent;
+  factory FileExplorerEvents.createFiles({required String fileName}) = CreateFileEvent;
 
   //Evento que elimina a los archivos
-  factory FileExplorerEvents.deleteFiles({required String fileID}) =
-      DeleteFileEvent;
+  factory FileExplorerEvents.deleteFiles({required String fileID}) = DeleteFileEvent;
 }
