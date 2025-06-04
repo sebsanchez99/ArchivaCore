@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/presentation/constants/schema_colors.dart';
+import 'package:frontend/presentation/global/constants/schema_colors.dart';
 
 // widget de input personalizado
 class CustomInput extends StatefulWidget {
