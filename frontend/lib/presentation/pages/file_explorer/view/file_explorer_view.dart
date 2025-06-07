@@ -34,6 +34,26 @@ class FileExplorerView extends StatelessWidget {
             loading: (_) => LoadingState(),
             loaded: (value) {
               return Scaffold(
+                appBar: AppBar(
+                  title: Text(
+                    "Carpetas",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  actions: [
+                    IconButton(
+                      icon: Icon(
+                        Icons.add_circle,
+                        color: SchemaColors.primary600,
+                        size: 35,
+                      ),
+
+                      tooltip: 'Agregar',
+                      onPressed: () {
+                        // Acción al presionar el botón de agregar
+                      },
+                    ),
+                  ],
+                ),
                 body: Padding(
                   padding: EdgeInsets.only(left: 16.0,  top: 16.0),
                   child: Column(
@@ -45,6 +65,16 @@ class FileExplorerView extends StatelessWidget {
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
+                      ),
+                      SizedBox(height: 20),
+                      Row(
+                        children: [
+                          CustomButton2(onPressed: () {}, message: 'Tipo'),
+                          SizedBox(width: 20),
+                          CustomButton2(onPressed: () {}, message: 'Persona'),
+                          SizedBox(width: 20),
+                          CustomButton2(onPressed: () {}, message: 'Fecha'),
+                        ],
                       ),
                       SizedBox(height: 20),
                       Center(
