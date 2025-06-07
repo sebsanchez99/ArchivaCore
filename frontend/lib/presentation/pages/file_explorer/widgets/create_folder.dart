@@ -1,6 +1,6 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/presentation/constants/schema_colors.dart';
+import 'package:frontend/presentation/global/constants/schema_colors.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
 import 'package:frontend/presentation/widgets/custom_input.dart';
 import 'package:frontend/presentation/widgets/folder/custom_folder.dart';
