@@ -4,17 +4,16 @@ import 'package:frontend/presentation/global/constants/schema_colors.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
 import 'package:frontend/presentation/widgets/custom_input.dart';
 import 'package:frontend/presentation/widgets/folder/custom_folder.dart';
-import 'package:frontend/presentation/widgets/folder/custom_folder2.dart';
 import 'package:dotted_border/dotted_border.dart';
 
-class CreateFolder extends StatefulWidget {
-  CreateFolder({super.key});
+class EditFolder extends StatefulWidget {
+  EditFolder({super.key});
 
   @override
-  State<CreateFolder> createState() => _CreateFolderState();
+  State<EditFolder> createState() => _EditFolderState();
 }
 
-class _CreateFolderState extends State<CreateFolder> {
+class _EditFolderState extends State<EditFolder> {
   final List<String> items = [
     'A_Item1',
     'A_Item2',
@@ -48,29 +47,19 @@ class _CreateFolderState extends State<CreateFolder> {
             Title(
               color: SchemaColors.textPrimary,
               child: Text(
-                "Crear Nueva Carpeta",
+                "Editar Carpeta",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 5),
+            Text('Modifica los detalles de tu carpeta.'),
+            SizedBox(height: 20),
             Text(
               'Nombre de la carpeta',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
-            CustomInput(isPassword: false, hintText: "ej: ArchivaCore"),
-            SizedBox(height: 20),
-            Text(
-              'Descripción (Opcional)',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            CustomInput(
-              isPassword: false,
-              hintText: "Describe el contenido o propocito de esta carpeta...",
-            ),
-            SizedBox(height: 20),
-            Divider(color: SchemaColors.border),
+            CustomInput(isPassword: false, hintText: "ArchivaCore"),
             SizedBox(height: 20),
             Text('Ubicación', style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: 10),
@@ -79,7 +68,7 @@ class _CreateFolderState extends State<CreateFolder> {
                 child: DropdownButton2<String>(
                   isExpanded: true,
                   hint: Text(
-                    'Seleccionar ubicación',
+                    'ArchivaCore',
                     style: TextStyle(
                       fontSize: 14,
                       color: SchemaColors.textPrimary,
@@ -106,7 +95,7 @@ class _CreateFolderState extends State<CreateFolder> {
                   buttonStyleData: const ButtonStyleData(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     height: 40,
-                    width: 330,
+                    width: 350,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(5)),
                       border: Border.fromBorderSide(
@@ -157,20 +146,26 @@ class _CreateFolderState extends State<CreateFolder> {
                 ),
               ),
             ),
+            SizedBox(height: 5),
+            Text('Nueva ruta: /ArchivaCore'),
             SizedBox(height: 20),
             Divider(color: SchemaColors.border),
             SizedBox(height: 20),
-            Text('Vista previa', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              'Vista previa de cambios',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             SizedBox(height: 10),
             Center(
               child: Container(
-                width: 300,
-                height: 150,
+                width: 330,
+                height: 120,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: SchemaColors.neutral700,
+                  color: SchemaColors.background,
                 ),
                 child: DottedBorder(
+                  dashPattern: [9],
                   color: SchemaColors.border,
                   strokeWidth: 1,
                   borderType: BorderType.RRect,
@@ -186,6 +181,38 @@ class _CreateFolderState extends State<CreateFolder> {
                 ),
               ),
             ),
+            SizedBox(height: 5),
+            Text('Si hay cambios pendientes'),
+            SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(15),
+              width: 330,
+              height: 100,
+              decoration: BoxDecoration(
+                border: Border.all(color: SchemaColors.border, width: 1),
+                borderRadius: BorderRadius.circular(10),
+                color: SchemaColors.background,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Creada:',
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  SizedBox(width: 5),
+                  Text(
+                    'Ultima Modificacion:',
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    'Contenido:',
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -195,7 +222,7 @@ class _CreateFolderState extends State<CreateFolder> {
           onPressed: () => Navigator.pop(context),
         ),
         CustomButton(
-          message: 'Crear Carpeta',
+          message: 'Editar Carpeta',
           onPressed: () {
             Navigator.pop(context);
           },

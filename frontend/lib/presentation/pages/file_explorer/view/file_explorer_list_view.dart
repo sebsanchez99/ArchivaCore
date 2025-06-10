@@ -3,16 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_bloc.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_state.dart';
+import 'package:frontend/presentation/pages/file_explorer/utils/utils.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/folder_expansion_tile.dart';
 import 'package:frontend/presentation/widgets/folder/custom_folder.dart';
 import 'package:frontend/presentation/widgets/states/loading_state.dart';
 
 class FileExplorerListView extends StatelessWidget {
   final FileExplorerBloc bloc;
-  const FileExplorerListView({
-    super.key,
-    required this.bloc
-  });
+  const FileExplorerListView({super.key, required this.bloc});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +31,11 @@ class FileExplorerListView extends StatelessWidget {
                       children:
                           folders.map((folder) {
                             // TODO: Calcular tamaño en backend?
-                            final totalSize = folder.files.fold<double>(0.0, (sum, file) => sum + (double.tryParse(file.size) ?? 0.0));
+                            final totalSize = folder.files.fold<double>(
+                              0.0,
+                              (sum, file) =>
+                                  sum + (double.tryParse(file.size) ?? 0.0),
+                            );
                             return Stack(
                               children: [
                                 CustomFolder(
@@ -47,24 +49,13 @@ class FileExplorerListView extends StatelessWidget {
                                   right: 0,
                                   child: PopupMenuButton<String>(
                                     tooltip: 'Opciones',
-                                    icon: Icon(
-                                      Icons.more_horiz,
-                                      size: 20,
-                                    ),
+                                    icon: Icon(Icons.more_horiz, size: 20),
                                     elevation: 7,
                                     color: SchemaColors.background,
                                     onSelected: (String option) {
                                       if (option == 'edit') {
-                                        // Acción para editar
-                                        print(
-                                          'Editar carpeta: ${folder.name}',
-                                        );
-                                      } else if (option == 'organize') {
-                                        // Acción para organizar
-                                        print(
-                                          'Organizar carpeta: ${folder.name}',
-                                        );
-                                      }
+                                        showEditFolderDialog(context);
+                                      } else if (option == 'organize') {}
                                     },
                                     itemBuilder:
                                         (BuildContext context) =>
@@ -73,10 +64,7 @@ class FileExplorerListView extends StatelessWidget {
                                                 value: 'edit',
                                                 child: Row(
                                                   children: [
-                                                    Icon(
-                                                      Icons.edit,
-                                                      size: 20,
-                                                    ),
+                                                    Icon(Icons.edit, size: 20),
                                                     SizedBox(width: 3),
                                                     Text('Editar'),
                                                   ],
@@ -111,21 +99,46 @@ class FileExplorerListView extends StatelessWidget {
                   shrinkWrap: true,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Expanded(child: Text('Nombre', style: TextStyle(fontWeight: FontWeight.bold))),
-                          Expanded(child: Text('Modificado por', style: TextStyle(fontWeight: FontWeight.bold))),
-                          Expanded(child: Text('Última vez', style: TextStyle(fontWeight: FontWeight.bold))),
-                          Expanded(child: Text('Detalles', style: TextStyle(fontWeight: FontWeight.bold))),
+                          Expanded(
+                            child: Text(
+                              'Nombre',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              'Modificado por',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              'Última vez',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              'Detalles',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
                         ],
                       ),
                     ),
                     const Divider(),
-                    ...folders.map((folder) => FolderExpansionTile(folder: folder))
+                    ...folders.map(
+                      (folder) => FolderExpansionTile(folder: folder),
+                    ),
                   ],
-                )
+                ),
               ],
             );
           },
