@@ -6,15 +6,15 @@ import 'package:frontend/presentation/global/enums/file_explorer_view_type.dart'
 import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_bloc.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_events.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_state.dart';
+import 'package:frontend/presentation/pages/file_explorer/utils/utils.dart';
 import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_details_view.dart';
 import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_grid_view.dart';
 import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_list_view.dart';
-import 'package:frontend/presentation/pages/file_explorer/widgets/create_folder.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_button2.dart';
 import 'package:frontend/presentation/widgets/states/failure_state.dart';
 import 'package:frontend/presentation/widgets/states/loading_state.dart';
 
-part '../utils/utils.dart';
+
 
 class FileExplorerView extends StatelessWidget {
   const FileExplorerView({super.key});
@@ -41,16 +41,24 @@ class FileExplorerView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "Carpetas",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Carpetas",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          IconButton(
+                            tooltip: "Crear Carpeta",
+                            onPressed: () => showCreateFolderDialog(context),
+                            icon: Icon(Icons.add, size: 30),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 20),
-                      IconButton(onPressed: () => _showCreateDialog(context), icon: Icon(Icons.add)),
-                      SizedBox(height: 10),
                       Center(
                         child: Wrap(
                           verticalDirection: VerticalDirection.up,

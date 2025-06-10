@@ -27,7 +27,7 @@ class CustomFolder extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(fileCount, style: TextStyle(fontSize: 12, color: Colors.grey)),
-            SizedBox(width: 1),
+            SizedBox(width: 10),
             Text(size, style: TextStyle(fontSize: 12, color: Colors.grey)),
           ],
         ),
