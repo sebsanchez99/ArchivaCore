@@ -14,7 +14,7 @@ class SupaBaseHelper {
    * Método que lista todas las carpetas
    * @returns  {ResponseUtil} Resultado de la operación en formato JSON
    */
-  async listCompanyFolders() {
+  async listCompany() {
     const { data, error } = await poolNewClient.listBuckets()
   
     if (error){
@@ -56,8 +56,20 @@ class SupaBaseHelper {
     
   }
 
-  async createFile(companyName, userName, folderName){
-    const prefix = `/${userName}/${folderName}`
+  async folderListFiles(companyName, userName, folderName){
+    const structure =await this.#builderStructure(companyName, userName, folderName, true)
+    if (!structure){
+      return ResponseUtil.fail('No se pudo listar el contenido de las carpetas del usuario')
+
+    }
+    return ResponseUtil.success('La operación se realizó con éxito', {
+      carpetas: structure.folders,
+      archivos: structure.files
+    })
+  }
+
+  async createFile(companyName, userName, folderName,fileName){
+    const prefix = `/${userName}/${folderName}/${fileName}`
     const { data, error } = await poolNewClient.from(companyName).upload(prefix)
 
     if (error){
@@ -101,7 +113,7 @@ class SupaBaseHelper {
   }
   
   async deleteFiles(companyName, userName, fileName){
-    const prefix = `/${companyName}`
+    const prefix = `${companyName}`
     const prefix2 = `/${userName}/${fileName}`
     const { data, error } = await poolNewClient.from(prefix).remove(prefix2)
 
@@ -111,6 +123,21 @@ class SupaBaseHelper {
     }
     return ResponseUtil.success('La operación se realizó con éxito', data)
   }
+
+  async createSubFolder(companyName, userName, folderName) {
+    const folderPath = `${userName}/${folderName}/placeholder.txt`; // Subimos un archivo vacío
+    const { data, error } = await poolNewClient.from(companyName).upload(folderPath, Buffer.from(''), {
+        contentType: 'text/plain',
+    });
+
+    if (error) {
+        return ResponseUtil.fail('Error al crear la subcarpeta en Supabase', error);
+    }
+
+    return ResponseUtil.success('Subcarpeta creada exitosamente', { path: `${userName}/${folderName}/` });
+}
+
+
 
   async #builderStructure(bucket, currentPath, omitCurrentFolder=false){
     const { data, error } = await poolNewClient.from(bucket).list(currentPath,
@@ -136,23 +163,24 @@ class SupaBaseHelper {
         if(structure){
           folders.push({
             nombreCarpeta: item.name,
+            rutaCarpeta: currentPath,
             archivos: structure.files,
-            subCarpeta: structure.folders
+            subCarpeta: structure.folders,
           })
         }
       } else{
         files.push({
           nombreArchivo: item.name,
+          rutaArchivo: `${currentPath}/${item.name}`,
           tamanoMB: (item.metadata.size/(1024*1024)).toFixed(2),
           fecha: item.updated_at || '',
           tipo: path.extname(item.name).substring(1)
         })
       }
     }))
-    return {folders, files}
-  }
-
+    return {folders, files}  }
 }
+  
   
 
 

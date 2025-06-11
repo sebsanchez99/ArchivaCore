@@ -13,8 +13,8 @@ const ResponseUtil = require('../../utils/response.util')
 
 /**
  * @memberof Controladores.FolderController
- * @function listCompanyFolders
- * @description Controlador que permite listar todas las carpetas de usuarios existentes en SupaBase Storage
+ * @function listCompany
+ * @description Controlador que permite listar todas las carpetas de empresas existentes en SupaBase Storage
  * @param {*} req 
  * @param {*} res 
  */
@@ -27,6 +27,14 @@ const listCompany = async(req, res) => {
         res.status(500).send(ResponseUtil.fail(error.message))
     }
 }
+
+/**
+ * @memberof Controladores.FolderController
+ * @function fileList
+ * @description Controlador que permite listar el bucket de  archivos de empresas existentes en SupaBase Storage
+ * @param {*} req 
+ * @param {*} res 
+ */
 const fileList = async(req, res) => {
     try {
         const {companyName} = req.body
@@ -38,6 +46,13 @@ const fileList = async(req, res) => {
     }
 }
 
+/**
+ * @memberof Controladores.FolderController
+ * @function fileListForUser
+ * @description Controlador que permite listar archivos de una  empresa existente en SupaBase Storage
+ * @param {*} req 
+ * @param {*} res 
+ */
 const fileListForUser = async(req, res) => {
     try {
         const {companyName, userName} = req.body
@@ -49,6 +64,13 @@ const fileListForUser = async(req, res) => {
     }
 }
 
+/**
+ * @memberof Controladores.FolderController
+ * @function folderListForUser
+ * @description Controlador que permite listar las carpetas y subcarpetas de una  empresa existente en SupaBase Storage
+ * @param {*} req 
+ * @param {*} res 
+ */
 const folderListForUser = async(req, res) => {
     try {
         const {companyName, userName, folderName} = req.body
@@ -60,11 +82,37 @@ const folderListForUser = async(req, res) => {
     }
 }
 
+/**
+ * @memberof Controladores.FolderController
+ * @function folderList
+ * @description Controlador que permite listar una carpeta y sus archivos de una  empresa existente en SupaBase Storage
+ * @param {*} req 
+ * @param {*} res 
+ */
+const folderListFiles = async(req,res) => {
+    try {
+        const { companyName, userName, folderName} = req.body
+        const supaBaseHelper = new SupaBaseHelper()
+        const result = await supaBaseHelper.folderListFiles(companyName, userName, folderName)
+        res.json(result)
+    }catch (eror){
+        res.status(500).send(ResponseUtil.fail(error.message))
+
+    }
+}
+
+/**
+ * @memberof Controladores.FolderController
+ * @function createFile
+ * @description Controlador que permite crear un archivo en la ubicacion seleccionada de una  empresa existente en SupaBase Storage
+ * @param {*} req 
+ * @param {*} res 
+ */
 const  createFile = async(req, res) => {
     try {
-        const {companyName, userName, fileName} = req.body
+        const {companyName, userName, folderName, fileName} = req.body
         const supaBaseHelper = new SupaBaseHelper()
-        const result = await supaBaseHelper.createFile(companyName, userName, fileName)
+        const result = await supaBaseHelper.createFile(companyName, userName, folderName, fileName)
         res.json(result)
     }catch (error){
         res.status(500).send(ResponseUtil.fail(error.message))
@@ -72,6 +120,13 @@ const  createFile = async(req, res) => {
     
 }
 
+/**
+ * @memberof Controladores.FolderController
+ * @function downloadFile
+ * @description Controlador que permite descargar un archivo en la ubicacion seleccionada de una  empresa existente en SupaBase Storage
+ * @param {*} req 
+ * @param {*} res 
+ */
 const downloadFile = async(req, res) => {
     try {
         const {companyName, userName, fileName} = req.body
@@ -83,6 +138,13 @@ const downloadFile = async(req, res) => {
     }
 }
 
+/**
+ * @memberof Controladores.FolderController
+ * @function deleteAllFiles
+ * @description Controlador que permite eliminar todos los archivos de una  empresa existente en SupaBase Storage
+ * @param {*} req 
+ * @param {*} res 
+ */
 const deleteAllFiles = async(req, res) => {
     try{
         const {companyName} = req.body
@@ -94,6 +156,13 @@ const deleteAllFiles = async(req, res) => {
     }
 }
 
+/**
+ * @memberof Controladores.FolderController
+ * @function deleteCompany
+ * @description Controlador que permite eliminar una  empresa existente en SupaBase Storage, (requiere estar vacia para poder ser eliminado)
+ * @param {*} req 
+ * @param {*} res 
+ */
 const deleteCompany = async(req, res) => {
     try{
         const {companyName} = req.body
@@ -106,6 +175,13 @@ const deleteCompany = async(req, res) => {
     
 }
 
+/**
+ * @memberof Controladores.FolderController
+ * @function deleteFiles
+ * @description Controlador que permite eliminar un archivo en la ruta seleccionada de una empresa existenten en SupaBase Storage
+ * @param {*} req 
+ * @param {*} res 
+ */
 const deleteFiles = async(req, res) => {
     try{
         const {companyName, userName, fileName} = req.body
@@ -118,16 +194,35 @@ const deleteFiles = async(req, res) => {
     }
 }
 
+const createSubFolder = async (req, res) => {
+    try {
+        const { companyName, userName, folderName } = req.body;
+        const supaBaseHelper = new SupaBaseHelper();
+        const result = await supaBaseHelper.createSubFolder(companyName, `${userName}/${folderName}`, folderName);
+        res.json(result);
+    } catch (error) {
+        res.status(500).send(ResponseUtil.fail(error.message));
+    }
+}
+
+// const fileToRecicle = async (req, res) => {
+
+// }
+//     { data, error } = await storageClient
+//   .from('bucket')
+//   .move('old/path/to/file', 'new/path/to/file')
    
 module.exports = {
     listCompany,
     fileList,
     fileListForUser,
     folderListForUser,
+    folderListFiles,
     createFile,
     downloadFile,
     deleteAllFiles,
     deleteCompany,
-    deleteFiles
+    deleteFiles, 
+    createSubFolder
 }
 
