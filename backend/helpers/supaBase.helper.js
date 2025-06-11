@@ -14,7 +14,7 @@ class SupaBaseHelper {
    * Método que lista todas las carpetas
    * @returns  {ResponseUtil} Resultado de la operación en formato JSON
    */
-  async listCompanyFolders() {
+  async listCompany() {
     const { data, error } = await poolNewClient.listBuckets()
 
     if (error) {
@@ -56,8 +56,20 @@ class SupaBaseHelper {
 
   }
 
-  async createFile(companyName, userName, folderName) {
-    const prefix = `/${userName}/${folderName}`
+  async folderListFiles(companyName, userName, folderName){
+    const structure =await this.#builderStructure(companyName, userName, folderName, true)
+    if (!structure){
+      return ResponseUtil.fail('No se pudo listar el contenido de las carpetas del usuario')
+
+    }
+    return ResponseUtil.success('La operación se realizó con éxito', {
+      carpetas: structure.folders,
+      archivos: structure.files
+    })
+  }
+
+  async createFile(companyName, userName, folderName,fileName){
+    const prefix = `/${userName}/${folderName}/${fileName}`
     const { data, error } = await poolNewClient.from(companyName).upload(prefix)
 
     if (error) {
@@ -99,9 +111,9 @@ class SupaBaseHelper {
     }
     return ResponseUtil.success('La operación se realizó con éxito', data)
   }
-
-  async deleteFiles(companyName, userName, fileName) {
-    const prefix = `/${companyName}`
+  
+  async deleteFiles(companyName, userName, fileName){
+    const prefix = `${companyName}`
     const prefix2 = `/${userName}/${fileName}`
     const { data, error } = await poolNewClient.from(prefix).remove(prefix2)
 
@@ -112,54 +124,22 @@ class SupaBaseHelper {
     return ResponseUtil.success('La operación se realizó con éxito', data)
   }
 
-  async calculateTotalStorage(companyName) {
-    const structure = await this.#builderStructure(companyName, '', true);
-    if (!structure) {
-      return ResponseUtil.fail('Could not calculate total storage');
-    }
-
-    const categories = this.#sumFileSizesByCategory(structure);
-    const totalMB = Object.values(categories).reduce((acc, val) => acc + val, 0);
-    const totalGB = totalMB / 1024;
-
-    return ResponseUtil.success('Total and categorized storage calculated successfully', {
-      totalMB: totalMB.toFixed(2),
-      totalGB: totalGB.toFixed(2),
-      categories: Object.fromEntries(
-        Object.entries(categories).map(([cat, val]) => [cat, val.toFixed(2)])
-      )
+  async createSubFolder(companyName, userName, folderName) {
+    const folderPath = `${userName}/${folderName}/placeholder.txt`; // Subimos un archivo vacío
+    const { data, error } = await poolNewClient.from(companyName).upload(folderPath, Buffer.from(''), {
+        contentType: 'text/plain',
     });
-  }
 
-  #sumFileSizesByCategory({ files = [], folders = [] }, categoryTotals = {}) {
-    for (const file of files) {
-      const category = this.#categorizeFile(file.tipo.toLowerCase());
-      const sizeMB = parseFloat(file.tamanoMB || 0);
-      categoryTotals[category] = (categoryTotals[category] || 0) + sizeMB;
+    if (error) {
+        return ResponseUtil.fail('Error al crear la subcarpeta en Supabase', error);
     }
 
-    for (const folder of folders) {
-      this.#sumFileSizesByCategory(
-        { files: folder.archivos, folders: folder.subCarpeta },
-        categoryTotals
-      );
-    }
+    return ResponseUtil.success('Subcarpeta creada exitosamente', { path: `${userName}/${folderName}/` });
+}
 
-    return categoryTotals;
-  }
 
-  #categorizeFile(extension) {
-    const images = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'];
-    const documents = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'rtf'];
-    const videos = ['mp4', 'mov', 'avi', 'mkv', 'webm', 'flv'];
 
-    if (images.includes(extension)) return 'images';
-    if (documents.includes(extension)) return 'documents';
-    if (videos.includes(extension)) return 'videos';
-    return 'others';
-  }
-
-  async #builderStructure(bucket, currentPath, omitCurrentFolder = false) {
+  async #builderStructure(bucket, currentPath, omitCurrentFolder=false){
     const { data, error } = await poolNewClient.from(bucket).list(currentPath,
       {
         limit: 1000,
@@ -183,24 +163,25 @@ class SupaBaseHelper {
         if (structure) {
           folders.push({
             nombreCarpeta: item.name,
+            rutaCarpeta: currentPath,
             archivos: structure.files,
-            subCarpeta: structure.folders
+            subCarpeta: structure.folders,
           })
         }
       } else {
         files.push({
           nombreArchivo: item.name,
-          tamanoMB: (item.metadata.size / (1024 * 1024)).toFixed(2),
+          rutaArchivo: `${currentPath}/${item.name}`,
+          tamanoMB: (item.metadata.size/(1024*1024)).toFixed(2),
           fecha: item.updated_at || '',
           tipo: path.extname(item.name).substring(1)
         })
       }
     }))
-    return { folders, files }
-  }
-
+    return {folders, files}  }
 }
-
+  
+  
 
 
 module.exports = SupaBaseHelper
