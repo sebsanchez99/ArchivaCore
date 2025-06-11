@@ -23,6 +23,10 @@ class SupaBaseHelper {
     return ResponseUtil.success('La operación se realizó con éxito', data)
   }
 
+  /**
+   * Método que lista todas las carpetas
+   * @returns  {ResponseUtil} Resultado de la operación en formato JSON
+   */
   async fileList(companyName) {
     const { data, error } = await poolNewClient.getBucket(companyName)
 
@@ -139,6 +143,7 @@ class SupaBaseHelper {
 
 
 
+
   async #builderStructure(bucket, currentPath, omitCurrentFolder=false){
     const { data, error } = await poolNewClient.from(bucket).list(currentPath,
       {
@@ -151,9 +156,10 @@ class SupaBaseHelper {
     }
     const folders = []
     const files = []
-
+    
     await Promise.all(data.map(async (item) => {
       const isFolder = item.metadata === null
+      const pathName = `${currentPath}/${item.name}`
       if (isFolder) {
         if (omitCurrentFolder && item.name === path.basename(currentPath)) {
           return
@@ -163,7 +169,7 @@ class SupaBaseHelper {
         if (structure) {
           folders.push({
             nombreCarpeta: item.name,
-            rutaCarpeta: currentPath,
+            rutaCarpeta: pathName,
             archivos: structure.files,
             subCarpeta: structure.folders,
           })
@@ -171,7 +177,7 @@ class SupaBaseHelper {
       } else {
         files.push({
           nombreArchivo: item.name,
-          rutaArchivo: `${currentPath}/${item.name}`,
+          rutaArchivo: pathName,
           tamanoMB: (item.metadata.size/(1024*1024)).toFixed(2),
           fecha: item.updated_at || '',
           tipo: path.extname(item.name).substring(1)
