@@ -73,9 +73,9 @@ const fileListForUser = async(req, res) => {
  */
 const folderListForUser = async(req, res) => {
     try {
-        const {companyName, userName, folderName} = req.body
+        const {companyName} = req.body
         const supaBaseHelper = new SupaBaseHelper()
-        const result = await supaBaseHelper.folderListForUser(companyName, userName, folderName)
+        const result = await supaBaseHelper.folderListForUser(companyName)
         res.json(result)
     }catch (error){
         res.status(500).send(ResponseUtil.fail(error.message))

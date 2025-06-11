@@ -45,8 +45,8 @@ class SupaBaseHelper {
     return ResponseUtil.success("La operación se realizó con éxito", data);
   }
 
-  async folderListForUser(companyName, userName) {
-    const structure = await this.#builderStructure(companyName, true);
+  async folderListForUser(companyName) {
+    const structure = await this.#builderStructure(companyName, '', true);
     if (!structure) {
       return ResponseUtil.fail(
         "No se pudo listar el contenido de las carpetas del usuario"
@@ -151,14 +151,14 @@ class SupaBaseHelper {
   async calculateTotalStorage(companyName) {
     const structure = await this.#builderStructure(companyName, '', true);
     if (!structure) {
-      return ResponseUtil.fail('Could not calculate total storage');
+      return ResponseUtil.fail('No se pudo calcular el almacenamiento total');
     }
 
     const categories = this.#sumFileSizesByCategory(structure);
     const totalMB = Object.values(categories).reduce((acc, val) => acc + val, 0);
     const totalGB = totalMB / 1024;
 
-    return ResponseUtil.success('Total and categorized storage calculated successfully', {
+    return ResponseUtil.success('Se realizó la operación correctamente', {
       totalMB: totalMB.toFixed(2),
       totalGB: totalGB.toFixed(2),
       categories: Object.fromEntries(
@@ -167,7 +167,7 @@ class SupaBaseHelper {
     });
   }
 
-  async #builderStructure(bucket, currentPath = "", omitCurrentFolder = false) {
+  async #builderStructure(bucket, currentPath, omitCurrentFolder = false) {
     const { data, error } = await poolNewClient.from(bucket).list(currentPath, {
       limit: 1000,
       offset: 0,
