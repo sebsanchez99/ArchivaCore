@@ -73,9 +73,9 @@ const fileListForUser = async(req, res) => {
  */
 const folderListForUser = async(req, res) => {
     try {
-        const {companyName, userName, folderName} = req.body
+        const {companyName} = req.body
         const supaBaseHelper = new SupaBaseHelper()
-        const result = await supaBaseHelper.folderListForUser(companyName, userName, folderName)
+        const result = await supaBaseHelper.folderListForUser(companyName)
         res.json(result)
     }catch (error){
         res.status(500).send(ResponseUtil.fail(error.message))
@@ -194,6 +194,13 @@ const deleteFiles = async(req, res) => {
     }
 }
 
+/**
+ * @memberof Controladores.FolderController
+ * @function createSubFolder
+ * @description Controlador que permite crear subCarpetas en el bucket seleccionado de SupaBase Storage
+ * @param {*} req 
+ * @param {*} res 
+ */
 const createSubFolder = async (req, res) => {
     try {
         const { companyName, userName, folderName } = req.body;
@@ -206,10 +213,12 @@ const createSubFolder = async (req, res) => {
 }
 
 // const fileToRecicle = async (req, res) => {
-
+//     try {
+//         const { companyName}
+//     }
 // }
-//     { data, error } = await storageClient
-//   .from('bucket')
+//    const { data, error } = await storageClient
+//   .from(')
 //   .move('old/path/to/file', 'new/path/to/file')
    
 module.exports = {
