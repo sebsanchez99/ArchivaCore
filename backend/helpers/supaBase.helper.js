@@ -8,6 +8,21 @@ const { type } = require("os");
  * @memberof Helpers
  */
 class SupaBaseHelper {
+
+  /**
+   * Crea el bucket de la empresa en Supabase
+   * @param { string } companyName Nombre de la empresa 
+   */
+  async createCompanyBucket(companyName) {
+    const lowerCompanyName = companyName.toLowerCase()
+    const { data, error  } = await poolNewClient.createBucket(lowerCompanyName, { public: false })
+    // const result = await this.#verifyCompanyBucket(lowerCompanyName)
+    if (error) {
+      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error)
+    }
+    console.log(data)
+    return ResponseUtil.success('Bucket creado con éxito')
+  }
   /**
    * Método que lista todas las carpetas
    * @returns  {ResponseUtil} Resultado de la operación en formato JSON
@@ -236,6 +251,13 @@ class SupaBaseHelper {
     if (documents.includes(extension)) return 'documents';
     if (videos.includes(extension)) return 'videos';
     return 'others';
+  }
+
+  // TODO: VERIFICAR MÉTODO PARA VALIDAR EXISTENCIA DE BUCKET
+  async #verifyCompanyBucket(companyName) {
+    const { data, error } = await poolNewClient.listBuckets()
+    const exists = data.find((bucket) => bucket.name === companyName)
+    return exists
   }
 }
 

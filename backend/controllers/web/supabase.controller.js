@@ -12,6 +12,18 @@ const getTotalStorage = async (req, res) => {
     }
 }
 
+const createCompanyBucket = async (req, res) => {
+    try {
+        const { companyName } = req.body
+        const supabaseHelper = new SupabaseHelper()
+        const result = await supabaseHelper.createCompanyBucket(companyName)
+        res.json(result)
+    } catch (error) {
+        res.status(500).send(ResponseUtil.fail(error.message))
+    }
+}
+
 module.exports = {
-    getTotalStorage
+    getTotalStorage,
+    createCompanyBucket
 }
