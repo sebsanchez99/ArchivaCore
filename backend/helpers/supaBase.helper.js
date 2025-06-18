@@ -15,13 +15,10 @@ class SupaBaseHelper {
    */
   async createCompanyBucket(companyName) {
     const lowerCompanyName = companyName.toLowerCase()
-    const { data, error  } = await poolNewClient.createBucket(lowerCompanyName, { public: false })
-    // const result = await this.#verifyCompanyBucket(lowerCompanyName)
-    if (error) {
-      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error)
-    }
-    console.log(data)
-    return ResponseUtil.success('Bucket creado con éxito')
+    const { _, error  } = await poolNewClient.createBucket(lowerCompanyName, { public: false })
+    if (error) return false
+    const result = await this.#createRecicleFolder(lowerCompanyName)
+    return result
   }
   /**
    * Método que lista todas las carpetas
@@ -253,12 +250,13 @@ class SupaBaseHelper {
     return 'others';
   }
 
-  // TODO: VERIFICAR MÉTODO PARA VALIDAR EXISTENCIA DE BUCKET
-  async #verifyCompanyBucket(companyName) {
-    const { data, error } = await poolNewClient.listBuckets()
-    const exists = data.find((bucket) => bucket.name === companyName)
-    return exists
+  async #createRecicleFolder(companyName) {
+    const folderPath = 'reciclaje/placeholder.txt'
+    const { _, error } = await poolNewClient.from(companyName).upload(folderPath, Buffer.from(''), { contentType: 'Text/plain' })
+    if(error) return false
+    return true
   }
 }
 
 module.exports = SupaBaseHelper;
+
