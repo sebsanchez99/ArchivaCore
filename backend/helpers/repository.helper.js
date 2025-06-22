@@ -34,6 +34,14 @@ class RepositoryHelper {
         }
         return ResponseUtil.success('Documentos obtenidos exitosamente', result.rows);
     }
+
+    async getCompanyDocument(fileId, companyId) {
+        const result = await pool.query('SELECT * FROM buscar_documento_por_ruta_y_empresa($1, $2)', [fileId, companyId])
+        if (result.rows.length === 0) {
+            return ResponseUtil.fail('No se encontró el documento');
+        }   
+        return ResponseUtil.success('Documento obtenido exitosamente', result.rows[0]);
+    }
 }
 
 module.exports = RepositoryHelper
