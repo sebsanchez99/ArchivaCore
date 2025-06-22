@@ -1,5 +1,12 @@
 const { Router } = require('express')
-const { listUsers, createUsers, userUpdate, deleteUser } = require('../../controllers/app/admin.controller.js')
+const { 
+    listUsers, 
+    createUsers, 
+    userUpdate, 
+    deleteUser, 
+    getRoles, 
+    changeUserState 
+} = require('../../controllers/app/admin.controller.js')
 
 const router = Router();
 
@@ -32,5 +39,19 @@ adminRouter.put('/updateUser', userUpdate);
  * @description Elimina un usuario del sistema.
  */
 adminRouter.delete('/deleteUser', deleteUser);
+
+/**
+ * @memberof Rutas.AdminRoutes
+ * @name delete/api/v1/admin/getRoles
+ * @description Obtiene los roles disponibles en el sistema.
+ */
+adminRouter.get('/getRoles', getRoles);
+
+/**
+ * @memberof Rutas.AdminRoutes
+ * @name delete/api/v1/admin/changeUserState
+ * @description Obtiene los roles disponibles en el sistema.
+ */
+adminRouter.put('/changeUserState', changeUserState);
 
 module.exports = adminRouter;

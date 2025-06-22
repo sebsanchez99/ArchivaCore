@@ -20,8 +20,9 @@ const ResponseUtil = require('../../utils/response.util')
  */
 const listUsers = async(req, res) => {
     try {
+        const { company } = req.user
         const adminHelper = new AdminHelper()
-        const result = await adminHelper.listUsers()
+        const result = await adminHelper.listUsers(company)
         res.json(result)
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
@@ -37,10 +38,10 @@ const listUsers = async(req, res) => {
  */
 const createUsers = async(req, res) => {
     try {
-        const { username, password, rolUser, idCompany } = req.body
+        const{ company } = req.user
+        const { username, fullname, password, idRol } = req.body
         const adminHelper = new AdminHelper()
-        const idRol = await adminHelper.obtenerRol(rolUser)
-        const result = await adminHelper.createUsers(username, password, idRol, idCompany)
+        const result = await adminHelper.createUsers(username, fullname, password, idRol, company)
         res.json(result)
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
@@ -57,10 +58,10 @@ const createUsers = async(req, res) => {
  */
 const userUpdate = async(req, res) => {
     try {
-        const { id, username, password, rolUser, idCompany } = req.body
+        const{ company } = req.user
+        const { id, fullname, username, password, idRol } = req.body
         const adminHelper = new AdminHelper()
-        const idRol = await adminHelper.obtenerRol(rolUser)
-        const result = await adminHelper.userUpdate(id, username, password, idRol, idCompany)
+        const result = await adminHelper.userUpdate(id, fullname, username, password, idRol, company)
         res.json(result)
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
@@ -76,11 +77,33 @@ const userUpdate = async(req, res) => {
  */
 const deleteUser = async(req, res) => {
     try {
-        const idUser = req.user.id
+        const currentIdUser = req.user.id
         const { id } = req.body
         const adminHelper = new AdminHelper()
-        const result = await adminHelper.deleteUsers(id,idUser)
+        const result = await adminHelper.deleteUsers(id, currentIdUser)
         res.json(result)        
+    } catch (error) {
+        res.status(500).send(ResponseUtil.fail(error.message))
+    }
+}
+
+const getRoles = async (req, res) => {
+    try {
+        const adminHelper = new AdminHelper()
+        const result = await adminHelper.getRoles()
+        res.json(result)
+    } catch (error) {
+        res.status(500).send(ResponseUtil.fail(error.message))
+    }
+}
+
+const changeUserState = async (req, res) => {
+    try {
+        const { id } = req.user
+        const { idRol, newState } = req.body
+        const adminHelper = new AdminHelper()
+        const result = await adminHelper.changeUserState(idRol, id, newState)
+        res.json(result)
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
     }
@@ -90,7 +113,9 @@ module.exports = {
     listUsers,
     createUsers, 
     userUpdate, 
-    deleteUser
+    deleteUser,
+    getRoles,
+    changeUserState
 };
 
 

@@ -17,11 +17,8 @@ class AdminHelper{
      * Método que lista usuarios
      * @returns {ResponseUtil} Resultado de la operación en formato JSON
      */
-    async listUsers(){
-        const result = await pool.query(
-            // 'SELECT listar_usuarios()'
-            'SELECT * FROM listar_usuarios()',
-        )
+    async listUsers(companyId){
+        const result = await pool.query('SELECT * FROM listar_usuarios_por_empresa($1)', [companyId] )
         const usersList = result.rows
         return ResponseUtil.success('La operación se realizó con éxito', usersList)
         
@@ -33,10 +30,7 @@ class AdminHelper{
      * @returns {ResponseUtil} Resultado de la operación en formato JSON
      */
     async obtenerRol(rolName){
-        const result = await pool.query(
-            'SELECT * FROM obtener_id_rol($1)',
-            [rolName]
-        )
+        const result = await pool.query('SELECT * FROM obtener_id_rol($1)', [rolName])
         const idRol = result.rows[0].obtener_id_rol 
         return idRol
     }
@@ -50,15 +44,15 @@ class AdminHelper{
      * @param {*} idCompany Id que corresponde a empresa de usuario
      * @returns Resultado de la operación en formato JSON
      */
-    async createUsers(username, password, rolUser, idCompany){
+    async createUsers(username, fullname, password, rolUser, idCompany){
         const userExist = await this.#verifyUser(username)
         if (userExist) {
-           return ResponseUtil.fail('El nombre de usuario ya existe, por favor modificarlo')
+           return ResponseUtil.fail('El nombre de usuario ya existe, por favor elije otro.')
         }
         const hashPassword =  await bcrypt.hash( password ,  10 )
-        await pool.query(            
-            'SELECT * FROM agregar_usuario($1, $2, $3, $4)',
-            [username, hashPassword, rolUser, idCompany]
+        await pool.query(   
+            'SELECT * FROM agregar_usuario($1, $2, $3, $4, $5)',
+            [username, fullname, hashPassword, rolUser, idCompany]
         )
         return ResponseUtil.success('EL usuario se creó con éxito')
         
@@ -72,11 +66,11 @@ class AdminHelper{
      * @param {*} idCompany Empresa de usuario
      * @returns Resultado de la operación en formato JSON
      */
-    async userUpdate(id, username, password, rolUser, idCompany){
-        const hashPassword = await bcrypt.hash( password ,  10 )
+    async userUpdate(id, fullname, username, password, idRol, idCompany){
+        const hashPassword = password != null ? await bcrypt.hash( password ,  10 ) : password
         await pool.query(
-            'SELECT * FROM actualizar_usuario( $1, $2, $3, $4, $5 )',
-            [id, username, hashPassword, rolUser, idCompany]
+            'SELECT * FROM actualizar_usuario( $1, $2, $3, $4, $5, $6 )',
+            [id, username, fullname, hashPassword, idRol, idCompany]
         )
         return ResponseUtil.success('El usuario se actualizó con éxito')
     }
@@ -87,14 +81,11 @@ class AdminHelper{
      * @param {string} idUser Id del usuario que realiza la operación
      * @returns {ResponseUtil} Resultado de la operación en formato JSON
      */
-    async deleteUsers(id, idUser){
-        if(id==idUser){
+    async deleteUsers(id, currentIdUser){
+        if(id === currentIdUser){
             return ResponseUtil.fail('El usuario no se puede eliminar a si mismo, elija otro')
         }
-        await pool.query(
-            'SELECT * FROM eliminar_usuario($1)',
-            [id]
-        )
+        await pool.query('SELECT * FROM eliminar_usuario($1)', [id])
         return ResponseUtil.success('Usuario eliminado con éxito')
 
     }
@@ -110,13 +101,21 @@ class AdminHelper{
             'SELECT * FROM obtener_usuario($1)',
             [username]
         )
-        if (userExist.rows.length > 0){
-            return true
-        } else {
-            return false
-        }
+        return userExist.rows.length > 0
     }
-        
+       
+    async getRoles() {
+        const result = await pool.query('SELECT * FROM obtener_roles()')
+        return ResponseUtil.success('Roles obtenidos con éxito', result.rows)
+    }
+
+    async changeUserState(userId, currentIdUser, newState) {
+        if(userId === currentIdUser){
+            return ResponseUtil.fail('Operación inválida.')
+        }
+        await pool.query('SELECT * FROM cambiar_estado_usuario($1, $2)', [userId, newState])
+        return ResponseUtil.success('Estado de usuario actualizado con éxito')
+    }
 }    
 
 module.exports = AdminHelper
