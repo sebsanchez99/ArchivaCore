@@ -16,15 +16,26 @@ const ResponseUtil = require('../../utils/response.util')
  */
 const login = async (req, res) => {
     try {
-        const { _usu_id, _rol_nombre, _emp_nombre } = req.user    
+        const { _usu_id, _usu_activo, _rol_nombre, _emp_id} = req.user   
         const authHelper = new AuthHelper()
         const payload = {
             userId: _usu_id,
             role: _rol_nombre,
-            company: _emp_nombre
+            company: _emp_id
         }
-        const result = authHelper.generateToken(payload)
-        res.json(result)      
+        if (_rol_nombre === 'Superusuario' || _rol_nombre === 'Soporte') {
+            return res.json(ResponseUtil.fail('No posee permisos para ingresar.'))
+        }
+        
+        if (!_usu_activo) {
+            return res.json(ResponseUtil.fail('Su cuenta se encuentra inactiva. Contacte con el administrador.'))
+        }
+        const expired = await authHelper.verifyCompanyPlanDate(_emp_id)
+        if (expired) {
+            return res.json(ResponseUtil.fail('Su plan ha expirado. Contacte con el administrador.'))
+        }      
+        const token = authHelper.generateToken(payload)
+        res.json(ResponseUtil.success('Token generado exitosamente', token))      
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
     }
