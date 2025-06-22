@@ -13,7 +13,7 @@ class SupaBaseHelper {
    * @param { string } companyName Nombre de la empresa 
    */
   async createCompanyBucket(companyName) {
-    const lowerCompanyName = companyName.toLowerCase()
+    const lowerCompanyName = companyName.toLowerCase().replace(/\s+/g, '')
     const { _, error  } = await poolNewClient.createBucket(lowerCompanyName, { public: false })
     if (error) return false
     const result = await this.#createRecicleFolder(lowerCompanyName)
