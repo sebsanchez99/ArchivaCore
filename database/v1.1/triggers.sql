@@ -2,35 +2,41 @@
 -- ========== FUNCIONES DE AUDITORÍA =========
 -- ===========================================
 
--- Función para insertar en LogActividad (auditoría global)
+-- Función para insertar en LogActividad (auditoría global)CREATE OR REPLACE FUNCTION fn_log_actividad()
 CREATE OR REPLACE FUNCTION fn_log_actividad()
 RETURNS TRIGGER AS $$
 DECLARE
     v_usuario UUID := NULL;
     v_registro UUID := NULL;
+    v_nombre_usuario VARCHAR(150) := NULL;
 BEGIN
-    -- Determina el usuario y el registro según la tabla
     IF TG_TABLE_NAME = 'usuario' THEN
         v_registro := COALESCE(NEW.usu_id, OLD.usu_id);
-        -- Solo asigna el usuario si NO es DELETE
         IF TG_OP <> 'DELETE' THEN
             v_usuario := COALESCE(NEW.usu_id, OLD.usu_id);
+            v_nombre_usuario := COALESCE(NEW.usu_nombrecompleto, OLD.usu_nombrecompleto);
         ELSE
             v_usuario := NULL;
+            v_nombre_usuario := COALESCE(OLD.usu_nombrecompleto, NEW.usu_nombrecompleto);
         END IF;
     ELSIF TG_TABLE_NAME = 'empresa' THEN
         v_registro := COALESCE(NEW.emp_id, OLD.emp_id);
         v_usuario := NULL;
+        v_nombre_usuario := NULL;
     ELSIF TG_TABLE_NAME = 'documento' THEN
         v_registro := COALESCE(NEW.doc_id, OLD.doc_id);
         IF TG_OP <> 'DELETE' THEN
             v_usuario := COALESCE(NEW.doc_subidopor, OLD.doc_subidopor);
+            SELECT usu_nombrecompleto INTO v_nombre_usuario
+            FROM Usuario WHERE usu_id = v_usuario;
         ELSE
             v_usuario := NULL;
+            v_nombre_usuario := NULL;
         END IF;
     ELSIF TG_TABLE_NAME = 'notificacion' THEN
         v_registro := COALESCE(NEW.not_id, OLD.not_id);
         v_usuario := NULL;
+        v_nombre_usuario := NULL;
     END IF;
 
     INSERT INTO LogActividad (
@@ -39,6 +45,7 @@ BEGIN
         Log_Tipo,
         Log_Descripcion,
         Log_Usuario,
+        Log_NombreUsuario,
         Log_DatosAnteriores,
         Log_DatosNuevos
     )
@@ -48,6 +55,7 @@ BEGIN
         TG_OP,
         TG_OP || ' en ' || TG_TABLE_NAME,
         v_usuario,
+        v_nombre_usuario,
         to_jsonb(OLD),
         to_jsonb(NEW)
     );
@@ -63,43 +71,51 @@ DECLARE
     v_usuario UUID := NULL;
     v_registro UUID := NULL;
     v_desc TEXT;
+    v_nombre_empresa VARCHAR(150) := NULL;
+    v_nombre_usuario VARCHAR(150) := NULL;
 BEGIN
     IF TG_TABLE_NAME = 'usuario' THEN
         v_empresa := COALESCE(NEW.usu_empresa, OLD.usu_empresa);
         v_registro := COALESCE(NEW.usu_id, OLD.usu_id);
         IF TG_OP <> 'DELETE' THEN
             v_usuario := COALESCE(NEW.usu_id, OLD.usu_id);
+            v_nombre_usuario := COALESCE(NEW.usu_nombrecompleto, OLD.usu_nombrecompleto);
         ELSE
             v_usuario := NULL;
+            v_nombre_usuario := COALESCE(OLD.usu_nombrecompleto, NEW.usu_nombrecompleto);
         END IF;
         v_desc := TG_OP || ' usuario: ' || COALESCE(NEW.usu_nombre, OLD.usu_nombre);
     ELSIF TG_TABLE_NAME = 'empresa' THEN
         v_registro := COALESCE(NEW.emp_id, OLD.emp_id);
         v_usuario := NULL;
+        v_nombre_usuario := NULL;
         v_desc := TG_OP || ' empresa: ' || COALESCE(NEW.emp_nombre, OLD.emp_nombre);
-        -- Para DELETE, no referenciar empresa eliminada
         IF TG_OP = 'DELETE' THEN
             v_empresa := NULL;
+            v_nombre_empresa := COALESCE(OLD.emp_nombre, NEW.emp_nombre);
         ELSE
             v_empresa := COALESCE(NEW.emp_id, OLD.emp_id);
+            v_nombre_empresa := COALESCE(NEW.emp_nombre, OLD.emp_nombre);
         END IF;
     ELSIF TG_TABLE_NAME = 'documento' THEN
         v_empresa := COALESCE(NEW.doc_empresa, OLD.doc_empresa);
         v_registro := COALESCE(NEW.doc_id, OLD.doc_id);
         IF TG_OP <> 'DELETE' THEN
             v_usuario := COALESCE(NEW.doc_subidopor, OLD.doc_subidopor);
+            v_nombre_usuario := NULL; -- Puedes hacer un JOIN si quieres traer el nombre aquí también
         ELSE
             v_usuario := NULL;
+            v_nombre_usuario := NULL;
         END IF;
         v_desc := TG_OP || ' documento: ' || COALESCE(NEW.doc_nombre, OLD.doc_nombre);
     ELSIF TG_TABLE_NAME = 'notificacion' THEN
         v_empresa := NULL;
         v_registro := COALESCE(NEW.not_id, OLD.not_id);
         v_usuario := NULL;
+        v_nombre_usuario := NULL;
         v_desc := TG_OP || ' notificación: ' || COALESCE(NEW.not_titulo, OLD.not_titulo);
     END IF;
 
-    -- Siempre inserta el log para DELETE de empresa, o si hay empresa, o si es notificación
     IF TG_TABLE_NAME = 'empresa' OR v_empresa IS NOT NULL OR TG_TABLE_NAME = 'notificacion' THEN
         INSERT INTO LogEmpresa (
             LogEmp_Empresa,
@@ -107,7 +123,9 @@ BEGIN
             LogEmp_Registro,
             LogEmp_Tipo,
             LogEmp_Descripcion,
-            LogEmp_Usuario
+            LogEmp_Usuario,
+            LogEmp_NombreEmpresa,
+            LogEmp_NombreUsuario
         )
         VALUES (
             v_empresa,
@@ -115,7 +133,9 @@ BEGIN
             v_registro,
             TG_OP,
             v_desc,
-            v_usuario
+            v_usuario,
+            v_nombre_empresa,
+            v_nombre_usuario
         );
     END IF;
     RETURN NULL;
