@@ -34,7 +34,7 @@ router.use('/admin', passport.authenticate('jwt', { session: false }), checkRole
  * @memberof Rutas
  * @description Rutas relacionadas con el Storage Supabase
 */
-router.use('/supa',folderRouter)
+router.use('/supa', passport.authenticate('jwt', { session: false }), checkRole('Usuario', 'Empresa', 'Administrador'),folderRouter)
 
 // Rutas de página web
 // Ruta de autenticación
