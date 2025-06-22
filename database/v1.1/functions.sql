@@ -262,7 +262,7 @@ RETURNS TABLE(
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT rol_id, rol_nombre FROM rol;
+    SELECT rol_id, rol_nombre FROM rol WHERE rol_nombre NOT IN ('Superusuario', 'Asesor', 'Empresa');
 END;
 $$ LANGUAGE plpgsql;
 
