@@ -14,8 +14,6 @@ import 'package:frontend/presentation/widgets/buttons/custom_button2.dart';
 import 'package:frontend/presentation/widgets/states/failure_state.dart';
 import 'package:frontend/presentation/widgets/states/loading_state.dart';
 
-
-
 class FileExplorerView extends StatelessWidget {
   const FileExplorerView({super.key});
 
@@ -51,10 +49,76 @@ class FileExplorerView extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          IconButton(
-                            tooltip: "Crear Carpeta",
-                            onPressed: () => showCreateFolderDialog(context),
-                            icon: Icon(Icons.add, size: 30),
+                          PopupMenuButton<String>(
+                            tooltip: 'Crear Carpeta o Adjuntar Archivo',
+                            offset: Offset(0, 40),
+                            itemBuilder:
+                                (BuildContext context) =>
+                                    <PopupMenuEntry<String>>[
+                                      PopupMenuItem<String>(
+                                        value: 'Crear Carpeta',
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.folder,
+                                              size: 25,
+                                              color: SchemaColors.warning,
+                                            ),
+                                            SizedBox(width: 3),
+                                            Text('Crear Carpeta'),
+                                          ],
+                                        ),
+                                      ),
+                                      PopupMenuItem<String>(
+                                        value: 'Adjuntar Archivo',
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.file_copy,
+                                              size: 25,
+                                              color: SchemaColors.secondary500,
+                                            ),
+                                            SizedBox(width: 3),
+                                            Text('Adjuntar Archivo'),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                            onSelected: (String option) {
+                              if (option == 'Crear Carpeta') {
+                                showCreateFolderDialog(context);
+                              } else if (option == 'Adjuntar Archivo') {
+                                // showCreateFileDialog(context);
+                              }
+                            },
+                            child: TextButton.icon(
+                              icon: Icon(
+                                Icons.add,
+                                size: 24,
+                                color: SchemaColors.primary700,
+                              ),
+                              label: Text(
+                                'Agregar',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: SchemaColors.primary700,
+                                ),
+                              ),
+                              onPressed:
+                                  null, // El PopupMenuButton maneja el onPressed
+                              style: TextButton.styleFrom(
+                                foregroundColor: SchemaColors.primary700,
+                                backgroundColor: Colors.transparent,
+                                side: BorderSide(
+                                  color: SchemaColors.primary,
+                                  width: 2,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -106,6 +170,7 @@ class FileExplorerView extends StatelessWidget {
                                 ),
                                 SizedBox(width: 30),
                                 IconButton(
+                                  tooltip: 'Inicio',
                                   icon: Icon(
                                     Icons.list,
                                     color: SchemaColors.primary700,
@@ -119,6 +184,7 @@ class FileExplorerView extends StatelessWidget {
                                       ),
                                 ),
                                 IconButton(
+                                  tooltip: 'Cuadrícula',
                                   icon: Icon(
                                     Icons.grid_view,
                                     color: SchemaColors.primary700,
@@ -132,6 +198,7 @@ class FileExplorerView extends StatelessWidget {
                                       ),
                                 ),
                                 IconButton(
+                                  tooltip: 'Bodega',
                                   icon: Icon(
                                     Icons.details,
                                     color: SchemaColors.primary700,

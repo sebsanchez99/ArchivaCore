@@ -1,11 +1,17 @@
 const AuthHelper = require('../../helpers/auth.helper')
+const SupaBaseHelper = require('../../helpers/supaBase.helper')
 const ResponseUtil = require('../../utils/response.util')
 
 const register =  async (req, res) => {
     try {
         const { companyName, companyEmail, password } = req.body
         const authHelper = new AuthHelper()
+        const supabaseHelper = new SupaBaseHelper()
         const result = await authHelper.registerCompany(companyName, companyEmail, password)
+        const bucketResult = await supabaseHelper.createCompanyBucket(companyName)
+        if (!result.success || !bucketResult) {
+            res.status(400).send(ResponseUtil.fail('No se pudo registrar la empresa'))
+        }        
         res.json(result)
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))

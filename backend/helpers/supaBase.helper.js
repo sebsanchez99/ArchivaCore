@@ -8,6 +8,18 @@ const { type } = require("os");
  * @memberof Helpers
  */
 class SupaBaseHelper {
+
+  /**
+   * Crea el bucket de la empresa en Supabase
+   * @param { string } companyName Nombre de la empresa 
+   */
+  async createCompanyBucket(companyName) {
+    const lowerCompanyName = companyName.toLowerCase()
+    const { _, error  } = await poolNewClient.createBucket(lowerCompanyName, { public: false })
+    if (error) return false
+    const result = await this.#createRecicleFolder(lowerCompanyName)
+    return result
+  }
   /**
    * Método que lista todas las carpetas
    * @returns  {ResponseUtil} Resultado de la operación en formato JSON
@@ -237,6 +249,14 @@ class SupaBaseHelper {
     if (videos.includes(extension)) return 'videos';
     return 'others';
   }
+
+  async #createRecicleFolder(companyName) {
+    const folderPath = 'reciclaje/placeholder.txt'
+    const { _, error } = await poolNewClient.from(companyName).upload(folderPath, Buffer.from(''), { contentType: 'Text/plain' })
+    if(error) return false
+    return true
+  }
 }
 
 module.exports = SupaBaseHelper;
+
