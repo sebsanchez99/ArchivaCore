@@ -21,7 +21,7 @@ const ResponseUtil = require('../../utils/response.util')
 const folderListForUser = async(req, res) => {
     try {
         const { companyName } = req.user
-        const companyNameToLowerCase = companyName.toLowerCase()
+        const companyNameToLowerCase = companyName.toLowerCase().replace(/\s+/g, '')
         const supaBaseHelper = new SupaBaseHelper()
         const result = await supaBaseHelper.folderListForUser(companyNameToLowerCase)
         res.json(result)
