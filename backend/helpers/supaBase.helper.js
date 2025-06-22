@@ -1,7 +1,6 @@
 const path = require("path");
 const poolNewClient = require("../libs/supaBase");
 const ResponseUtil = require("../utils/response.util");
-const { type } = require("os");
 
 /**
  * @class Esta clase contiene métodos para la gestión de carpetas de usuarios
@@ -20,63 +19,9 @@ class SupaBaseHelper {
     const result = await this.#createRecicleFolder(lowerCompanyName)
     return result
   }
-  /**
-   * Método que lista todas las carpetas
-   * @returns  {ResponseUtil} Resultado de la operación en formato JSON
-   */
-  async listCompany() {
-    const { data, error } = await poolNewClient.listBuckets();
-
-    if (error) {
-      return ResponseUtil.fail("Hubo un error al conectar con Supabase", error);
-    }
-    return ResponseUtil.success("La operación se realizó con éxito", data);
-  }
-
-  /**
-   * Método que lista todas las carpetas
-   * @returns  {ResponseUtil} Resultado de la operación en formato JSON
-   */
-  async fileList(companyName) {
-    const { data, error } = await poolNewClient.getBucket(companyName);
-
-    if (error) {
-      return ResponseUtil.fail("Hubo un error al conectar con Supabase", error);
-    }
-    return ResponseUtil.success("La operación se realizó con éxito", data);
-  }
-
-  async fileListForUser(companyName, userName) {
-    const { data, error } = await poolNewClient
-      .from(companyName)
-      .list(userName);
-
-    if (error) {
-      return ResponseUtil.fail("Hubo un error al conectar con Supabase", error);
-    }
-    return ResponseUtil.success("La operación se realizó con éxito", data);
-  }
 
   async folderListForUser(companyName) {
     const structure = await this.#builderStructure(companyName, '', true);
-    if (!structure) {
-      return ResponseUtil.fail(
-        "No se pudo listar el contenido de las carpetas del usuario"
-      );
-    }
-    return ResponseUtil.success("La operación se realizó con éxito", {
-      carpetas: structure.folders,
-      archivos: structure.files,
-    });
-  }
-
-  async folderListFiles(companyName, userName, folderName) {
-    const structure = await this.#builderStructure(
-      companyName,
-      userName,
-      folderName,
-      true
-    );
     if (!structure) {
       return ResponseUtil.fail(
         "No se pudo listar el contenido de las carpetas del usuario"

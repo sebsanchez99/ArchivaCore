@@ -1,29 +1,15 @@
 const { Router } = require('express')
-const { listCompany, fileList, fileListForUser, folderListForUser, folderListFiles, createFile, downloadFile, deleteAllFiles, deleteCompany, deleteFiles, createSubFolder} = require('../../controllers/app/folder.controllers')
+const { 
+    folderListForUser, 
+    createFile, 
+    downloadFile, 
+    deleteAllFiles, 
+    deleteCompany, 
+    deleteFiles, 
+    createSubFolder
+} = require('../../controllers/app/folder.controllers')
 
 const router = Router()
-
-
-/**
- * @memberof Rutas.FolderRouter
- * @name get/api/v1/supa/listCompanyFolders
- * @description Obtiene la lista de todos los archivos
- */
-router.get('/listCompany', listCompany)
-
-/**
- * @memberof Rutas.FolderRouter
- * @name get/api/v1/supa/listFiles
- * @description Obtiene la lista de todos los archivos
- */
-router.get('/listFiles', fileList)
-
-/**
- * @memberof Rutas.FolderRouter
- * @name get/api/v1/supa/listFilesForUser
- * @description Obtiene la lista de todos los archivos
- */
-router.get('/listFilesForUser', fileListForUser )
 
 /**
  * @memberof Rutas.FolderRouter
@@ -31,13 +17,6 @@ router.get('/listFilesForUser', fileListForUser )
  * @description Obtiene la lista de todos los archivos
  */
 router.get('/ListFoldersForUser', folderListForUser)
-
-/**
- * @memberof Rutas.FolderRouter
- * @name get/api/v1/supa/folderList
- * @description Obtiene la lista de todos los archivos
- */
-router.get('/folderList', folderListFiles)
 
 /**
  * @memberof Rutas.FolderRouter

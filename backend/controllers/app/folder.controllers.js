@@ -13,91 +13,20 @@ const ResponseUtil = require('../../utils/response.util')
 
 /**
  * @memberof Controladores.FolderController
- * @function listCompany
- * @description Controlador que permite listar todas las carpetas de empresas existentes en SupaBase Storage
- * @param {*} req 
- * @param {*} res 
- */
-const listCompany = async(req, res) => { 
-    try {
-        const supaBaseHelper = new SupaBaseHelper()
-        const result = await supaBaseHelper.listCompany()
-        res.json(result)
-    }catch (error) {
-        res.status(500).send(ResponseUtil.fail(error.message))
-    }
-}
-
-/**
- * @memberof Controladores.FolderController
- * @function fileList
- * @description Controlador que permite listar el bucket de  archivos de empresas existentes en SupaBase Storage
- * @param {*} req 
- * @param {*} res 
- */
-const fileList = async(req, res) => {
-    try {
-        const {companyName} = req.body
-        const supaBaseHelper = new SupaBaseHelper()
-        const result = await supaBaseHelper.fileList(companyName)
-        res.json(result)
-    }catch (error){
-        res.status(500).send(ResponseUtil.fail(error.message))
-    }
-}
-
-/**
- * @memberof Controladores.FolderController
- * @function fileListForUser
- * @description Controlador que permite listar archivos de una  empresa existente en SupaBase Storage
- * @param {*} req 
- * @param {*} res 
- */
-const fileListForUser = async(req, res) => {
-    try {
-        const {companyName, userName} = req.body
-        const supaBaseHelper = new SupaBaseHelper()
-        const result = await supaBaseHelper.fileListForUser(companyName, userName)
-        res.json(result)
-    }catch (error){
-        res.status(500).send(ResponseUtil.fail(error.message))
-    }
-}
-
-/**
- * @memberof Controladores.FolderController
  * @function folderListForUser
- * @description Controlador que permite listar las carpetas y subcarpetas de una  empresa existente en SupaBase Storage
+ * @description Controlador que permite listar las carpetas y subcarpetas de una empresa existente en SupaBase Storage
  * @param {*} req 
  * @param {*} res 
  */
 const folderListForUser = async(req, res) => {
     try {
-        const {companyName} = req.body
+        const { companyName } = req.user
+        const companyNameToLowerCase = companyName.toLowerCase()
         const supaBaseHelper = new SupaBaseHelper()
-        const result = await supaBaseHelper.folderListForUser(companyName)
+        const result = await supaBaseHelper.folderListForUser(companyNameToLowerCase)
         res.json(result)
     }catch (error){
         res.status(500).send(ResponseUtil.fail(error.message))
-    }
-}
-
-/**
- * @memberof Controladores.FolderController
- * @function folderList
- * @description Controlador que permite listar una carpeta y sus archivos de una  empresa existente en SupaBase Storage
- * @param {*} req 
- * @param {*} res 
- */
-const folderListFiles = async(req,res) => {
-    try {
-        const { companyName, userName, folderName} = req.body
-        const supaBaseHelper = new SupaBaseHelper()
-        const result = await supaBaseHelper.folderListFiles(companyName, userName, folderName)
-        res.json(result)
-    }catch (eror){
-        res.status(500).send(ResponseUtil.fail(error.message))
-
     }
 }
 
@@ -211,22 +140,9 @@ const createSubFolder = async (req, res) => {
         res.status(500).send(ResponseUtil.fail(error.message));
     }
 }
-
-// const fileToRecicle = async (req, res) => {
-//     try {
-//         const { companyName}
-//     }
-// }
-//    const { data, error } = await storageClient
-//   .from(')
-//   .move('old/path/to/file', 'new/path/to/file')
    
 module.exports = {
-    listCompany,
-    fileList,
-    fileListForUser,
     folderListForUser,
-    folderListFiles,
     createFile,
     downloadFile,
     deleteAllFiles,
