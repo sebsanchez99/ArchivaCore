@@ -50,7 +50,7 @@ CREATE TABLE Notificacion (
     Not_ID UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     Not_Titulo VARCHAR(255) NOT NULL,
     Not_Mensaje TEXT NOT NULL,
-    Not_Fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Not_Fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabla Intermedia de notificaciones
@@ -58,7 +58,7 @@ CREATE TABLE NotificacionUsuario (
     NotUsu_ID SERIAL PRIMARY KEY,
     NotUsu_Notificacion UUID NOT NULL,
     NotUsu_Usuario UUID NOT NULL,
-    NotUsu_Recibida BOOLEAN DEFAULT FALSE
+    NotUsu_Recibida BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (NotUsu_Notificacion) REFERENCES Notificacion(Not_ID) ON DELETE CASCADE,
     FOREIGN KEY (NotUsu_Usuario) REFERENCES Usuario(Usu_ID) ON DELETE CASCADE
 );
@@ -71,7 +71,8 @@ CREATE TABLE LogActividad (
     Log_Tipo VARCHAR(50) NOT NULL,              
     Log_Descripcion TEXT NOT NULL,
     Log_Fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Log_Usuario UUID,                            
+    Log_Usuario UUID,
+    Log_NombreUsuario VARCHAR(150),                           
     Log_DatosAnteriores JSONB,                   
     Log_DatosNuevos JSONB,                       
     CONSTRAINT fk_log_usuario FOREIGN KEY (Log_Usuario) REFERENCES Usuario(Usu_ID) ON DELETE SET NULL
@@ -86,7 +87,9 @@ CREATE TABLE LogEmpresa (
     LogEmp_Tipo VARCHAR(50) NOT NULL,         
     LogEmp_Descripcion TEXT NOT NULL,
     LogEmp_Fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    LogEmp_Usuario UUID,                      
+    LogEmp_Usuario UUID,
+    LogEmp_NombreEmpresa VARCHAR(150),
+    LogEmp_NombreUsuario VARCHAR(150),
     CONSTRAINT fk_logempresa_usuario FOREIGN KEY (LogEmp_Usuario) REFERENCES Usuario(Usu_ID) ON DELETE SET NULL
 );
 
@@ -106,8 +109,8 @@ CREATE TABLE Documento (
     Doc_ID UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     Doc_Nombre VARCHAR(255) NOT NULL,
     Doc_Url TEXT NOT NULL, -- URL de Supabase
-    Doc_Tipo VARCHAR(50),      -- <--- Campo faltante
-    Doc_Tamanio BIGINT,        -- <--- Campo faltante
+    Doc_Tipo VARCHAR(50),      
+    Doc_Tamanio BIGINT,        
     Doc_SubidoPor UUID,
     Doc_Empresa UUID NOT NULL,
     Doc_Fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
