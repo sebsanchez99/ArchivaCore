@@ -33,13 +33,13 @@ class AuthHelper {
         return expired
     }
 
-    async registerCompany(companyName, companyEmail, password){
+    async registerCompany(companyName, fullname, companyEmail, password){
         const companyExist = await this.#verifyCompany(companyEmail)
         if (companyExist) {
             return ResponseUtil.fail('El nombre de empresa ya existe. Seleccione otro.')
         }
         const hashPassword = await bcrypt.hash(password, 10)
-        await pool.query('SELECT * FROM agregar_empresa($1, $2, $3)', [companyName, companyEmail, hashPassword])
+        await pool.query('SELECT * FROM agregar_empresa($1, $2, $3, $4)', [companyName, fullname, companyEmail, hashPassword])
         return ResponseUtil.success('Empresa registrada con éxito')
     }   
 
