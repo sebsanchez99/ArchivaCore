@@ -389,6 +389,29 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION empresa_puede_registrar_usuario(p_emp_id UUID)
+RETURNS BOOLEAN AS $$
+DECLARE
+    v_max_usuarios INT;
+    v_usuarios_actuales INT;
+BEGIN
+    -- Obtener el máximo de usuarios permitidos por el plan de la empresa
+    SELECT p.Plan_MaxUsuarios
+    INTO v_max_usuarios
+    FROM Empresa e
+    JOIN Plan p ON e.Emp_Plan = p.Plan_ID
+    WHERE e.Emp_ID = p_emp_id;
+
+    -- Contar usuarios activos de la empresa
+    SELECT COUNT(*) INTO v_usuarios_actuales
+    FROM Usuario
+    WHERE Usu_Empresa = p_emp_id AND Usu_Activo = TRUE;
+
+    -- Retornar TRUE si puede registrar más usuarios, FALSE si llegó al límite
+    RETURN v_usuarios_actuales < v_max_usuarios;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION obtener_dias_restantes_por_empresa(p_id UUID)
 RETURNS INT AS $$
 DECLARE
@@ -539,6 +562,40 @@ BEGIN
     JOIN Empresa e ON d.Doc_Empresa = e.Emp_ID
     LEFT JOIN Usuario u ON d.Doc_SubidoPor = u.Usu_ID
     WHERE d.Doc_ID = p_doc_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION buscar_documento_por_ruta_y_empresa(
+    p_ruta TEXT,
+    p_empresa UUID
+)
+RETURNS TABLE (
+    doc_id UUID,
+    doc_nombre VARCHAR(255),
+    doc_url TEXT,
+    doc_tipo VARCHAR(50),
+    doc_tamanio BIGINT,
+    doc_subido_por UUID,
+    doc_fecha TIMESTAMP,
+    emp_nombre VARCHAR(150),
+    emp_nombre_completo VARCHAR(150)
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        d.Doc_ID,
+        d.Doc_Nombre,
+        d.Doc_Url,
+        d.Doc_Tipo,
+        d.Doc_Tamanio,
+        d.Doc_SubidoPor,
+        d.Doc_Fecha,
+        e.Emp_Nombre,
+        e.Emp_NombreCompleto
+    FROM Documento d
+    JOIN Empresa e ON d.Doc_Empresa = e.Emp_ID
+    WHERE d.Doc_Url = p_ruta
+      AND d.Doc_Empresa = p_empresa;
 END;
 $$ LANGUAGE plpgsql;
 
