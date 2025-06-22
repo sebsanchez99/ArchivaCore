@@ -655,6 +655,7 @@ $$ LANGUAGE plpgsql;
 -- ========== HISTORIAL DE AUDITORÍA =========
 -- ===========================================
 
+-- Historial de auditoría de una empresa (LogEmpresa)
 CREATE OR REPLACE FUNCTION obtener_historial_auditoria_empresa(p_empresa UUID)
 RETURNS TABLE (
     log_id UUID,
@@ -663,7 +664,9 @@ RETURNS TABLE (
     tipo VARCHAR(50),
     descripcion TEXT,
     fecha TIMESTAMP,
-    usuario UUID
+    usuario UUID,
+    usuario_nombre VARCHAR(150),
+    empresa_nombre VARCHAR(150)
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -674,7 +677,9 @@ BEGIN
         LogEmp_Tipo,
         LogEmp_Descripcion,
         LogEmp_Fecha,
-        LogEmp_Usuario
+        LogEmp_Usuario,
+        LogEmp_NombreUsuario,
+        LogEmp_NombreEmpresa
     FROM LogEmpresa
     WHERE LogEmp_Empresa = p_empresa
     ORDER BY LogEmp_Fecha DESC;
@@ -690,7 +695,9 @@ RETURNS TABLE (
     registro UUID,
     tipo VARCHAR(50),
     descripcion TEXT,
-    fecha TIMESTAMP
+    fecha TIMESTAMP,
+    usuario_nombre VARCHAR(150),
+    empresa_nombre VARCHAR(150)
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -701,9 +708,78 @@ BEGIN
         LogEmp_Registro,
         LogEmp_Tipo,
         LogEmp_Descripcion,
-        LogEmp_Fecha
+        LogEmp_Fecha,
+        LogEmp_NombreUsuario,
+        LogEmp_NombreEmpresa
     FROM LogEmpresa
     WHERE LogEmp_Usuario = p_usuario
     ORDER BY LogEmp_Fecha DESC;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Historial de auditoría general (LogActividad)
+CREATE OR REPLACE FUNCTION obtener_historial_actividad()
+RETURNS TABLE (
+    log_id UUID,
+    tabla VARCHAR(50),
+    registro UUID,
+    tipo VARCHAR(50),
+    descripcion TEXT,
+    fecha TIMESTAMP,
+    usuario UUID,
+    usuario_nombre VARCHAR(150),
+    datos_anteriores JSONB,
+    datos_nuevos JSONB
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        Log_ID,
+        Log_Tabla,
+        Log_Registro,
+        Log_Tipo,
+        Log_Descripcion,
+        Log_Fecha,
+        Log_Usuario,
+        Log_NombreUsuario,
+        Log_DatosAnteriores,
+        Log_DatosNuevos
+    FROM LogActividad
+    ORDER BY Log_Fecha DESC;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION eliminar_logs_actividad_antiguos(
+    p_fecha_limite TIMESTAMP
+) RETURNS INTEGER AS $$
+DECLARE
+    v_count INTEGER;
+BEGIN
+    DELETE FROM LogActividad WHERE Log_Fecha < p_fecha_limite RETURNING 1 INTO v_count;
+    RETURN COALESCE(v_count, 0);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION eliminar_logs_empresa_antiguos(
+    p_fecha_limite TIMESTAMP
+) RETURNS INTEGER AS $$
+DECLARE
+    v_count INTEGER;
+BEGIN
+    DELETE FROM LogEmpresa WHERE LogEmp_Fecha < p_fecha_limite RETURNING 1 INTO v_count;
+    RETURN COALESCE(v_count, 0);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION eliminar_todos_logs_antiguos(
+    p_fecha_limite TIMESTAMP
+) RETURNS INTEGER AS $$
+DECLARE
+    v_count_actividad INTEGER := 0;
+    v_count_empresa INTEGER := 0;
+BEGIN
+    DELETE FROM LogActividad WHERE Log_Fecha < p_fecha_limite RETURNING 1 INTO v_count_actividad;
+    DELETE FROM LogEmpresa WHERE LogEmp_Fecha < p_fecha_limite RETURNING 1 INTO v_count_empresa;
+    RETURN COALESCE(v_count_actividad, 0) + COALESCE(v_count_empresa, 0);
 END;
 $$ LANGUAGE plpgsql;
