@@ -1,15 +1,23 @@
--- FUNCIONES DE USUARIO
+-- ===========================================
+-- ========== FUNCIONES DE USUARIO ===========
+-- ===========================================
+
 CREATE OR REPLACE FUNCTION obtener_usuario(p_nombre VARCHAR)
 RETURNS TABLE (
     _usu_id UUID,
     _usu_nombre VARCHAR(100),
+    _usu_nombre_completo VARCHAR(150),
     _usu_hash TEXT,
+    _usu_activo BOOLEAN,
     _rol_nombre VARCHAR(100),
-    _emp_nombre VARCHAR(150)
+    _emp_id UUID,
+    _emp_nombre VARCHAR(150),
+    _emp_nombre_completo VARCHAR(150),
+    _emp_activo BOOLEAN
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT u.usu_id, u.usu_nombre, u.usu_hash, r.rol_nombre, e.emp_nombre
+    SELECT u.usu_id, u.usu_nombre, u.usu_nombrecompleto, u.usu_hash, u.usu_activo, r.rol_nombre, e.emp_id, e.emp_nombre, e.emp_nombrecompleto, e.emp_activo
     FROM usuario u
     JOIN rol r ON u.usu_rol = r.rol_id
     LEFT JOIN empresa e ON u.usu_empresa = e.emp_id
@@ -21,30 +29,95 @@ CREATE OR REPLACE FUNCTION listar_usuarios()
 RETURNS TABLE(
     _usu_id UUID,
     _usu_nombre VARCHAR(100),
+    _usu_nombre_completo VARCHAR(150),
+    _usu_activo BOOLEAN,
     _rol_nombre VARCHAR(100),
-    _emp_nombre VARCHAR(150)
+    _emp_nombre VARCHAR(150),
+    _emp_nombre_completo VARCHAR(150)
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT u.usu_id, u.usu_nombre, r.rol_nombre, e.emp_nombre
+    SELECT u.usu_id, u.usu_nombre, u.usu_nombrecompleto, u.usu_activo, r.rol_nombre, e.emp_nombre, e.emp_nombrecompleto
     FROM usuario u
     JOIN rol r ON u.usu_rol = r.rol_id
     LEFT JOIN empresa e ON u.usu_empresa = e.emp_id;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION obtener_id_rol(p_nombre VARCHAR(100))
-RETURNS INT AS $$
-DECLARE
-    v_id INT;
+-- Listar usuarios con rol Superusuario o Asesor
+CREATE OR REPLACE FUNCTION listar_usuarios_superusuario_asesor()
+RETURNS TABLE (
+    usu_id UUID,
+    usu_nombre VARCHAR(100),
+    usu_nombre_completo VARCHAR(150),
+    usu_rol INT,
+    rol_nombre VARCHAR(100),
+    usu_activo BOOLEAN
+) AS $$
 BEGIN
-    SELECT rol_id INTO v_id FROM rol WHERE rol_nombre = p_nombre;
+    RETURN QUERY
+    SELECT 
+        u.Usu_ID,
+        u.Usu_Nombre,
+        u.Usu_NombreCompleto,
+        u.Usu_Rol,
+        r.Rol_Nombre,
+        u.Usu_Activo
+    FROM Usuario u
+    JOIN Rol r ON u.Usu_Rol = r.Rol_ID
+    WHERE r.Rol_Nombre IN ('Superusuario', 'Asesor');
+END;
+$$ LANGUAGE plpgsql;
+
+-- Crear usuario Superusuario
+CREATE OR REPLACE FUNCTION crear_usuario_superusuario(
+    p_nombre VARCHAR(100),
+    p_nombre_completo VARCHAR(150),
+    p_hash TEXT
+) RETURNS UUID AS $$
+DECLARE
+    v_id UUID;
+    v_rol_id INT;
+BEGIN
+    SELECT Rol_ID INTO v_rol_id FROM Rol WHERE Rol_Nombre = 'Superusuario' LIMIT 1;
+    IF v_rol_id IS NULL THEN
+        RAISE EXCEPTION 'No existe el rol Superusuario';
+    END IF;
+
+    INSERT INTO Usuario (Usu_ID, Usu_Nombre, Usu_NombreCompleto, Usu_Hash, Usu_Rol, Usu_Activo)
+    VALUES (uuid_generate_v4(), p_nombre, p_nombre_completo, p_hash, v_rol_id, TRUE)
+    RETURNING Usu_ID INTO v_id;
+
+    RETURN v_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Crear usuario Asesor
+CREATE OR REPLACE FUNCTION crear_usuario_asesor(
+    p_nombre VARCHAR(100),
+    p_nombre_completo VARCHAR(150),
+    p_hash TEXT
+) RETURNS UUID AS $$
+DECLARE
+    v_id UUID;
+    v_rol_id INT;
+BEGIN
+    SELECT Rol_ID INTO v_rol_id FROM Rol WHERE Rol_Nombre = 'Asesor' LIMIT 1;
+    IF v_rol_id IS NULL THEN
+        RAISE EXCEPTION 'No existe el rol Asesor';
+    END IF;
+
+    INSERT INTO Usuario (Usu_ID, Usu_Nombre, Usu_NombreCompleto, Usu_Hash, Usu_Rol, Usu_Activo)
+    VALUES (uuid_generate_v4(), p_nombre, p_nombre_completo, p_hash, v_rol_id, TRUE)
+    RETURNING Usu_ID INTO v_id;
+
     RETURN v_id;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION agregar_usuario(
     p_nombre VARCHAR(100),
+    p_nombre_completo VARCHAR(150),
     p_hash TEXT,
     p_rol INT,
     p_empresa UUID DEFAULT NULL
@@ -52,8 +125,8 @@ CREATE OR REPLACE FUNCTION agregar_usuario(
 DECLARE
     v_id UUID;
 BEGIN
-    INSERT INTO usuario (usu_id, usu_nombre, usu_hash, usu_rol, usu_empresa)
-    VALUES (uuid_generate_v4(), p_nombre, p_hash, p_rol, p_empresa)
+    INSERT INTO usuario (usu_nombre, usu_nombrecompleto, usu_hash, usu_rol, usu_empresa)
+    VALUES (p_nombre, p_nombre_completo, p_hash, p_rol, p_empresa)
     RETURNING usu_id INTO v_id;
 
     RETURN v_id;
@@ -70,18 +143,21 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION actualizar_usuario(
     p_id UUID,
-    p_nombre VARCHAR(100),
-    p_hash TEXT,
-    p_rol INT,
+    p_nombre VARCHAR(100) DEFAULT NULL,
+    p_nombre_completo VARCHAR(150) DEFAULT NULL,
+    p_hash TEXT DEFAULT NULL,
+    p_rol INT DEFAULT NULL,
     p_empresa UUID DEFAULT NULL
 ) RETURNS VOID AS $$
 BEGIN
-    UPDATE usuario
-    SET usu_nombre = p_nombre,
-        usu_hash = p_hash,
-        usu_rol = p_rol,
-        usu_empresa = p_empresa
-    WHERE usu_id = p_id;
+    UPDATE Usuario
+    SET
+        Usu_Nombre = COALESCE(p_nombre, Usu_Nombre),
+        Usu_NombreCompleto = COALESCE(p_nombre_completo, Usu_NombreCompleto),
+        Usu_Hash = COALESCE(p_hash, Usu_Hash),
+        Usu_Rol = COALESCE(p_rol, Usu_Rol),
+        Usu_Empresa = COALESCE(p_empresa, Usu_Empresa)
+    WHERE Usu_ID = p_id;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -89,13 +165,17 @@ CREATE OR REPLACE FUNCTION obtener_usuario_por_id(p_id UUID)
 RETURNS TABLE(
     _usu_id UUID,
     _usu_nombre VARCHAR(100),
+    _usu_nombre_completo VARCHAR(150),
     _usu_hash TEXT,
+    _usu_activo BOOLEAN,
     _rol_nombre VARCHAR(100),
-    _emp_nombre VARCHAR(150)
+    _emp_nombre VARCHAR(150),
+    _emp_nombre_completo VARCHAR(150),
+    _emp_activo BOOLEAN
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT u.usu_id, u.usu_nombre, u.usu_hash, r.rol_nombre, e.emp_nombre
+    SELECT u.usu_id, u.usu_nombre, u.usu_nombrecompleto, u.usu_hash, u.usu_activo, r.rol_nombre, e.emp_nombre, e.emp_nombrecompleto, e.emp_activo
     FROM usuario u
     JOIN rol r ON u.usu_rol = r.rol_id
     LEFT JOIN empresa e ON u.usu_empresa = e.emp_id
@@ -103,20 +183,116 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- FUNCIONES DE EMPRESA
+CREATE OR REPLACE FUNCTION cambiar_estado_usuario(
+    p_usu_id UUID,
+    p_activo BOOLEAN
+) RETURNS VOID AS $$
+BEGIN
+    UPDATE Usuario
+    SET Usu_Activo = p_activo
+    WHERE Usu_ID = p_usu_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION listar_usuarios_por_empresa(p_emp_id UUID)
+RETURNS TABLE (
+    _usu_id UUID,
+    _usu_nombre VARCHAR(100),
+    _usu_nombre_completo VARCHAR(150),
+    _rol_nombre VARCHAR(100),
+    _usu_activo BOOLEAN
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT u.usu_id, u.usu_nombre, u.usu_nombrecompleto, r.rol_nombre, u.usu_activo
+    FROM usuario u
+    JOIN rol r ON u.usu_rol = r.rol_id
+    WHERE u.usu_empresa = p_emp_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION obtener_dias_restantes_por_usuario(p_usu_id UUID)
+RETURNS INT AS $$
+DECLARE
+    v_fecha_inicio DATE;
+    v_duracion INT;
+    v_dias_restantes INT;
+BEGIN
+    SELECT e.Emp_FechaInicioPlan, p.Plan_Duracion
+    INTO v_fecha_inicio, v_duracion
+    FROM Usuario u
+    JOIN Empresa e ON u.Usu_Empresa = e.Emp_ID
+    JOIN Plan p ON e.Emp_Plan = p.Plan_ID
+    WHERE u.Usu_ID = p_usu_id;
+
+    v_dias_restantes := v_duracion - (CURRENT_DATE - v_fecha_inicio);
+    RETURN GREATEST(v_dias_restantes, 0);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION cambiar_contrasena_usuario(
+    p_usu_id UUID,
+    p_nueva_hash TEXT
+) RETURNS VOID AS $$
+BEGIN
+    UPDATE Usuario
+    SET Usu_Hash = p_nueva_hash
+    WHERE Usu_ID = p_usu_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- ===========================================
+-- ========== FUNCIONES DE ROLES =============
+-- ===========================================
+
+CREATE OR REPLACE FUNCTION obtener_id_rol(p_nombre VARCHAR(100))
+RETURNS INT AS $$
+DECLARE
+    v_id INT;
+BEGIN
+    SELECT rol_id INTO v_id FROM rol WHERE rol_nombre = p_nombre;
+    RETURN v_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION obtener_roles()
+RETURNS TABLE(
+    _rol_id INT,
+    _rol_nombre VARCHAR(100)
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT rol_id, rol_nombre FROM rol;
+END;
+$$ LANGUAGE plpgsql;
+
+-- ===========================================
+-- ========== FUNCIONES DE EMPRESA ===========
+-- ===========================================
+
 CREATE OR REPLACE FUNCTION agregar_empresa(
     p_nombre VARCHAR(150),
+    p_nombre_completo VARCHAR(150),
     p_correo VARCHAR(150),
     p_hash TEXT
 ) RETURNS UUID AS $$
 DECLARE
-    v_id UUID;
+    v_emp_id UUID;
+    v_rol_empresa_id INT;
 BEGIN
-    INSERT INTO Empresa (Emp_ID, Emp_Nombre, Emp_Correo, Emp_Hash, Emp_Plan, Emp_Activo)
-    VALUES (uuid_generate_v4(), p_nombre, p_correo, p_hash, 2, TRUE)
-    RETURNING Emp_ID INTO v_id;
+    -- Insertar empresa
+    INSERT INTO Empresa (Emp_Nombre, Emp_NombreCompleto, Emp_Correo, Emp_Hash, Emp_Plan, Emp_Activo)
+    VALUES (p_nombre, p_nombre_completo, p_correo, p_hash, 2, TRUE)
+    RETURNING Emp_ID INTO v_emp_id;
 
-    RETURN v_id;
+    -- Obtener ID del rol "empresa"
+    SELECT obtener_id_rol('Empresa') INTO v_rol_empresa_id;
+
+    -- Crear usuario principal con rol empresa
+    INSERT INTO Usuario (Usu_Nombre, Usu_NombreCompleto, Usu_Hash, Usu_Rol, Usu_Empresa)
+    VALUES (p_nombre, p_nombre_completo, p_hash, v_rol_empresa_id, v_emp_id);
+
+    RETURN v_emp_id;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -130,19 +306,23 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION actualizar_empresa(
     p_id UUID,
-    p_nombre VARCHAR(150),
-    p_correo VARCHAR(150),
-    p_hash TEXT,
-    p_plan INT,
-    p_activo BOOLEAN
+    p_nombre VARCHAR(150) DEFAULT NULL,
+    p_nombre_completo VARCHAR(150) DEFAULT NULL,
+    p_correo VARCHAR(150) DEFAULT NULL,
+    p_hash TEXT DEFAULT NULL,
+    p_plan INT DEFAULT NULL,
+    p_activo BOOLEAN DEFAULT NULL
 ) RETURNS VOID AS $$
 BEGIN
     UPDATE Empresa
-    SET Emp_Nombre = p_nombre,
-        Emp_Correo = p_correo,
-        Emp_Hash = p_hash,
-        Emp_Plan = p_plan,
-        Emp_Activo = p_activo
+    SET
+        Emp_Nombre = COALESCE(p_nombre, Emp_Nombre),
+        Emp_NombreCompleto = COALESCE(p_nombre_completo, Emp_NombreCompleto),
+        Emp_Correo = COALESCE(p_correo, Emp_Correo),
+        Emp_Hash = COALESCE(p_hash, Emp_Hash),
+        Emp_Plan = COALESCE(p_plan, Emp_Plan),
+        Emp_Activo = COALESCE(p_activo, Emp_Activo),
+        Emp_Actualizado = CURRENT_TIMESTAMP
     WHERE Emp_ID = p_id;
 END;
 $$ LANGUAGE plpgsql;
@@ -151,13 +331,14 @@ CREATE OR REPLACE FUNCTION listar_empresas()
 RETURNS TABLE(
     _Emp_ID UUID,
     _Emp_Nombre VARCHAR(150),
+    _Emp_NombreCompleto VARCHAR(150),
     _Emp_Correo VARCHAR(150),
     _Emp_Activo BOOLEAN,
     _Plan_Nombre VARCHAR(100)
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT e.Emp_ID, e.Emp_Nombre, e.Emp_Correo, e.Emp_Activo, p.Plan_Nombre
+    SELECT e.Emp_ID, e.Emp_Nombre, e.Emp_NombreCompleto, e.Emp_Correo, e.Emp_Activo, p.Plan_Nombre
     FROM Empresa e
     JOIN Plan p ON e.Emp_Plan = p.Plan_ID;
 END;
@@ -167,6 +348,7 @@ CREATE OR REPLACE FUNCTION obtener_empresa_por_correo(p_correo VARCHAR(150))
 RETURNS TABLE (
     _Emp_ID UUID,
     _Emp_Nombre VARCHAR(150),
+    _Emp_NombreCompleto VARCHAR(150),
     _Emp_Correo VARCHAR(150),
     _Emp_Hash TEXT,
     _Emp_Activo BOOLEAN,
@@ -181,6 +363,7 @@ BEGIN
     SELECT 
         e.Emp_ID,
         e.Emp_Nombre,
+        e.Emp_NombreCompleto,
         e.Emp_Correo,
         e.Emp_Hash,
         e.Emp_Activo,
@@ -195,3 +378,332 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION cambiar_estado_empresa(
+    p_id UUID,
+    p_activo BOOLEAN
+) RETURNS VOID AS $$
+BEGIN
+    UPDATE Empresa
+    SET Emp_Activo = p_activo
+    WHERE Emp_ID = p_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION obtener_dias_restantes_por_empresa(p_id UUID)
+RETURNS INT AS $$
+DECLARE
+    v_fecha_inicio DATE;
+    v_duracion INT;
+    v_dias_restantes INT;
+BEGIN
+    SELECT e.Emp_FechaInicioPlan, p.Plan_Duracion
+    INTO v_fecha_inicio, v_duracion
+    FROM Empresa e
+    JOIN Plan p ON e.Emp_Plan = p.Plan_ID
+    WHERE e.Emp_ID = p_id;
+
+    v_dias_restantes := v_duracion - (CURRENT_DATE - v_fecha_inicio);
+    RETURN GREATEST(v_dias_restantes, 0);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION cambiar_contrasena_empresa(
+    p_emp_id UUID,
+    p_nueva_hash TEXT
+) RETURNS VOID AS $$
+BEGIN
+    UPDATE Empresa
+    SET Emp_Hash = p_nueva_hash
+    WHERE Emp_ID = p_emp_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- ===========================================
+-- ========== FUNCIONES DE DOCUMENTOS ========
+-- ===========================================
+
+-- ...otras funciones...
+
+CREATE OR REPLACE FUNCTION insertar_documento(
+    p_nombre VARCHAR(255),
+    p_url TEXT,
+    p_tipo VARCHAR(50),
+    p_tamanio BIGINT,
+    p_subido_por UUID,
+    p_empresa UUID
+) RETURNS UUID AS $$
+DECLARE
+    v_doc_id UUID;
+BEGIN
+    INSERT INTO Documento (
+        Doc_Nombre, Doc_Url, Doc_Tipo, Doc_Tamanio, Doc_SubidoPor, Doc_Empresa
+    ) VALUES (
+        p_nombre, p_url, p_tipo, p_tamanio, p_subido_por, p_empresa
+    )
+    RETURNING Doc_ID INTO v_doc_id;
+
+    RETURN v_doc_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION actualizar_documento(
+    p_doc_id UUID,
+    p_nombre VARCHAR(255) DEFAULT NULL,
+    p_url TEXT DEFAULT NULL,
+    p_tipo VARCHAR(50) DEFAULT NULL,
+    p_tamanio BIGINT DEFAULT NULL,
+    p_subido_por UUID DEFAULT NULL,
+    p_empresa UUID DEFAULT NULL
+) RETURNS VOID AS $$
+BEGIN
+    UPDATE Documento
+    SET
+        Doc_Nombre = COALESCE(p_nombre, Doc_Nombre),
+        Doc_Url = COALESCE(p_url, Doc_Url),
+        Doc_Tipo = COALESCE(p_tipo, Doc_Tipo),
+        Doc_Tamanio = COALESCE(p_tamanio, Doc_Tamanio),
+        Doc_SubidoPor = COALESCE(p_subido_por, Doc_SubidoPor),
+        Doc_Empresa = COALESCE(p_empresa, Doc_Empresa)
+    WHERE Doc_ID = p_doc_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION listar_documentos_por_empresa(p_empresa UUID)
+RETURNS TABLE (
+    _doc_id UUID,
+    _doc_nombre VARCHAR(255),
+    _doc_url TEXT,
+    _doc_tipo VARCHAR(50),
+    _doc_tamanio BIGINT,
+    _doc_subido_por UUID,
+    _usuario_nombre_completo VARCHAR(150),
+    _doc_fecha TIMESTAMP,
+    _emp_nombre VARCHAR(150),
+    _emp_nombre_completo VARCHAR(150)
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        d.Doc_ID,
+        d.Doc_Nombre,
+        d.Doc_Url,
+        d.Doc_Tipo,
+        d.Doc_Tamanio,
+        d.Doc_SubidoPor,
+        u.Usu_NombreCompleto,
+        d.Doc_Fecha,
+        e.Emp_Nombre,
+        e.Emp_NombreCompleto
+    FROM Documento d
+    JOIN Empresa e ON d.Doc_Empresa = e.Emp_ID
+    LEFT JOIN Usuario u ON d.Doc_SubidoPor = u.Usu_ID
+    WHERE d.Doc_Empresa = p_empresa;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION eliminar_documento(p_doc_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+    DELETE FROM Documento WHERE Doc_ID = p_doc_id;
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION obtener_documento_por_id(p_doc_id UUID)
+RETURNS TABLE (
+    _doc_id UUID,
+    _doc_nombre VARCHAR(255),
+    _doc_url TEXT,
+    _doc_tipo VARCHAR(50),
+    _doc_tamanio BIGINT,
+    _doc_subido_por UUID,
+    _usuario_nombre_completo VARCHAR(150),
+    _doc_fecha TIMESTAMP,
+    _emp_nombre VARCHAR(150),
+    _emp_nombre_completo VARCHAR(150)
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        d.Doc_ID,
+        d.Doc_Nombre,
+        d.Doc_Url,
+        d.Doc_Tipo,
+        d.Doc_Tamanio,
+        d.Doc_SubidoPor,
+        u.Usu_NombreCompleto,
+        d.Doc_Fecha,
+        e.Emp_Nombre,
+        e.Emp_NombreCompleto
+    FROM Documento d
+    JOIN Empresa e ON d.Doc_Empresa = e.Emp_ID
+    LEFT JOIN Usuario u ON d.Doc_SubidoPor = u.Usu_ID
+    WHERE d.Doc_ID = p_doc_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- ===============================================
+-- ========== FUNCIONES DE NOTIFICACIONES ========
+-- ===============================================
+
+CREATE OR REPLACE FUNCTION insertar_notificacion(
+    p_titulo VARCHAR(255),
+    p_mensaje TEXT,
+    p_usuarios UUID[]
+) RETURNS UUID AS $$
+DECLARE
+    v_id UUID;
+    v_usuario UUID;
+BEGIN
+    INSERT INTO Notificacion (Not_ID, Not_Titulo, Not_Mensaje, Not_Fecha)
+    VALUES (uuid_generate_v4(), p_titulo, p_mensaje, CURRENT_TIMESTAMP)
+    RETURNING Not_ID INTO v_id;
+
+    FOREACH v_usuario IN ARRAY p_usuarios LOOP
+        INSERT INTO NotificacionUsuario (NotUsu_Notificacion, NotUsu_Usuario)
+        VALUES (v_id, v_usuario);
+    END LOOP;
+
+    RETURN v_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION listar_notificaciones_usuario(
+    p_usuario UUID
+) RETURNS TABLE (
+    not_id UUID,
+    titulo VARCHAR,
+    mensaje TEXT,
+    fecha TIMESTAMP,
+    recibida BOOLEAN
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        n.Not_ID,
+        n.Not_Titulo,
+        n.Not_Mensaje,
+        n.Not_Fecha,
+        nu.NotUsu_Recibida
+    FROM Notificacion n
+    INNER JOIN NotificacionUsuario nu ON nu.NotUsu_Notificacion = n.Not_ID
+    WHERE nu.NotUsu_Usuario = p_usuario;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION marcar_notificacion_recibida(
+    p_notificacion UUID,
+    p_usuario UUID
+) RETURNS VOID AS $$
+BEGIN
+    UPDATE NotificacionUsuario
+    SET NotUsu_Recibida = TRUE
+    WHERE NotUsu_Notificacion = p_notificacion AND NotUsu_Usuario = p_usuario;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION eliminar_notificacion_usuario(
+    p_notificacion UUID,
+    p_usuario UUID
+) RETURNS VOID AS $$
+BEGIN
+    DELETE FROM NotificacionUsuario
+    WHERE NotUsu_Notificacion = p_notificacion AND NotUsu_Usuario = p_usuario;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION enviar_notificacion_a_empresa(
+    p_titulo VARCHAR(255),
+    p_mensaje TEXT,
+    p_empresa UUID
+) RETURNS UUID AS $$
+DECLARE
+    v_id UUID;
+    v_usuario UUID;
+BEGIN
+    -- Crear la notificación
+    INSERT INTO Notificacion (Not_ID, Not_Titulo, Not_Mensaje, Not_Fecha)
+    VALUES (uuid_generate_v4(), p_titulo, p_mensaje, CURRENT_TIMESTAMP)
+    RETURNING Not_ID INTO v_id;
+
+    -- Asignar la notificación a todos los usuarios activos de la empresa
+    FOR v_usuario IN
+        SELECT Usu_ID FROM Usuario WHERE Usu_Empresa = p_empresa AND Usu_Activo = TRUE
+    LOOP
+        INSERT INTO NotificacionUsuario (NotUsu_Notificacion, NotUsu_Usuario)
+        VALUES (v_id, v_usuario);
+    END LOOP;
+
+    RETURN v_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION eliminar_notificaciones_usuario(
+    p_usuario UUID
+) RETURNS VOID AS $$
+BEGIN
+    DELETE FROM NotificacionUsuario
+    WHERE NotUsu_Usuario = p_usuario;
+END;
+$$ LANGUAGE plpgsql;
+
+-- ===============================================
+-- ========== FUNCIONES DE AUDITORÍA ========
+-- ===============================================
+
+-- ===========================================
+-- ========== HISTORIAL DE AUDITORÍA =========
+-- ===========================================
+
+CREATE OR REPLACE FUNCTION obtener_historial_auditoria_empresa(p_empresa UUID)
+RETURNS TABLE (
+    log_id UUID,
+    tabla VARCHAR(50),
+    registro UUID,
+    tipo VARCHAR(50),
+    descripcion TEXT,
+    fecha TIMESTAMP,
+    usuario UUID
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        LogEmp_ID,
+        LogEmp_Tabla,
+        LogEmp_Registro,
+        LogEmp_Tipo,
+        LogEmp_Descripcion,
+        LogEmp_Fecha,
+        LogEmp_Usuario
+    FROM LogEmpresa
+    WHERE LogEmp_Empresa = p_empresa
+    ORDER BY LogEmp_Fecha DESC;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Historial de auditoría de un usuario (LogEmpresa)
+CREATE OR REPLACE FUNCTION obtener_historial_auditoria_usuario(p_usuario UUID)
+RETURNS TABLE (
+    log_id UUID,
+    empresa UUID,
+    tabla VARCHAR(50),
+    registro UUID,
+    tipo VARCHAR(50),
+    descripcion TEXT,
+    fecha TIMESTAMP
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        LogEmp_ID,
+        LogEmp_Empresa,
+        LogEmp_Tabla,
+        LogEmp_Registro,
+        LogEmp_Tipo,
+        LogEmp_Descripcion,
+        LogEmp_Fecha
+    FROM LogEmpresa
+    WHERE LogEmp_Usuario = p_usuario
+    ORDER BY LogEmp_Fecha DESC;
+END;
+$$ LANGUAGE plpgsql;
