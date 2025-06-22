@@ -20,10 +20,17 @@ class AuthHelper {
     generateToken(payload, options = {}) {
         const tokenOptions = {
             expiresIn: configToken.expireToken,
-            ...options // Permite sobrescribir opciones predeterminadas
+            ...options 
         }
         const token = jwt.sign(payload, configToken.secretKey, tokenOptions)
-        return ResponseUtil.success('Token generado exitosamente', token)
+        return token
+    }
+
+    async verifyCompanyPlanDate(companyId) {
+        const result = await pool.query('SELECT * FROM obtener_dias_restantes_por_empresa($1)', [companyId])
+        const days = result.rows[0].obtener_dias_restantes_por_empresa
+        const expired = days === 0 ? true : false
+        return expired
     }
 
     async registerCompany(companyName, companyEmail, password){
