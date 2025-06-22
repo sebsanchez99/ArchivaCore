@@ -46,6 +46,10 @@ class AdminHelper{
      */
     async createUsers(username, fullname, password, rolUser, idCompany){
         const userExist = await this.#verifyUser(username)
+        const canAddAnUser = await this.#verifyTotalOfUsers(idCompany)
+        if (!canAddAnUser) {
+            return ResponseUtil.fail('No se puede agregar más usuarios a esta empresa, por favor actualice su plan.')
+        }
         if (userExist) {
            return ResponseUtil.fail('El nombre de usuario ya existe, por favor elije otro.')
         }
@@ -97,11 +101,13 @@ class AdminHelper{
      * @returns {boolean} Valor booleano indicando si el usuario existe
      */
     async #verifyUser(username) {
-        const userExist = await pool.query(
-            'SELECT * FROM obtener_usuario($1)',
-            [username]
-        )
+        const userExist = await pool.query('SELECT * FROM obtener_usuario($1)', [username])
         return userExist.rows.length > 0
+    }
+
+    async #verifyTotalOfUsers(companyId) {
+        const result = await pool.query('SELECT * FROM empresa_puede_registrar_usuario($1)', [companyId])
+        return result.rows[0].empresa_puede_registrar_usuario;
     }
        
     async getRoles() {

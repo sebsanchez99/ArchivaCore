@@ -50,11 +50,7 @@ class AuthHelper {
      */
     async #verifyCompany(companyEmail) {
         const companyExist = await pool.query('SELECT * FROM obtener_empresa_por_correo($1)', [companyEmail])
-        if (companyExist.rows.length > 0) {
-            return true
-        } else {
-            return false
-        }
+        return companyExist.rows.length > 0
     }
 }
 

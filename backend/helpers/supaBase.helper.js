@@ -137,6 +137,7 @@ class SupaBaseHelper {
 
     await Promise.all(
       data.map(async (item) => {
+        if (item.name === 'placeholder.txt' || item.name === '.emptyFolderPlaceholder' || item.name === 'reciclaje') return; 
         const isFolder = item.metadata === null;
         const pathName = `${currentPath}/${item.name}`;
         if (isFolder) {
