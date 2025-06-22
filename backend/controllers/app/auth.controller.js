@@ -16,12 +16,13 @@ const ResponseUtil = require('../../utils/response.util')
  */
 const login = async (req, res) => {
     try {
-        const { _usu_id, _usu_activo, _rol_nombre, _emp_id} = req.user   
+        const { _usu_id, _usu_activo, _rol_nombre, _emp_id, _emp_nombre} = req.user   
         const authHelper = new AuthHelper()
         const payload = {
             userId: _usu_id,
             role: _rol_nombre,
-            company: _emp_id
+            company: _emp_id,
+            companyName: _emp_nombre,
         }
         if (_rol_nombre === 'Superusuario' || _rol_nombre === 'Soporte') {
             return res.json(ResponseUtil.fail('No posee permisos para ingresar.'))
