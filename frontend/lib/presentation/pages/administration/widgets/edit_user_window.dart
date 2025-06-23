@@ -44,10 +44,20 @@ class EdituserWindow extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        "Complete el formulario para editar un usuario en el sistema",
+                        "Complete el formulario para editar un usuario en el sistema. Los campos no marcados como obligatorios son opcionales.",
                         style: TextStyle(color: SchemaColors.textSecondary),
                       ),
                       SizedBox(height: 10),
+                      Text(
+                        "Nombre completo",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 10),
+                      CustomInput(
+                        isPassword: false, 
+                        labeltext: user.fullname, 
+                        enabled: false,
+                      ),
                       Text(
                         "Nombre de usuario",
                         style: TextStyle(fontWeight: FontWeight.bold),
@@ -59,36 +69,41 @@ class EdituserWindow extends StatelessWidget {
                         enabled: false,
                       ),
                       SizedBox(height: 10),
-                      Text(
-                        "Selecciona el rol del usuario",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      ...value.roles.map((role) => RadioListTile<String>(
-                          title: Text(role, style: TextStyle(color: SchemaColors.textPrimary)), 
-                          value: role, 
-                          dense: true,
-                          activeColor: SchemaColors.primary700,
-                          groupValue: value.selectedRole, 
-                          onChanged: (value) => bloc.add(ChangeRoleEvent(role: value!)))
-                        ),
+                      if (user.role.toLowerCase() != 'empresa') ...[
+                        Text("Selecciona el rol del usuario (opcional)", style: TextStyle(fontWeight: FontWeight.bold)),
+                        ...value.roles.map((role) => RadioListTile<String>(
+                            title: Text(role.name, style: TextStyle(color: SchemaColors.textPrimary)), 
+                            dense: true,
+                            value: role.id.toString(), 
+                            activeColor: SchemaColors.primary700,
+                            groupValue: value.selectedRole, 
+                            onChanged: (value) => bloc.add(ChangeRoleEvent(role: value!)))
+                          ),
+                        SizedBox(height: 7),
+                      ],
                       SizedBox(height: 7),
                       Text(
-                        "Cambiar contraseña",
+                        "Cambiar contraseña (opcional)",
                         style: TextStyle(fontWeight: FontWeight.bold, height: 3),
                       ),
                       CustomInput(
                         isPassword: true, 
                         labeltext: "Nueva contraseña",
                         onChanged: (text) => bloc.add(ChangePasswordEvent(password: text)),
-                        validator: (value) => value.validateWith([FormValidator.strongPassword()]),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return null; 
+                          return value.validateWith([FormValidator.strongPassword()]);
+                        },
                       ),
                       SizedBox(height: 16),
                       CustomInput(
                         isPassword: true, 
                         labeltext: "Confirmar contraseña",
-                        validator: (value2) => value2.validateWith([
-                            FormValidator.match(value.password, message: 'Las contraseñas no coinciden')
-                        ]),
+                        validator: (value2) {
+                          if ((value2 == null || value2.isEmpty) && (value.password.isEmpty)) return null;
+                          if (value2 != value.password) return 'Las contraseñas no coinciden';
+                          return null;
+                        },
                       ),
                     ],
                   ),

@@ -3,6 +3,7 @@ part of '../view/adminitration_view.dart';
 //Muestra el dialogo para editar un usuario
 Future<void> _showEditDialog(BuildContext context, UserModel user) async {
   final bloc = context.read<AdministrationBloc>();
+  bloc.add(AdministrationEvents.changeRole(role: user.roleId.toString()));
   return showDialog(
     context: context, 
     barrierDismissible: false,
