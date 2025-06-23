@@ -35,4 +35,8 @@ class AdministrationEvents with _$AdministrationEvents {
   factory AdministrationEvents.changeUsername({
     required String username,
   }) = ChangeUsernameEvent;
+
+  factory AdministrationEvents.changeFullname({
+    required String fullname,
+  }) = ChangeFullnameEvent;
 }

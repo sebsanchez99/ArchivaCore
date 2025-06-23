@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/domain/failures/http_request_failure.dart';
+import 'package:frontend/domain/models/role_model.dart';
 import 'package:frontend/domain/models/server_response_model.dart';
 import 'package:frontend/domain/models/user_model.dart';
 
@@ -14,9 +15,10 @@ class AdministrationState with _$AdministrationState {
   factory AdministrationState.loaded({
     @Default([]) List<UserModel> users,
     @Default([]) List<UserModel> filteredUsers,
-    @Default(['Administrador', 'Usuario']) List<String> roles,
-    @Default('Usuario') String selectedRole,
+    @Default([]) List<RoleModel> roles,
+    @Default('') String selectedRole,
     @Default('') String username,
+    @Default('') String fullname,
     @Default('') String password,
     ServerResponseModel? response,
   }) = _LoadedState;
