@@ -21,15 +21,16 @@ class AdministrationService {
 
   /// Envía una petición para actualizar un usuario y retorna un objeto 
   /// [ServerResponseModel] con el resultado de la operación
-  HttpFuture<ServerResponseModel> putUsers(String userID, String username, String password, String rolUser) {
+  HttpFuture<ServerResponseModel> putUsers(String userID, String fullname, String username, String password, String idRol) {
     return DioHandler.handleRequest(
       () => _dio.put(
         '/admin/updateUser',
         data: {
           'id' : userID,
+          'fullname': fullname,
           'username' : username,
           'password' : password,
-          'rolUser' : rolUser,
+          'idRol' : idRol,
         },
       ), 
       (response) => ServerResponseModel.fromJson(response),
@@ -38,14 +39,15 @@ class AdministrationService {
 
   /// Envía una petición para crear un usuario y retorna un objeto 
   /// [ServerResponseModel] con el resultado de la operación
-  HttpFuture<ServerResponseModel> createUsers(String username, String password, String rolUser){
+  HttpFuture<ServerResponseModel> createUsers(String fullname, String username, String password, String idRol){
     return DioHandler.handleRequest(
       () => _dio.post(
         '/admin/createUser',
         data: {
           'username' : username,
+          'fullname': fullname,
           'password' : password,
-          'rolUser' : rolUser,
+          'idRol' : idRol,
         },
       ), 
       (response) => ServerResponseModel.fromJson(response),
@@ -62,6 +64,15 @@ class AdministrationService {
         'id' : userID,
       },
     ),
+    (response) => ServerResponseModel.fromJson(response),
+    );
+  }
+
+  /// Envía una petición para obtener roles
+  /// [ServerResponseModel] con el resultado de la operación  
+  HttpFuture<ServerResponseModel> getRoles(){
+    return DioHandler.handleRequest(
+    () => _dio.get('/admin/getRoles'),
     (response) => ServerResponseModel.fromJson(response),
     );
   }
