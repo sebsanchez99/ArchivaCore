@@ -31,10 +31,10 @@ class LoginBloc extends Bloc<LoginEvents, LoginState> {
   HttpFuture<ServerResponseModel> authUser() async {
     add(LoginEvents.blocking(true));
     final result = await _authRepository.logIn(state.username, state.password);
-    result.whenOrNull(
-      right: (response){
+    await result.whenOrNull(
+      right: (response) async{
         if (response.result) {
-          _secureStorage.setToken(response.data);
+         await  _secureStorage.setToken(response.data);
         }
       }
     );
