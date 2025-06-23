@@ -23,6 +23,7 @@ class AdministrationBloc extends Bloc<AdministrationEvents, AdministrationState>
     on<ChangeRoleEvent>(_onChangeRole);
     on<ChangePasswordEvent>(_onChangePassword);
     on<ChangeUsernameEvent>(_onChangeUsername);
+    on<ChangeFullnameEvent>(_onChangeFullname);
   }
 
   final AdministrationRepository _administrationRepository;
@@ -33,12 +34,13 @@ class AdministrationBloc extends Bloc<AdministrationEvents, AdministrationState>
       orElse: () => emit(AdministrationState.loading()),
     );
     final result = await _administrationRepository.getUsers();
+    final roles = await _administrationRepository.getRoles();
     emit(
       result.when(
         right: (response) {
           final responseData = response.data as List<dynamic>;
           final List<UserModel> users = responseData.map((user) => UserModel.fromJson(user)).toList();
-          return AdministrationState.loaded(users: users, filteredUsers: users);
+          return AdministrationState.loaded(users: users, filteredUsers: users, roles: roles);
         },
         left: (failure) => AdministrationState.failed(failure),
       ),
@@ -62,7 +64,7 @@ class AdministrationBloc extends Bloc<AdministrationEvents, AdministrationState>
     await state.mapOrNull(
       loaded: (value) async {
         emit(AdministrationState.loading());
-        final result = await _administrationRepository.createUsers(value.username, value.password, value.selectedRole);
+        final result = await _administrationRepository.createUsers(value.fullname, value.username, value.password, value.selectedRole);
         emit(
           result.when(
             left: (failure) => AdministrationState.failed(failure),
@@ -81,7 +83,7 @@ class AdministrationBloc extends Bloc<AdministrationEvents, AdministrationState>
     await state.mapOrNull(
       loaded: (value) async {
         emit(AdministrationState.loading());
-        final result = await _administrationRepository.putUsers(event.user.id, event.user.name, value.password, value.selectedRole);
+        final result = await _administrationRepository.putUsers(event.user.id, event.user.fullname, event.user.name, value.password, value.selectedRole);
         emit(
           result.when(
             left: (failure) => AdministrationState.failed(failure),
@@ -125,6 +127,12 @@ class AdministrationBloc extends Bloc<AdministrationEvents, AdministrationState>
   Future<void> _onChangeUsername(ChangeUsernameEvent event, Emitter<AdministrationState> emit) async {
     state.mapOrNull(
       loaded: (value) => emit(value.copyWith(username: event.username)),
+    );
+  }
+
+  Future<void> _onChangeFullname(ChangeFullnameEvent event, Emitter<AdministrationState> emit) async {
+    state.mapOrNull(
+      loaded: (value) => emit(value.copyWith(fullname: event.fullname)),
     );
   }
 
