@@ -146,6 +146,9 @@ class AdministrationView extends StatelessWidget {
                           label: Text('Rol'),
                         ),
                         DataColumn(
+                          label: Text('Estado'),
+                        ),
+                        DataColumn(
                           label: Text('Acciones'),
                         ),
                       ],
@@ -183,15 +186,37 @@ class TableRow extends DataTableSource {
         DataCell(Center(child: Text(user.name))),
         DataCell(Center(child: Text(user.role))),
         DataCell(
+        Center(
+          child: Text(
+            user.active ? 'Activo' : 'Inactivo',
+            style: TextStyle(
+              color: user.active ? Colors.green : Colors.red,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+        DataCell(
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
+              icon: Icon(
+                user.active ? Icons.toggle_on : Icons.toggle_off,
+                color: user.active ? Colors.green : Colors.grey,
+                size: 30,
+              ),
+              tooltip: user.active ? 'Desactivar' : 'Activar',
+              onPressed: () {},
+              ),
+              IconButton(
                 icon: Icon(Icons.edit, color: SchemaColors.primary800),
+                tooltip: 'Editar usuario',
                 onPressed: () => _showEditDialog(context, user),
               ),
               IconButton(
                 icon: Icon(Icons.delete, color: SchemaColors.error),
+                tooltip: 'Eliminar usuario',
                 onPressed: () => _showInfoDialog(context, user.id),
               ),
             ],
