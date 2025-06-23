@@ -1,8 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/domain/models/server_response_model.dart';
 import 'package:frontend/domain/repositories/auth_repository.dart';
 import 'package:frontend/domain/typedefs.dart';
 import 'package:frontend/presentation/pages/login/bloc/login_events.dart';
 import 'package:frontend/presentation/pages/login/bloc/login_state.dart';
+import 'package:frontend/utils/secure_storage.dart';
 
 class LoginBloc extends Bloc<LoginEvents, LoginState> {
   // Se recibe un estado inicial y un repositorio de autenticación
@@ -23,11 +25,19 @@ class LoginBloc extends Bloc<LoginEvents, LoginState> {
   }
 
   final AuthRepository _authRepository;
+  final SecureStorage _secureStorage = SecureStorage();
 
   // Método para autenticar usuario
-  HttpFuture<void> authUser() async {
+  HttpFuture<ServerResponseModel> authUser() async {
     add(LoginEvents.blocking(true));
     final result = await _authRepository.logIn(state.username, state.password);
+    result.whenOrNull(
+      right: (response){
+        if (response.result) {
+          _secureStorage.setToken(response.data);
+        }
+      }
+    );
     add(LoginEvents.blocking(false));
     return result;
   }
