@@ -10,6 +10,7 @@ RETURNS TABLE (
     _usu_hash TEXT,
     _usu_activo BOOLEAN,
     _rol_nombre VARCHAR(100),
+    _rol_id INT,
     _emp_id UUID,
     _emp_nombre VARCHAR(150),
     _emp_nombre_completo VARCHAR(150),
@@ -17,7 +18,7 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT u.usu_id, u.usu_nombre, u.usu_nombrecompleto, u.usu_hash, u.usu_activo, r.rol_nombre, e.emp_id, e.emp_nombre, e.emp_nombrecompleto, e.emp_activo
+    SELECT u.usu_id, u.usu_nombre, u.usu_nombrecompleto, u.usu_hash, u.usu_activo, r.rol_nombre, r.rol_id, e.emp_id, e.emp_nombre, e.emp_nombrecompleto, e.emp_activo
     FROM usuario u
     JOIN rol r ON u.usu_rol = r.rol_id
     LEFT JOIN empresa e ON u.usu_empresa = e.emp_id
@@ -199,12 +200,13 @@ RETURNS TABLE (
     _usu_id UUID,
     _usu_nombre VARCHAR(100),
     _usu_nombre_completo VARCHAR(150),
+    _rol_id INT,
     _rol_nombre VARCHAR(100),
     _usu_activo BOOLEAN
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT u.usu_id, u.usu_nombre, u.usu_nombrecompleto, r.rol_nombre, u.usu_activo
+    SELECT u.usu_id, u.usu_nombre, u.usu_nombrecompleto, r.rol_id, r.rol_nombre, u.usu_activo
     FROM usuario u
     JOIN rol r ON u.usu_rol = r.rol_id
     WHERE u.usu_empresa = p_emp_id;
