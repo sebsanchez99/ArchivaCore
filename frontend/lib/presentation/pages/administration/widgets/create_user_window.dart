@@ -47,12 +47,24 @@ class CreateUserWindow extends StatelessWidget {
                         ),
                         SizedBox(height: 10),
                         Text(
+                          "Nombre completo",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 10),
+                        CustomInput(
+                          labeltext: "Ejemplo: Juan Pérez García",
+                          isPassword: false,
+                          onChanged: (text) => bloc.add(ChangeFullnameEvent(fullname: text.trim())),
+                          validator: (value) => value.validateWith([FormValidator.name()])
+                        ),
+                        SizedBox(height: 10),
+                        Text(
                           "Nombre de usuario",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 10),
                         CustomInput(
-                          labeltext: "Ingrese el nombre de usuario",
+                          labeltext: "Ejemplo: juan.perez",
                           isPassword: false,
                           onChanged: (text) => bloc.add(ChangeUsernameEvent(username: text.trim())),
                           validator: (value) => value.validateWith([FormValidator.username()])
@@ -63,12 +75,13 @@ class CreateUserWindow extends StatelessWidget {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         ...value.roles.map((role) => RadioListTile<String>(
-                          title: Text(role, style: TextStyle(color: SchemaColors.textPrimary)), 
-                          value: role, 
+                          title: Text(role.name, style: TextStyle(color: SchemaColors.textPrimary)), 
+                          value: role.id.toString(), 
                           dense: true,
                           activeColor: SchemaColors.primary700,
                           groupValue: value.selectedRole, 
-                          onChanged: (value) => bloc.add(ChangeRoleEvent(role: value!)))
+                          onChanged: (value) => bloc.add(ChangeRoleEvent(role: value!))
+                        )
                         ),
                         SizedBox(height: 20),
                         Text(
