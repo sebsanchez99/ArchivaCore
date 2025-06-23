@@ -137,7 +137,10 @@ class AdministrationView extends StatelessWidget {
                       rowsPerPage: 8,
                       columns: [
                         DataColumn(
-                          label: Text('Usuario'),
+                          label: Text('Nombre'),
+                        ),
+                        DataColumn(
+                          label: Text('Nombre de usuario'),
                         ),
                         DataColumn(
                           label: Text('Rol'),
@@ -176,6 +179,7 @@ class TableRow extends DataTableSource {
     return DataRow.byIndex(
       index: index,
       cells: [
+        DataCell(Center(child: Text(user.fullname))),
         DataCell(Center(child: Text(user.name))),
         DataCell(Center(child: Text(user.role))),
         DataCell(
