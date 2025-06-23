@@ -34,9 +34,13 @@ class AuthHelper {
     }
 
     async registerCompany(companyName, fullname, companyEmail, password){
-        const companyExist = await this.#verifyCompany(companyEmail)
-        if (companyExist) {
-            return ResponseUtil.fail('El nombre de empresa ya existe. Seleccione otro.')
+        const companyEmailExist = await this.#verifyCompanyEmail(companyEmail)
+        const companyNameExist = await this.#verifyCompanyName(companyName)
+        if (companyEmailExist) {
+            return ResponseUtil.fail('Este correo ya se encuentra registrado. Seleccione otro.')
+        }
+        if (companyNameExist) {
+            return ResponseUtil.fail('Este nombre ya se encuentra registrado. Seleccione otro.')
         }
         const hashPassword = await bcrypt.hash(password, 10)
         await pool.query('SELECT * FROM agregar_empresa($1, $2, $3, $4)', [companyName, fullname, companyEmail, hashPassword])
@@ -44,13 +48,23 @@ class AuthHelper {
     }   
 
     /**
-     * Verifica la existencia del nombre de la empresa en la base de datos
+     * Verifica la existencia del correo de la empresa en la base de datos
      * @param {*} companyEmail Email de empresa
-     * @returns Valor booleano indicando si la empresa existe
+     * @returns Valor booleano indicando si el correo de la empresa existe
      */
-    async #verifyCompany(companyEmail) {
-        const companyExist = await pool.query('SELECT * FROM obtener_empresa_por_correo($1)', [companyEmail])
-        return companyExist.rows.length > 0
+    async #verifyCompanyEmail(companyEmail) {
+        const companyEmailExist = await pool.query('SELECT * FROM obtener_empresa_por_correo($1)', [companyEmail])
+        return companyEmailExist.rows.length > 0
+    }
+
+    /**
+     * Verifica la existencia del nombre de la empresa en la base de datos
+     * @param {*} companyName Nombre de la empresa
+     * @returns Valor booleano indicando si el nombre de la empresa existe
+     */
+    async #verifyCompanyName(companyName) {
+        const companyNameExist = await pool.query('SELECT * FROM obtener_empresa_por_nombre($1)', [companyName])
+        return companyNameExist.rows.length > 0
     }
 }
 

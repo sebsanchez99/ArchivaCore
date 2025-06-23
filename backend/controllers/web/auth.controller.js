@@ -30,6 +30,9 @@ const register =  async (req, res) => {
         const authHelper = new AuthHelper()
         const supabaseHelper = new SupaBaseHelper()
         const result = await authHelper.registerCompany(companyName, fullname, companyEmail, password)
+        if (!result.result) {
+            return res.json(result)
+        }      
         const bucketResult = await supabaseHelper.createCompanyBucket(companyName)
         if (!bucketResult) {
             return res.status(400).send(ResponseUtil.fail('No se pudo registrar la empresa'))
