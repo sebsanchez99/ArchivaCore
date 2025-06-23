@@ -124,4 +124,18 @@ class FormValidator {
     };
   }
 
+  static String? Function(String?) name({String? message}) {
+  return (value) {
+    if (value == null || value.trim().isEmpty) {
+      return message ?? 'El nombre no puede estar vacío';
+    }
+    // Permite letras, espacios y tildes (acentos)
+    final nameRegex = RegExp(r"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$");
+    if (!nameRegex.hasMatch(value.trim())) {
+      return message ?? 'El nombre solo puede contener letras y espacios';
+    }
+    return null;
+  };
+}
+
 }
