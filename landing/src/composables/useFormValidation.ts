@@ -1,27 +1,26 @@
 import { reactive, watch } from "vue";
 import type { ValidationErrors, Validators } from "@/interfaces/validationInterfaces.ts";
 
-export function useFormValidation(initialFields: Record<string, string>, validators: Validators = {}) {
-  // Cambiado a reactive para simplificar el acceso a las propiedades
+export function useFormValidation(initialFields: Record<string, string>, validators: Record<string, Array<Function>> = {}) {
   const fields = reactive({ ...initialFields });
   const errors = reactive<ValidationErrors>({});
 
   const validateField = (fieldName: string) => {
-    const value = fields[fieldName]; // Acceso directo a las propiedades reactivas
-    const validator = validators[fieldName];
-    if (validator) {
+    const value = fields[fieldName];
+    const validatorArr = validators[fieldName] || [];
+    for (const validator of validatorArr) {
       const error = validator(value, fields);
       if (error) {
         errors[fieldName] = error;
-      } else {
-        delete errors[fieldName];
+        return;
       }
     }
+    delete errors[fieldName];
   };
 
   const validateAll = () => {
     Object.keys(fields).forEach((fieldName) => validateField(fieldName));
-    return Object.keys(errors).length === 0; // Retorna true si no hay errores
+    return Object.keys(errors).length === 0;
   };
 
   const setFieldValue = (fieldName: string, value: string) => {
@@ -30,7 +29,7 @@ export function useFormValidation(initialFields: Record<string, string>, validat
   };
 
   const resetFields = () => {
-    Object.assign(fields, initialFields); // Reinicia los valores de los campos
+    Object.assign(fields, initialFields);
     Object.keys(errors).forEach((key) => delete errors[key]);
   };
 
