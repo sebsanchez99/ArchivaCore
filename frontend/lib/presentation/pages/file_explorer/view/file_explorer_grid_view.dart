@@ -38,6 +38,7 @@ class FileExplorerGridView extends StatelessWidget {
                       return Stack(
                         children: [
                           CustomFolder(
+                            onPressed:(){},
                             icon: Icons.folder,
                             name: folder.name,
                             fileCount: folder.files.length.toString(),

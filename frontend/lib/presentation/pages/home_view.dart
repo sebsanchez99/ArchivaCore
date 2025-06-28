@@ -24,7 +24,10 @@ class HomeView extends StatelessWidget {
                 icon: Icon(Icons.menu, color: SchemaColors.neutral),
               ),
               actions: [
-                IconButton(onPressed: () {}, icon: Icon(Icons.notifications, color: SchemaColors.neutral)),
+                IconButton(
+                  onPressed: () =>{},
+                  icon: Icon(Icons.notifications, color: SchemaColors.neutral),
+                ),
               ],
             ),
             body: Row(
@@ -39,7 +42,10 @@ class HomeView extends StatelessWidget {
                     child: PageView(
                       physics: NeverScrollableScrollPhysics(),
                       controller: sideMenuCubit.pageController,
-                      children: menuItems.values.map((item) => item['widget'] as Widget).toList(),
+                      children:
+                          menuItems.values
+                              .map((item) => item['widget'] as Widget)
+                              .toList(),
                     ),
                   ),
                 ),
