@@ -45,7 +45,7 @@ class FileExplorerView extends StatelessWidget {
                           Text(
                             "Carpetas",
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 25,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -64,7 +64,7 @@ class FileExplorerView extends StatelessWidget {
                                               size: 25,
                                               color: SchemaColors.warning,
                                             ),
-                                            SizedBox(width: 3),
+                                            SizedBox(width: 10),
                                             Text('Crear Carpeta'),
                                           ],
                                         ),
@@ -78,7 +78,7 @@ class FileExplorerView extends StatelessWidget {
                                               size: 25,
                                               color: SchemaColors.secondary500,
                                             ),
-                                            SizedBox(width: 3),
+                                            SizedBox(width: 10),
                                             Text('Adjuntar Archivo'),
                                           ],
                                         ),
@@ -88,17 +88,17 @@ class FileExplorerView extends StatelessWidget {
                               if (option == 'Crear Carpeta') {
                                 showCreateFolderDialog(context);
                               } else if (option == 'Adjuntar Archivo') {
-                                // showCreateFileDialog(context);
+                                showAttachFolderDialog(context);
                               }
                             },
                             child: TextButton.icon(
                               icon: Icon(
                                 Icons.add,
-                                size: 24,
+                                size: 30,
                                 color: SchemaColors.primary700,
                               ),
                               label: Text(
-                                'Agregar',
+                                'Agregar o crear',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
@@ -110,9 +110,13 @@ class FileExplorerView extends StatelessWidget {
                               style: TextButton.styleFrom(
                                 foregroundColor: SchemaColors.primary700,
                                 backgroundColor: Colors.transparent,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 12,
+                                ),
                                 side: BorderSide(
-                                  color: SchemaColors.primary,
-                                  width: 2,
+                                  color: SchemaColors.border,
+                                  width: 1,
                                 ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30),
