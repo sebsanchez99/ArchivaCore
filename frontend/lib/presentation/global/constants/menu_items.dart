@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/presentation/pages/notification/notification_view.dart';
 import 'package:frontend/presentation/pages/resume_analizer/view/resume_analizer_view.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:frontend/presentation/pages/administration/view/adminitration_view.dart';
@@ -17,6 +18,11 @@ final Map<int, Map<String, dynamic>> menuItems = {
     "widget": FileExplorerView(),
   },
   2: {
+    "title": "Notificaciones",
+    "icon": Icon(Icons.folder),
+    "widget": NotificationView(),
+  },
+  3: {
     "title": "Analizador HV",
     "icon": Icon(LucideIcons.bot),
     "widget": ResumeAnalizerView(),
