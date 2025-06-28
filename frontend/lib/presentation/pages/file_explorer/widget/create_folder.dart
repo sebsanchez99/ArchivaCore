@@ -177,6 +177,7 @@ class _CreateFolderState extends State<CreateFolder> {
                   radius: Radius.circular(10),
                   child: Center(
                     child: CustomFolder(
+                      onPressed: () {},
                       icon: Icons.folder,
                       name: 'ArchivaCore',
                       fileCount: '9 Archivos',

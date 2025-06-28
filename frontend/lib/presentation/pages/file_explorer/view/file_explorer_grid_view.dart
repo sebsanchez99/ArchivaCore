@@ -35,6 +35,10 @@ class FileExplorerGridView extends StatelessWidget {
                     return Stack(
                       children: [
                         CustomFolder(
+                          onPressed: () {
+                            // Acción al presionar la carpeta
+                            print('Abrir carpeta: ${folder.name}');
+                          },
                           icon: Icons.folder,
                           name: folder.name,
                           fileCount: folder.files.length.toString(),
