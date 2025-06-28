@@ -15,6 +15,8 @@ class FolderModel with _$FolderModel {
     @JsonKey(name: 'archivos') required List<FileModel> files,
     /// Id del padre de la carpeta
     @JsonKey(name: 'subCarpeta') required List<FolderModel> subFolders,
+    // Ruta de la carpeta
+    @JsonKey(name: 'rutaCarpeta') required String path,
   }) = _FolderModel;
 
   /// Parsea los datos de la respuesta de tipo JSON y los transforma en un dato de tipo [Map]

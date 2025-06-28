@@ -15,6 +15,8 @@ class FileModel with _$FileModel {
     @JsonKey(name: 'fecha') required String date,
     /// Tamaño del archivo
     @JsonKey(name: 'tipo') required String type,
+    /// Ruta del archivo
+    @JsonKey(name: 'rutaArchivo') required String path,
   }) = _FileModel;
 
   /// Parsea los datos de la respuesta de tipo JSON y los transforma en un dato de tipo [Map]
