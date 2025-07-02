@@ -6,10 +6,7 @@ import 'package:frontend/presentation/widgets/folder/custom_folder2.dart';
 
 class FileExplorerDetailsView extends StatelessWidget {
   final FileExplorerBloc bloc;
-  const FileExplorerDetailsView({
-    super.key, 
-    required this.bloc
-  });
+  const FileExplorerDetailsView({super.key, required this.bloc});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +28,11 @@ class FileExplorerDetailsView extends StatelessWidget {
                     child: ListView(
                       children: [
                         CustomFolder2(
-                          leading: Icons.folder,
+                          leading: Icons.file_copy,
+                          title: 'Documento 1',
+                        ),
+                        CustomFolder2(
+                          leading: Icons.file_copy,
                           title: 'Documento 1',
                         ),
                         CustomFolder2(
@@ -43,7 +44,7 @@ class FileExplorerDetailsView extends StatelessWidget {
                           title: 'Documento 1',
                         ),
                         CustomFolder2(
-                          leading: Icons.folder,
+                          leading: Icons.file_copy,
                           title: 'Documento 1',
                         ),
                         CustomFolder2(
@@ -55,7 +56,7 @@ class FileExplorerDetailsView extends StatelessWidget {
                           title: 'Documento 1',
                         ),
                         CustomFolder2(
-                          leading: Icons.folder,
+                          leading: Icons.file_copy,
                           title: 'Documento 1',
                         ),
                         CustomFolder2(
@@ -63,11 +64,7 @@ class FileExplorerDetailsView extends StatelessWidget {
                           title: 'Documento 1',
                         ),
                         CustomFolder2(
-                          leading: Icons.folder,
-                          title: 'Documento 1',
-                        ),
-                        CustomFolder2(
-                          leading: Icons.folder,
+                          leading: Icons.file_copy,
                           title: 'Documento 1',
                         ),
                         CustomFolder2(

@@ -40,6 +40,7 @@ class FileExplorerListView extends StatelessWidget {
                               children: [
                                 CustomFolder(
                                   icon: Icons.folder,
+                                  onPressed: () {},
                                   name: folder.name,
                                   fileCount: folder.files.length.toString(),
                                   size: "${totalSize.toStringAsFixed(2)} MB",
@@ -104,17 +105,11 @@ class FileExplorerListView extends StatelessWidget {
                         vertical: 10,
                       ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
                             child: Text(
                               'Nombre',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(
-                              'Modificado por',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
