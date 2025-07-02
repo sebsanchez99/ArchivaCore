@@ -37,9 +37,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true),
       routes: {
-        '/': (context) => const HomeView(),
-        // '/': (context) => const LoginView(),
-        // '/home': (context) => const HomeView(),
+        // '/': (context) => const HomeView(),
+        '/': (context) => const LoginView(),
+        '/home': (context) => const HomeView(),
       }, 
     );
   }
