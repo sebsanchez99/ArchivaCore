@@ -32,12 +32,11 @@
 
             <!-- Mensajes -->
             <div ref="chatContainer" class="flex-1 overflow-y-auto py-4 space-y-4">
-                <div v-for="(msg, index) in chat.messages" :key="index" :class="getMessageClass(msg.from)">
+                <div v-for="(msg, index) in messages" :key="index" :class="getMessageClass(msg.from)">
                     <template v-if="msg.from === 'user'">
                         <!-- Avatar del cliente -->
                         <div class="chat-image avatar mr-2">
-                            <div
-                                class="bg-accent-200 text-white rounded-full font-bold p-3 shadow">
+                            <div class="bg-accent-200 text-white rounded-full font-bold p-3 shadow">
                                 {{ getInitials(chat.name) }}
                             </div>
                         </div>
@@ -71,62 +70,68 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick } from "vue"
+import { ref, watch, nextTick, onMounted, computed } from "vue";
 import {
-    ChatBubbleBottomCenterTextIcon,
-    PaperAirplaneIcon,
-    PowerIcon
-} from "@heroicons/vue/24/outline"
-import { UserIcon } from "@heroicons/vue/24/solid"
+  ChatBubbleBottomCenterTextIcon,
+  PaperAirplaneIcon,
+  PowerIcon
+} from "@heroicons/vue/24/outline";
+import { UserIcon } from "@heroicons/vue/24/solid";
+import { useChatStore } from "@/stores/chatStore";
+import { useAuthStore } from "@/stores/authStore";
+import {
+  sendMessageToRoom,
+  onMessage,
+  onSystemMessage
+} from "@/services/chatService";
+import type { ChatMessage } from "@/interfaces/chat";
 
-interface ChatMessage {
-    text: string
-    time: string
-    from: "user" | "agent"
-}
-interface Chat {
-    id: number
-    name: string
-    online: boolean
-    time: string
-    messages: ChatMessage[]
-}
+const props = defineProps<{ chat: any; messages: ChatMessage[] }>();
+const chatStore = useChatStore();
+const authStore = useAuthStore();
 
-const props = defineProps<{ chat: Chat | null }>()
+const input = ref("");
+const chatContainer = ref<HTMLElement | null>(null);
+const userId = authStore.getUserId;
 
-const input = ref("")
-const chatContainer = ref<HTMLElement | null>(null)
+// Obtiene el room asociado a este chat
+const room = computed(() => chatStore.rooms[props.chat?.id]);
 
 function sendMessage() {
-    if (!input.value.trim() || !props.chat) return
-    props.chat.messages.push({
-        text: input.value,
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        from: "agent"
-    })
-    input.value = ""
+  if (!input.value.trim() || !room.value || !props.chat) return;
+  sendMessageToRoom(room.value, input.value, userId);
+  input.value = "";
 }
 
 function endChat() {
-    input.value = ""
-    if (props.chat) {
-        props.chat.messages = []
-    }
+  input.value = "";
+  chatStore.clearMessages(props.chat.id);
 }
 
 function getInitials(name: string) {
-  return name.trim().substring(0, 2).toUpperCase()
+  return name.trim().substring(0, 2).toUpperCase();
 }
 
-
-function getMessageClass(from: "user" | "agent") {
-  return from === "agent" ? "chat chat-end" : "chat chat-start"
+function getMessageClass(from: "user" | "agent" | "system") {
+  if (from === "agent") return "chat chat-end";
+  if (from === "system") return "chat chat-center";
+  return "chat chat-start";
 }
 
-watch(() => props.chat?.messages, async () => {
-    await nextTick()
-    if (chatContainer.value) {
-        chatContainer.value.scrollTop = chatContainer.value.scrollHeight
+// Auto-scroll al recibir nuevos mensajes
+watch(() => props.messages, async () => {
+  await nextTick();
+  if (chatContainer.value) {
+    chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+  }
+});
+
+// Escuchar solo los mensajes del room actual
+onMounted(() => {
+  onSystemMessage((data) => {
+    if (props.chat) {
+      chatStore.addMessageToChat(props.chat.id, data.message, "system");
     }
-})
+  });
+});
 </script>

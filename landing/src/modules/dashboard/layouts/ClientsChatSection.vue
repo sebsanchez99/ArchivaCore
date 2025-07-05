@@ -1,58 +1,163 @@
 <template>
-    <div class="max-w-6xl mx-auto px-4 py-6">
-        <div class="grid grid-cols-12 gap-4 h-[85vh]">
-            <div class="col-span-4 bg-primary-200 rounded-lg shadow p-4 overflow-y-auto ">
-                <ChatListPanel :chats="chats" :selectedChatId="selectedChatId" @selectChat="selectChat" />
-            </div>
-
-            <!-- Chat seleccionado (columna derecha) -->
-            <div class="col-span-8 bg-white rounded-lg shadow p-4 flex flex-col">
-                <ChatDetails :chat="selectedChat" />
-
-            </div>
+  <div class="max-w-6xl mx-auto px-4 py-6 h-[85vh] flex items-center justify-center">
+    <template v-if="!connected">
+      <div class="w-full flex flex-col items-center justify-center h-full">
+        <div class="bg-primary-100 rounded-full p-6 shadow mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-primary-500" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8s-9-3.582-9-8 4.03-8 9-8 9 3.582 9 8z" />
+          </svg>
         </div>
-    </div>
+        <h2 class="text-3xl font-bold text-primary-700 mb-2">Bienvenido, Asesor</h2>
+        <p class="mb-4 text-text-400 text-center max-w-md">
+          Para comenzar a atender a los clientes, haz clic en el botón para conectarte al chat en línea.<br>
+          <span class="text-xs text-primary-400 block mt-2">Recuerda mantenerte disponible durante tu turno.</span>
+        </p>
+        <button
+          class="btn btn-primary px-8 py-3 text-lg font-semibold rounded-full shadow-lg hover:bg-primary-600 transition"
+          @click="connectSupport">
+          <span class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m4 0h-1v4h-1m-4 0h-1v-4h-1" />
+            </svg>
+            Conectarme como soporte
+          </span>
+        </button>
+      </div>
+    </template>
+    <template v-else>
+      <div class="grid grid-cols-12 gap-4 w-full h-full">
+        <div class="col-span-4 bg-primary-200 rounded-lg shadow p-4 overflow-y-auto">
+          <ChatListPanel :chats="chats" :selectedChatId="selectedChatId" @selectChat="selectChat"
+            @disconnect="handleDisconnect" />
+        </div>
+        <div class="col-span-8 bg-white rounded-lg shadow p-4 flex flex-col">
+          <ChatDetails v-if="selectedChat" :chat="selectedChat" :messages="selectedChatMessages" />
+
+        </div>
+      </div>
+    </template>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
+import {
+  connectChat,
+  disconnectChat,
+  onEmpresaAsignada,
+  onEmpresasAsignadas,
+  onEmpresaStatus,
+  onMessage
+} from "@/services/chatService";
+import { useChatStore } from "@/stores/chatStore";
+import { useAuthStore } from "@/stores/authStore";
 import ChatListPanel from "@/modules/dashboard/components/ClientsChatSection/ChatListPanel.vue";
 import ChatDetails from "@/modules/dashboard/components/ClientsChatSection/ChatDetails.vue";
-const chats = ref([
-  {
-    id: 1,
-    name: 'Empresa A',
-    online: true,
-    time: '2m',
-    messages: [
-      { text: 'Hola, necesito ayuda con mi cuenta.', time: '10:12 AM', from: 'user' as const }
-    ]
-  },
-  {
-    id: 2,
-    name: 'Empresa B',
-    online: false,
-    time: '15m',
-    messages: [
-      { text: '¿Cómo puedo cambiar mi correo?', time: '9:58 AM', from: 'user' as const }
-    ]
-  },
-  {
-    id: 3,
-    name: 'Empresa C',
-    online: true,
-    time: '5m',
-    messages: [
-      { text: 'Tengo problemas para iniciar sesión.', time: '10:30 AM', from: 'user' as const }
-    ]
-  }
-])
 
+const chatStore = useChatStore();
+const authStore = useAuthStore();
 
-const selectedChatId = ref<number | null>(null)
-const selectChat = (id: number) => selectedChatId.value = id
+interface Chat {
+  id: string;
+  name: string;
+  online: boolean;
+  time: string;
+  messages: any[];
+}
+
+const chats = ref<Chat[]>([]);
+
+const selectedChatId = ref<string | null>(null);
+const selectChat = (id: string) => selectedChatId.value = id;
 
 const selectedChat = computed(() =>
-    chats.value.find(chat => chat.id === selectedChatId.value) || null
-)
+  chats.value.find(chat => chat.id === selectedChatId.value) || null
+);
+
+const selectedChatMessages = computed(() => {
+  if (!selectedChat.value) return [];
+  return chatStore.messages[selectedChat.value.id] || [];
+});
+
+const connected = ref(false);
+
+const userId = authStore.getUserId;
+const role = authStore.getRol;
+
+function connectSupport() {
+  connectChat(userId, "Asesor");
+
+  onEmpresaAsignada((data: { empresaId: string, nombreEmpresa: string, room: string }) => {
+    addOrUpdateChat(data.empresaId, data.room, data.nombreEmpresa);
+  });
+
+  onEmpresasAsignadas((empresas: { empresaId: string, room: string, nombreEmpresa: string }[]) => {
+    console.log("[FRONT] Evento empresas-asignadas recibido:", empresas);
+    empresas.forEach(e => addOrUpdateChat(e.empresaId, e.room, e.nombreEmpresa));
+  });
+
+  onEmpresaStatus((data: { empresaId: string, online: boolean }) => {
+    const chat = chats.value.find(c => c.id === data.empresaId);
+    if (chat) chat.online = data.online;
+  });
+
+  // ✅ Este listener al final, cuando los rooms ya están registrados
+  onMessage(({ from, message, room }: { from: string, message: string, room: string }) => {
+    const chatId = Object.keys(chatStore.rooms).find(key => chatStore.rooms[key] === room);
+    if (!chatId) {
+      console.warn("[FRONT] Mensaje recibido desde room desconocido:", room);
+      return;
+    }
+
+    const fromType = from === userId ? "agent" : "user";
+    chatStore.addMessageToChat(chatId, message, fromType);
+
+    const chat = chats.value.find(c => c.id === chatId);
+    if (chat) {
+      chat.time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
+  });
+
+  connected.value = true;
+}
+
+
+function handleDisconnect() {
+  disconnectChat();
+  connected.value = false;
+  selectedChatId.value = null;
+  chats.value = [];
+  chatStore.clearMessages();
+  chatStore.setRoom("", "");
+}
+
+function addOrUpdateChat(empresaId: string, room: string, nombreEmpresa: string) {
+  let chat = chats.value.find(c => c.id === empresaId);
+  if (!chat) {
+    chat = {
+      id: empresaId,
+      name: nombreEmpresa,
+      online: true,
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      messages: []
+    };
+    chats.value.push(chat);
+    console.log("[FRONT] Chat agregado:", chat);
+    if (!selectedChatId.value) selectedChatId.value = empresaId;
+  }
+
+  // Registrar room en el store
+  chatStore.setRoom(empresaId, room);
+
+  if (selectedChatId.value === empresaId) {
+    chatStore.setRoom(empresaId, room);
+  }
+
+  console.log("[FRONT] Estado actual de chats:", chats.value);
+}
+defineOptions({ name: 'ClientsChatSection' });
 </script>
