@@ -35,8 +35,12 @@
             @disconnect="handleDisconnect" />
         </div>
         <div class="col-span-8 bg-white rounded-lg shadow p-4 flex flex-col">
-          <ChatDetails v-if="selectedChat" :chat="selectedChat" :messages="selectedChatMessages" />
-
+         <ChatDetails
+          v-if="selectedChat"
+          :chat="selectedChat"
+          :messages="selectedChatMessages"
+          @chatFinalizado="onFinalizedChat"
+        />
         </div>
       </div>
     </template>
@@ -134,6 +138,23 @@ function handleDisconnect() {
   chatStore.clearMessages();
   chatStore.setRoom("", "");
 }
+
+function onFinalizedChat(chatId: string) {
+  // Eliminar el chat de la lista
+  chats.value = chats.value.filter(c => c.id !== chatId);
+
+  // Limpiar mensajes del store
+  chatStore.clearMessages(chatId);
+
+  // Borrar el room del store
+  chatStore.setRoom(chatId, "");
+
+  // Si el chat eliminado era el seleccionado, deseleccionarlo
+  if (selectedChatId.value === chatId) {
+    selectedChatId.value = null;
+  }
+}
+
 
 function addOrUpdateChat(empresaId: string, room: string, nombreEmpresa: string) {
   let chat = chats.value.find(c => c.id === empresaId);

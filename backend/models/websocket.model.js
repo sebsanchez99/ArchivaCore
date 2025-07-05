@@ -111,6 +111,31 @@ class WebSocketServer {
         this.io.to(room).emit('empresa-status', { empresaId, online: true })
       })
 
+      socket.on('finalizar-chat', ({ empresaId, room }) => {
+        console.log(`[WS] Chat finalizado por asesor para empresaId=${empresaId} en room=${room}`);
+
+        // Eliminar empresa del mapa de empresasAsignadas
+        for (const [asesorId, empresas] of this.empresasAsignadas.entries()) {
+          const index = empresas.findIndex(e => e.empresaId === empresaId && e.room === room);
+          if (index !== -1) {
+            empresas.splice(index, 1);
+            console.log(`[WS] Empresa eliminada de asignación: asesorId=${asesorId}, empresaId=${empresaId}`);
+          }
+        }
+
+        // Notificar al cliente que el asesor finalizó el chat
+        this.io.to(room).emit('agent-status', false);
+        this.io.to(room).emit('system-message', {
+          message: 'El asesor finalizó el chat.',
+          from: 'system',
+          type: 'chat-ended'
+        });
+
+        // Sacar a todos del room (opcional)
+        this.io.socketsLeave(room);
+      });
+
+
 
       socket.on('disconnect', () => {
         if (this.asesores.has(socket.id)) {

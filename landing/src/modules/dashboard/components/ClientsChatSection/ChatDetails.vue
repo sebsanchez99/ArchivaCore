@@ -72,21 +72,23 @@
 <script setup lang="ts">
 import { ref, watch, nextTick, onMounted, computed } from "vue";
 import {
-  ChatBubbleBottomCenterTextIcon,
-  PaperAirplaneIcon,
-  PowerIcon
+    ChatBubbleBottomCenterTextIcon,
+    PaperAirplaneIcon,
+    PowerIcon
 } from "@heroicons/vue/24/outline";
 import { UserIcon } from "@heroicons/vue/24/solid";
 import { useChatStore } from "@/stores/chatStore";
 import { useAuthStore } from "@/stores/authStore";
 import {
-  sendMessageToRoom,
-  onMessage,
-  onSystemMessage
+    sendMessageToRoom,
+    endChat as endChatService,
+    onSystemMessage
 } from "@/services/chatService";
 import type { ChatMessage } from "@/interfaces/chat";
 
 const props = defineProps<{ chat: any; messages: ChatMessage[] }>();
+const emit = defineEmits(["chatFinalizado"]);
+
 const chatStore = useChatStore();
 const authStore = useAuthStore();
 
@@ -98,40 +100,57 @@ const userId = authStore.getUserId;
 const room = computed(() => chatStore.rooms[props.chat?.id]);
 
 function sendMessage() {
-  if (!input.value.trim() || !room.value || !props.chat) return;
-  sendMessageToRoom(room.value, input.value, userId);
-  input.value = "";
+    if (!input.value.trim() || !room.value || !props.chat) return;
+    sendMessageToRoom(room.value, input.value, userId);
+    input.value = "";
 }
 
 function endChat() {
-  input.value = "";
-  chatStore.clearMessages(props.chat.id);
+    if (!props.chat || !room.value) return;
+
+    // Emitir al WebSocket para cerrar el chat
+    endChatService(props.chat.id, room.value);
+
+    // Limpiar mensajes del store
+    chatStore.clearMessages(props.chat.id);
+
+    // Notificar al padre para que quite el chat de la lista
+    emit("chatFinalizado", props.chat.id);
+
+    // Limpiar input
+    input.value = "";
 }
 
+
 function getInitials(name: string) {
-  return name.trim().substring(0, 2).toUpperCase();
+    return name.trim().substring(0, 2).toUpperCase();
 }
 
 function getMessageClass(from: "user" | "agent" | "system") {
-  if (from === "agent") return "chat chat-end";
-  if (from === "system") return "chat chat-center";
-  return "chat chat-start";
+    if (from === "agent") return "chat chat-end";
+    if (from === "system") return "chat chat-center";
+    return "chat chat-start";
 }
 
 // Auto-scroll al recibir nuevos mensajes
 watch(() => props.messages, async () => {
-  await nextTick();
-  if (chatContainer.value) {
-    chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
-  }
+    await nextTick();
+    if (chatContainer.value) {
+        chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+    }
 });
 
 // Escuchar solo los mensajes del room actual
 onMounted(() => {
-  onSystemMessage((data) => {
-    if (props.chat) {
-      chatStore.addMessageToChat(props.chat.id, data.message, "system");
-    }
-  });
+    onSystemMessage((data) => {
+        if (!props.chat) return;
+        // Evita mostrar el mensaje si es sobre el asesor desconectado Y el asesor es quien lo está viendo
+        if (data.type === "agent-disconnect" && (authStore.getRol === "Asesor" || authStore.getRol === "Superusuario")) return;
+        if (data.type === "chat-ended" && (authStore.getRol === "Asesor" || authStore.getRol === "Superusuario")) return;
+        if (data.type === "user-disconnect" && authStore.getRol === "Empresa") return;
+
+        chatStore.addMessageToChat(props.chat.id, data.message, "system");
+    });
+
 });
 </script>

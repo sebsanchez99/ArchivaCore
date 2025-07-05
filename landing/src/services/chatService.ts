@@ -119,6 +119,15 @@ export function offAllChatListeners() {
 }
 
 /**
+ * Finaliza un chat entre asesor y empresa.
+ */
+export function endChat(empresaId: string, room: string) {
+  if (socket) {
+    socket.emit("finalizar-chat", { empresaId, room });
+  }
+}
+
+/**
  * Desconecta el chat.
  */
 export function disconnectChat() {
