@@ -14,8 +14,6 @@
           </div>
         </div>
 
-        <!-- <div class="divider before:bg-primary-100 after:bg-primary-100"></div> -->
-
         <ul>
           <li v-for="item in sidebarItems" :key="item.label">
             <RouterLink :to="item.path"
@@ -27,7 +25,6 @@
                 {{ item.label }}
               </span>
             </RouterLink>
-
           </li>
         </ul>
       </div>
@@ -60,18 +57,27 @@ import {
   UserIcon,
   ChatBubbleLeftRightIcon
 } from "@heroicons/vue/24/solid";
+import { useAuthStore } from "@/stores/authStore";
 
-const sidebarItems = [
-  { label: "Inicio", icon: HomeIcon, path: "/dashboard/home" },
-  { label: "Descargar App", icon: CloudArrowDownIcon, path: "/dashboard/download" },
-  { label: "Soporte", icon: LifebuoyIcon, path: "/dashboard/support" },
-  { label: "Planes y Facturación", icon: CreditCardIcon, path: "/dashboard/plans" },
-  { label: "Soporte Clientes", icon: ChatBubbleLeftRightIcon, path: "/dashboard/chat" },
-  { label: "Clientes", icon: UserIcon, path: "/dashboard/clients" },
-  { label: "Configuración", icon: Cog6ToothIcon, path: "/dashboard/settings" },
+const authStore = useAuthStore();
+const rol = authStore.getRol?.toLowerCase?.() || "empresa";
+
+// Todas las opciones posibles
+const allItems = [
+  { label: "Inicio", icon: HomeIcon, path: "/dashboard/home", roles: ["empresa"] },
+  { label: "Descargar App", icon: CloudArrowDownIcon, path: "/dashboard/download", roles: ["empresa"] },
+  { label: "Soporte", icon: LifebuoyIcon, path: "/dashboard/support", roles: ["empresa"] },
+  { label: "Planes y Facturación", icon: CreditCardIcon, path: "/dashboard/plans", roles: ["empresa"] },
+  { label: "Soporte Clientes", icon: ChatBubbleLeftRightIcon, path: "/dashboard/chat", roles: ["soporte", "superusuario"] },
+  { label: "Clientes", icon: UserIcon, path: "/dashboard/clients", roles: ["superusuario"] },
+  { label: "Configuración", icon: Cog6ToothIcon, path: "/dashboard/settings", roles: ["empresa"] },
 ];
 
+// Filtra según el rol
+const sidebarItems = allItems.filter(item => item.roles.includes(rol));
+
 const cerrarSesion = () => {
+  // Aquí deberías llamar a tu método de logout real
   console.log("Sesión cerrada");
 };
 </script>
