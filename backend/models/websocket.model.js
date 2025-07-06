@@ -7,11 +7,10 @@ class WebSocketServer {
       cors: { origin: '*' },
     })
     this.asesores = new Map() // socketId -> { userId, socket }
-    this.empresasPendientes = [] // [{ userId, socket }]
-    this.empresasAsignadas = new Map() // asesorUserId -> [{ empresaId, room }]
+    this.empresasPendientes = [] // [{ userId, socket, nombreEmpresa }]
+    this.empresasAsignadas = new Map() // asesorUserId -> [{ empresaId, room, nombreEmpresa }]
   }
 
-  // Utilidad para evitar duplicados en empresasAsignadas
   addEmpresaAsignada(asesorId, empresaId, room, nombreEmpresa) {
     if (!this.empresasAsignadas.has(asesorId)) this.empresasAsignadas.set(asesorId, [])
     const arr = this.empresasAsignadas.get(asesorId)
@@ -19,7 +18,6 @@ class WebSocketServer {
       arr.push({ empresaId, room, nombreEmpresa })
     }
   }
-
 
   init() {
     this.io.on('connection', (socket) => {
@@ -32,117 +30,133 @@ class WebSocketServer {
           return
         }
 
-        // Guarda el userId en el socket para identificarlo en disconnect
         socket.userId = userId
+        socket.nombreEmpresa = nombreEmpresa || 'Empresa'
+
+        console.log(`[DEBUG] Usuario unido: id=${userId}, role=${role}`)
 
         if (role === 'Asesor') {
           this.asesores.set(socket.id, { userId, socket })
           console.log(`[WS] Asesor registrado: userId=${userId}, socketId=${socket.id}`)
+          console.log(`[DEBUG] Total asesores conectados: ${this.asesores.size}`)
 
-          // Enviar todas las empresas asignadas a este asesor
           const asignadas = this.empresasAsignadas.get(userId) || []
           if (asignadas.length > 0) {
             socket.emit('empresas-asignadas', asignadas)
-            for (const { room } of asignadas) {
-              socket.join(room)
-            }
-
+            for (const { room } of asignadas) socket.join(room)
             console.log(`[WS] Enviando empresas asignadas a asesor ${userId}:`, asignadas)
           } else {
             socket.emit('info', { msg: 'No tienes empresas asignadas actualmente.' })
           }
 
-          // Asignar TODAS las empresas pendientes (si hay)
           while (this.empresasPendientes.length > 0) {
             const empresaPendiente = this.empresasPendientes.shift()
+
+            if (!empresaPendiente.socket?.connected) {
+              console.log(`[WS] Empresa ${empresaPendiente.userId} ya no está conectada. Se descarta de la cola.`)
+              continue
+            }
+
             const room = `chat_${empresaPendiente.userId}_${userId}`
             empresaPendiente.socket.join(room)
             socket.join(room)
-            empresaPendiente.socket.emit('asesor-asignado', { asesorId: userId, room, msg: '¡Te hemos asignado un agente de soporte!' })
+
+            empresaPendiente.socket.emit('asesor-asignado', {
+              asesorId: userId,
+              room,
+              msg: '¡Te hemos asignado un agente de soporte!'
+            })
+
             empresaPendiente.socket.emit('agent-status', true)
-            // Aquí agrega nombreEmpresa:
+
             socket.emit('empresa-asignada', {
               empresaId: empresaPendiente.userId,
               nombreEmpresa: empresaPendiente.nombreEmpresa,
               room,
               msg: 'Se te ha asignado una nueva empresa.'
             })
+
+            this.io.to(room).emit('empresa-status', {
+              empresaId: empresaPendiente.userId,
+              online: true
+            })
+
             this.addEmpresaAsignada(userId, empresaPendiente.userId, room, empresaPendiente.nombreEmpresa)
+
             console.log(`[WS] Empresa pendiente asignada: empresaId=${empresaPendiente.userId}, asesorId=${userId}, room=${room}`)
           }
-        }
 
-        if (['Usuario', 'Empresa'].includes(role)) {
-          const asesorEntry = Array.from(this.asesores.values()).find(a => !!a.socket?.connected)
-          if (asesorEntry) {
+
+        } else if (['Usuario', 'Empresa'].includes(role)) {
+          const asesoresConectados = Array.from(this.asesores.values())
+            .filter(({ socket }) => socket.connected)
+
+          console.log(`[DEBUG] Asesores conectados actualmente: ${asesoresConectados.length}`)
+
+          if (asesoresConectados.length === 0) {
+            this.empresasPendientes.push({ userId, socket, nombreEmpresa })
+            socket.emit('agent-status', false)
+            socket.emit('sin-asesor', {
+              msg: 'No hay agentes de soporte disponibles en este momento. Por favor, espera a que uno se conecte.'
+            })
+            console.log(`[WS] Empresa en espera: empresaId=${userId}, socketId=${socket.id}`)
+          } else {
+            const asesorEntry = asesoresConectados[0]
             const room = `chat_${userId}_${asesorEntry.userId}`
             socket.join(room)
             asesorEntry.socket.join(room)
-            socket.emit('asesor-asignado', { asesorId: asesorEntry.userId, room, msg: '¡Te hemos asignado un agente de soporte!' })
+            socket.emit('asesor-asignado', {
+              asesorId: asesorEntry.userId,
+              room,
+              msg: '¡Te hemos asignado un agente de soporte!'
+            })
             socket.emit('agent-status', true)
-            asesorEntry.socket.emit('empresa-asignada', { empresaId: userId, nombreEmpresa, room, msg: 'Se te ha asignado una nueva empresa.' })
+            asesorEntry.socket.emit('empresa-asignada', {
+              empresaId: userId,
+              nombreEmpresa,
+              room,
+              msg: 'Se te ha asignado una nueva empresa.'
+            })
             this.io.to(room).emit('empresa-status', { empresaId: userId, online: true })
             this.addEmpresaAsignada(asesorEntry.userId, userId, room, nombreEmpresa)
             console.log(`[WS] Empresa asignada: empresaId=${userId}, asesorId=${asesorEntry.userId}, room=${room}`)
-          } else {
-            this.empresasPendientes.push({ userId, socket, nombreEmpresa })
-            socket.emit('agent-status', false)
-            socket.emit('sin-asesor', { msg: 'No hay agentes de soporte disponibles en este momento. Por favor, espera a que uno se conecte.' })
-            console.log(`[WS] Empresa en espera: empresaId=${userId}, socketId=${socket.id}`)
           }
         }
       })
 
-      // Handler para mensajes de chat
       socket.on('message', ({ room, message, fromUserId }) => {
-        const [empresaId, asesorId] = room.replace("chat_", "").split("_")
-
-        // Validar que el socket esté unido al room (por seguridad)
+        const [empresaId] = room.replace("chat_", "").split("_")
         if (!socket.rooms.has(room)) {
           socket.join(room)
           console.warn(`[WS] El socket ${socket.id} no estaba en el room ${room}, fue agregado.`)
         }
-
-        // Emitir el mensaje a todos los sockets en ese room, incluyendo al remitente
         this.io.to(room).emit('message', { from: fromUserId, message, room })
-        console.log(`[WS] Mensaje reenviado a room=${room} de userId=${fromUserId}: ${message}`)
-
-        // Marcar como "empresa en línea" si aplica
         this.io.to(room).emit('empresa-status', { empresaId, online: true })
+        console.log(`[WS] Mensaje reenviado a room=${room} de userId=${fromUserId}: ${message}`)
       })
 
       socket.on('finalizar-chat', ({ empresaId, room }) => {
-        console.log(`[WS] Chat finalizado por asesor para empresaId=${empresaId} en room=${room}`);
-
-        // Eliminar empresa del mapa de empresasAsignadas
+        console.log(`[WS] Chat finalizado por asesor para empresaId=${empresaId} en room=${room}`)
         for (const [asesorId, empresas] of this.empresasAsignadas.entries()) {
-          const index = empresas.findIndex(e => e.empresaId === empresaId && e.room === room);
+          const index = empresas.findIndex(e => e.empresaId === empresaId && e.room === room)
           if (index !== -1) {
-            empresas.splice(index, 1);
-            console.log(`[WS] Empresa eliminada de asignación: asesorId=${asesorId}, empresaId=${empresaId}`);
+            empresas.splice(index, 1)
+            console.log(`[WS] Empresa eliminada de asignación: asesorId=${asesorId}, empresaId=${empresaId}`)
           }
         }
-
-        // Notificar al cliente que el asesor finalizó el chat
-        this.io.to(room).emit('agent-status', false);
+        this.io.to(room).emit('agent-status', false)
         this.io.to(room).emit('system-message', {
           message: 'El asesor finalizó el chat.',
           from: 'system',
           type: 'chat-ended'
-        });
-
-        // Sacar a todos del room (opcional)
-        this.io.socketsLeave(room);
-      });
-
-
+        })
+        this.io.socketsLeave(room)
+      })
 
       socket.on('disconnect', () => {
         if (this.asesores.has(socket.id)) {
           const { userId } = this.asesores.get(socket.id)
-          // Notificar a todas las empresas asignadas a este asesor
           const asignadas = this.empresasAsignadas.get(userId) || []
-          // Evita duplicados de rooms
           const roomsNotificados = new Set()
           asignadas.forEach(({ empresaId, room }) => {
             if (!roomsNotificados.has(room)) {
@@ -153,12 +167,25 @@ class WebSocketServer {
                 type: 'agent-disconnect'
               })
               roomsNotificados.add(room)
+
+              const empresaSocket = Array.from(this.io.sockets.sockets.values()).find(s => s.userId === empresaId)
+              if (empresaSocket?.connected) {
+                this.empresasPendientes.push({
+                  userId: empresaId,
+                  socket: empresaSocket,
+                  nombreEmpresa: empresaSocket.nombreEmpresa || 'Empresa'
+                })
+                empresaSocket.emit('sin-asesor', {
+                  msg: 'No hay agentes de soporte disponibles en este momento. Por favor, espera a que uno se conecte.'
+                })
+                empresaSocket.emit('agent-status', false)
+                console.log(`[DEBUG] Empresa reenviada a cola de espera: ${empresaId}`)
+              }
             }
           })
           this.asesores.delete(socket.id)
           console.log(`[WS] Asesor desconectado: socketId=${socket.id}`)
         } else {
-          // Empresa desconectada: notificar al asesor correspondiente
           const empresaId = socket.userId
           if (empresaId) {
             for (const [asesorId, empresas] of this.empresasAsignadas.entries()) {
@@ -171,7 +198,7 @@ class WebSocketServer {
                   from: 'system',
                   type: 'user-disconnect'
                 })
-                empresas.splice(index, 1) // ← elimina la empresa asignada
+                empresas.splice(index, 1)
                 console.log(`[WS] Empresa eliminada de empresasAsignadas: empresaId=${empresaId}`)
               }
             }
