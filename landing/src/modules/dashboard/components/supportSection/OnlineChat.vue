@@ -92,7 +92,7 @@
 
                 <!-- Mensajes -->
                 <div ref="chatContainer" class="flex-1 overflow-y-auto py-4 space-y-2">
-                    <div v-for="(msg, index) in (chatStore.rooms[empresaId] ? chatStore.messages[empresaId] : [])"
+                    <div v-for="(msg, index) in chatStore.messages[empresaId] || []"
                         :key="index" :class="getMessageClass(msg.from)">
                         <div v-if="msg.from === 'agent'" class="chat-image avatar pa-3">
                             <div class="bg-accent-200 text-white rounded-full p-3 shadow font-bold">
