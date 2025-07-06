@@ -15,6 +15,7 @@ const login = async (req, res) => {
             const payload = {
                 companyId: user._emp_id,
                 companyName: user._emp_nombre,
+                email: user._emp_correo,
                 active: user._emp_activo,
                 planName: user._plan_nombre,
                 planDuration: user._plan_duracion,
@@ -29,22 +30,22 @@ const login = async (req, res) => {
                 planName: user._plan_nombre,
                 planDuration: user._plan_duracion,
                 planStartDate: planStartDate,
+                email: user._emp_correo,
                 rol: "Empresa"
             }))
         }
-
         if (user._usu_id && user._rol_nombre) {
             const payload = {
                 userId: user._usu_id,
-                fullname: user._usu_nombre,
-                email: user._usu_correo,
+                username: user._usu_nombre,
                 rol: user._rol_nombre
             }
             const token = authHelper.generateToken(payload)
             return res.json(ResponseUtil.success('Usuario autenticado con éxito', {
                 userId: user._usu_id,
                 token,
-                fullname: user._usu_nombre,
+                username: user._usu_nombre,
+                fullname: user._usu_nombre_completo,
                 rol: user._rol_nombre
             }))
         }
