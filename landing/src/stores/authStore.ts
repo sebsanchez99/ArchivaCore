@@ -15,6 +15,7 @@ export const useAuthStore = defineStore("auth", {
     userId: null as number | null,
     fullname: null as string | null,
     email: null as string | null,
+    username: null as string | null,
     rol: null as string | null,
     loading: false,
     error: null as string | null,
@@ -82,6 +83,11 @@ export const useAuthStore = defineStore("auth", {
       const data = localStorage.getItem("authData");
       return data ? JSON.parse(data).rol : null;
     },
+    getUsername: (state) => {
+      if (state.username) return state.username;
+      const data = localStorage.getItem("authData");
+      return data ? JSON.parse(data).name : null;
+    }
   },
   actions: {
     setAuthData(data: any) {
@@ -94,6 +100,8 @@ export const useAuthStore = defineStore("auth", {
       this.planDuration = data.planDuration || null;
       this.planStartDate = data.planStartDate || null;
       this.userId = data.userId || null;
+      this.fullname = data.fullname || null;
+      this.username = data.username || null; 
       this.fullname = data.fullname || null;
       this.email = data.email || null;
       this.rol = data.rol || null;
