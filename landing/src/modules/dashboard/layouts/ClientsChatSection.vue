@@ -8,7 +8,7 @@
         </div>
 
         <!-- Título -->
-        <h2 class="text-4xl font-bold text-primary-700 mb-3">¡Hola, Asesor!</h2>
+        <h2 class="text-4xl font-bold text-primary-700 mb-3">¡Hola, {{ username }}!</h2>
 
         <!-- Subtítulo -->
         <p class="text-base text-text-500 max-w-md mb-6">
@@ -70,8 +70,6 @@
   </div>
 </template>
 
-
-
 <script lang="ts" setup>
 import { ref, computed } from 'vue';
 import {
@@ -107,12 +105,13 @@ interface Chat {
   messages: any[];
 }
 
+const username = authStore.getUsername;
 const chats = ref<Chat[]>([]);
 
 const selectedChatId = ref<string | null>(null);
 const selectChat = (id: string) => {
   selectedChatId.value = id;
-  chatStore.markAsRead(id); // 👈 Marcar como leído
+  chatStore.markAsRead(id); 
 };
 
 const selectedChat = computed(() =>
@@ -126,7 +125,6 @@ const selectedChatMessages = computed(() => {
 
 const connected = ref(false);
 const connectionStatus = computed(() => chatStore.connectionStatus);
-
 
 const userId = authStore.getUserId;
 const role = authStore.getRol;
