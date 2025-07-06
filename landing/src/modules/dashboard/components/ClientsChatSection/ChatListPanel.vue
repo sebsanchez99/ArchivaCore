@@ -1,15 +1,4 @@
 <template>
-  <div class="flex justify-end mb-6">
-    <button
-      class="flex items-center gap-2 btn bg-red-500 hover:bg-red-600 text-white font-semibold px-5 py-2 rounded-full shadow transition"
-      @click="handleDisconnect"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-      Desconectarme
-    </button>
-  </div>
   <div>
     <!-- Campo de búsqueda -->
     <div class="mb-7 input bg-white">
@@ -55,14 +44,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline"
-import { disconnectChat } from "@/services/chatService";
 
 const props = defineProps<{
   chats: { id: string, name: string, online: boolean, time: string }[],
   selectedChatId: string | null
 }>()
 
-const emit = defineEmits(['selectChat', 'disconnect'])
+const emit = defineEmits(['selectChat'])
 
 const search = ref('')
 
@@ -71,9 +59,4 @@ const filteredChats = computed(() =>
     chat.name.toLowerCase().includes(search.value.toLowerCase())
   )
 )
-
-function handleDisconnect() {
-  disconnectChat();
-  emit('disconnect');
-}
 </script>

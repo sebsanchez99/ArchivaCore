@@ -120,13 +120,34 @@
 
                 </div>
 
-                <!-- Input -->
-                <div class="pt-2 border-t border-primary-500 flex gap-2 items-center">
-                    <input v-model="input" @keyup.enter="sendMessage" type="text" placeholder="Escribe un mensaje..."
-                        class="input w-full bg-white border border-primary-500" />
-                    <button @click="sendMessage" class="btn btn-primary bg-primary-500 border-none">
-                        <PaperAirplaneIcon class="w-5" />
-                    </button>
+                <!-- Mensaje de reconexión -->
+                <div v-if="chatStore.connectionStatus === 'reconnecting'"
+                    class="absolute inset-0 z-10 bg-white/80 flex flex-col items-center justify-center text-center px-4">
+                    <svg class="animate-spin h-8 w-8 text-primary-500 mb-2" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                    </svg>
+                    <p class="text-sm text-gray-600 font-semibold">Reconectando con el servidor...</p>
+                </div>
+
+                <!-- Input o estado de reconexión -->
+                <div class="pt-2 border-t border-primary-500">
+                    <div v-if="chatStore.connectionStatus !== 'online'"
+                        class="flex items-center justify-center gap-2 py-4">
+                        <span class="loading loading-spinner text-primary-500"></span>
+                        <span class="text-sm text-gray-500 font-medium">
+                           Parece que hay problemas de conexión. Intentando reconectar...
+                        </span>
+                    </div>
+                    <div v-else class="flex gap-2 items-center">
+                        <input v-model="input" @keyup.enter="sendMessage" type="text"
+                            placeholder="Escribe un mensaje..."
+                            class="input w-full border border-primary-500 bg-white text-black" />
+                        <button @click="sendMessage" class="btn btn-primary bg-primary-500 border-none">
+                            <PaperAirplaneIcon class="w-5" />
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

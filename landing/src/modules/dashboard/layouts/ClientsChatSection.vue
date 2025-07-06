@@ -31,21 +31,51 @@
     <template v-else>
       <div class="grid grid-cols-12 gap-4 w-full h-full">
         <div class="col-span-4 bg-primary-200 rounded-lg shadow p-4 overflow-y-auto">
-          <ChatListPanel :chats="chats" :selectedChatId="selectedChatId" @selectChat="selectChat"
-            @disconnect="handleDisconnect" />
+          <ChatListPanel :chats="chats" :selectedChatId="selectedChatId" @selectChat="selectChat" />
         </div>
-        <div class="col-span-8 bg-white rounded-lg shadow p-4 flex flex-col">
-         <ChatDetails
-          v-if="selectedChat"
-          :chat="selectedChat"
-          :messages="selectedChatMessages"
-          @chatFinalizado="onFinalizedChat"
-        />
+        <div class="col-span-8 bg-white rounded-lg shadow p-0 flex flex-col relative overflow-hidden">
+          <!-- 🔔 Barra de estado (sin transición) -->
+          <ConnectionStatusBar :connectionStatus="connectionStatus" @disconnect="handleDisconnect" />
+
+          <!-- 💬 Área del chat -->
+          <div class="p-4 flex-1 overflow-y-auto relative">
+            <template v-if="selectedChat">
+              <ChatDetails :chat="selectedChat" :messages="selectedChatMessages" @chatFinalizado="onFinalizedChat" />
+            </template>
+            <template v-else>
+              <!-- Mensaje de reconexión si no hay chat -->
+              <div v-if="connectionStatus !== 'online'" class="flex flex-col items-center justify-center h-full gap-4">
+                <span class="loading loading-spinner text-primary-500 w-8 h-8"></span>
+                <p class="text-sm text-gray-500 font-medium text-center max-w-xs">
+                  Parece que hay problemas de conexión. Intentando reconectar...
+                </p>
+              </div>
+              <!-- Mensaje neutro cuando no hay chats activos -->
+              <div v-else class="flex flex-col items-center justify-center h-full text-center text-text-500">
+                <div class="avatar mb-4">
+                  <div class="w-20 rounded-full bg-primary-100 p-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="text-primary-600 w-12 h-12" fill="none"
+                      viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8s-9-3.582-9-8 4.03-8 9-8 9 3.582 9 8z" />
+                    </svg>
+                  </div>
+                </div>
+                <h3 class="text-xl font-semibold">Selecciona un chat</h3>
+                <p class="text-sm text-text-400">Aquí podrás ver y responder mensajes de los clientes</p>
+              </div>
+            </template>
+          </div>
+
         </div>
+
+
       </div>
     </template>
   </div>
 </template>
+
+
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue';
@@ -55,12 +85,17 @@ import {
   onEmpresaAsignada,
   onEmpresasAsignadas,
   onEmpresaStatus,
-  onMessage
+  onMessage,
+  onSocketConnect,
+  onSocketDisconnect,
+  onSocketReconnecting,
+  onSocketError,
 } from "@/services/chatService";
 import { useChatStore } from "@/stores/chatStore";
 import { useAuthStore } from "@/stores/authStore";
 import ChatListPanel from "@/modules/dashboard/components/ClientsChatSection/ChatListPanel.vue";
 import ChatDetails from "@/modules/dashboard/components/ClientsChatSection/ChatDetails.vue";
+import ConnectionStatusBar from "@/modules/dashboard/components/ClientsChatSection/ConnectionStatusBar.vue";
 
 const chatStore = useChatStore();
 const authStore = useAuthStore();
@@ -88,46 +123,61 @@ const selectedChatMessages = computed(() => {
 });
 
 const connected = ref(false);
+const connectionStatus = computed(() => chatStore.connectionStatus);
+
 
 const userId = authStore.getUserId;
 const role = authStore.getRol;
 
 function connectSupport() {
+  chatStore.setConnectionStatus('connecting');
   connectChat(userId, "Asesor");
+  connected.value = true;
 
-  onEmpresaAsignada((data: { empresaId: string, nombreEmpresa: string, room: string }) => {
+  onSocketConnect(() => {
+    chatStore.setConnected(true);
+    chatStore.setConnectionStatus("online");
+  });
+
+  onSocketDisconnect(() => {
+    chatStore.setConnected(false);
+    chatStore.setConnectionStatus("offline");
+  });
+
+  onSocketReconnecting(() => {
+    chatStore.setConnectionStatus("reconnecting");
+  });
+
+  onSocketError(() => {
+    chatStore.setConnectionStatus("offline");
+  });
+
+  // El resto igual...
+  onEmpresaAsignada((data) => {
     addOrUpdateChat(data.empresaId, data.room, data.nombreEmpresa);
   });
 
-  onEmpresasAsignadas((empresas: { empresaId: string, room: string, nombreEmpresa: string }[]) => {
-    console.log("[FRONT] Evento empresas-asignadas recibido:", empresas);
+  onEmpresasAsignadas((empresas) => {
     empresas.forEach(e => addOrUpdateChat(e.empresaId, e.room, e.nombreEmpresa));
   });
 
-  onEmpresaStatus((data: { empresaId: string, online: boolean }) => {
+  onEmpresaStatus((data) => {
     const chat = chats.value.find(c => c.id === data.empresaId);
     if (chat) chat.online = data.online;
   });
 
-  // ✅ Este listener al final, cuando los rooms ya están registrados
-  onMessage(({ from, message, room }: { from: string, message: string, room: string }) => {
+  onMessage(({ from, message, room }) => {
     const chatId = Object.keys(chatStore.rooms).find(key => chatStore.rooms[key] === room);
-    if (!chatId) {
-      console.warn("[FRONT] Mensaje recibido desde room desconocido:", room);
-      return;
-    }
-
+    if (!chatId) return;
     const fromType = from === userId ? "agent" : "user";
     chatStore.addMessageToChat(chatId, message, fromType);
-
     const chat = chats.value.find(c => c.id === chatId);
     if (chat) {
       chat.time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     }
   });
-
-  connected.value = true;
 }
+
 
 
 function handleDisconnect() {
@@ -137,6 +187,8 @@ function handleDisconnect() {
   chats.value = [];
   chatStore.clearMessages();
   chatStore.setRoom("", "");
+  connected.value = false;
+  chatStore.setConnectionStatus('offline');
 }
 
 function onFinalizedChat(chatId: string) {

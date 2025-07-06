@@ -25,7 +25,6 @@
                     </div>
                 </div>
                 <button @click="endChat" class="btn btn-sm border-none bg-red-500 text-white">
-                    <PowerIcon class="w-4 text-white mr-1" />
                     Finalizar chat
                 </button>
             </div>
@@ -67,15 +66,23 @@
 
             </div>
 
-
-            <!-- Input -->
-            <div class="pt-2 border-t border-primary-500 flex gap-2 items-center">
-                <input v-model="input" @keyup.enter="sendMessage" type="text" placeholder="Escribe un mensaje..."
-                    class="input w-full bg-white border border-primary-500" />
-                <button @click="sendMessage" class="btn btn-primary bg-primary-500 border-none">
-                    <PaperAirplaneIcon class="w-5" />
-                </button>
+            <!-- Input o estado de reconexión -->
+            <div class="pt-2 border-t border-primary-500">
+                <div v-if="chatStore.connectionStatus !== 'online'" class="flex items-center justify-center gap-2 py-4">
+                    <span class="loading loading-spinner text-primary-500"></span>
+                    <span class="text-sm text-gray-500 font-medium">
+                        Parece que hay problemas de conexión. Intentando reconectar...
+                    </span>
+                </div>
+                <div v-else class="flex gap-2 items-center">
+                    <input v-model="input" @keyup.enter="sendMessage" type="text" placeholder="Escribe un mensaje..."
+                        class="input w-full bg-white border border-primary-500" />
+                    <button @click="sendMessage" class="btn btn-primary bg-primary-500 border-none">
+                        <PaperAirplaneIcon class="w-5" />
+                    </button>
+                </div>
             </div>
+
         </div>
     </div>
 </template>
