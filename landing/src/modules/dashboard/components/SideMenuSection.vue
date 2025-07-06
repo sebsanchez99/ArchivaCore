@@ -40,15 +40,15 @@
       <!-- Pie con usuario y botón cerrar sesión -->
       <div class="mt-6  pt-4 text-white">
         <div class="mb-2">
-          <p class="text-sm font-semibold">Usuario Demo</p>
-          <p class="text-xs">usuario@empresa.com</p>
+          <p class="text-sm font-semibold">{{ fullname }}</p>
+          <p class="text-xs">{{ email }}</p>
         </div>
-        <button
+        <RouterLink to="/"
           class="btn btn-sm  bg-primary-700 text-white border-none hover:bg-primary-800 shadow w-full flex items-center justify-center gap-2"
           @click="cerrarSesion">
           <ArrowLeftEndOnRectangleIcon class="w-5 h-5" />
           Cerrar sesión
-        </button>
+        </RouterLink>
       </div>
     </aside>
   </div>
@@ -70,21 +70,20 @@ import { useAuthStore } from "@/stores/authStore";
 import { useChatStore } from "@/stores/chatStore";
 
 const chatStore = useChatStore();
+const authStore = useAuthStore();
+
+const fullname = computed(() => authStore.getFullname || "Usuario Demo");
+const email = computed(() => authStore.getEmail || "");
 
 const unreadSupportMessages = computed(() => {
   if (rol === "empresa") {
     return chatStore.unreadMessages[authStore.getCompanyId] || 0;
   }
-
-  // Si es soporte o superusuario, cuenta todos
   return Object.values(chatStore.unreadMessages).filter(v => v > 0).length;
 });
 
-
-const authStore = useAuthStore();
 const rol = authStore.getRol?.toLowerCase?.() || "empresa";
-console.log("🔍 unreadMessages:", chatStore.unreadMessages);
-console.log("📌 unreadSupportMessages:", unreadSupportMessages.value);
+
 
 // Todas las opciones posibles
 const allItems = [
@@ -101,7 +100,6 @@ const allItems = [
 const sidebarItems = allItems.filter(item => item.roles.includes(rol));
 
 const cerrarSesion = () => {
-  // Aquí deberías llamar a tu método de logout real
-  console.log("Sesión cerrada");
+  authStore.logout();
 };
 </script>
