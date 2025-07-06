@@ -1,5 +1,5 @@
 <template>
-    <div class="flex-1 flex flex-col h-full">
+    <div class="flex-1 flex flex-col h-[500px]">
         <div v-if="!chat" class="flex flex-col items-center justify-center flex-1 text-center text-text-500">
             <div class="avatar mb-4">
                 <div class="w-20 rounded-full bg-primary-100 p-4">
@@ -92,7 +92,6 @@ import { ref, watch, nextTick, onMounted, computed, onUnmounted } from "vue";
 import {
     ChatBubbleBottomCenterTextIcon,
     PaperAirplaneIcon,
-    PowerIcon
 } from "@heroicons/vue/24/outline";
 import { UserIcon } from "@heroicons/vue/24/solid";
 import { useChatStore } from "@/stores/chatStore";

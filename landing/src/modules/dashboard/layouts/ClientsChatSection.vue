@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-6xl mx-auto px-4 py-6 h-[85vh] flex items-center justify-center">
+  <div class="max-w-6xl mx-auto px-4 py-6 h-[80vh] flex items-center justify-center">
     <template v-if="!connected">
       <div class="w-full flex flex-col items-center justify-center h-full">
         <div class="bg-primary-100 rounded-full p-6 shadow mb-4">
