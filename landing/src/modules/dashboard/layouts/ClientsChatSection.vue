@@ -1,33 +1,31 @@
 <template>
   <div class="max-w-6xl mx-auto px-4 py-6 h-[83vh] flex items-center justify-center">
     <template v-if="!connected">
-      <div class="w-full flex flex-col items-center justify-center h-full">
-        <div class="bg-primary-100 rounded-full p-6 shadow mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-primary-500" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8s-9-3.582-9-8 4.03-8 9-8 9 3.582 9 8z" />
-          </svg>
+      <div class="w-full flex flex-col items-center justify-center h-full text-center px-4">
+        <!-- Ícono decorativo con animación -->
+        <div class="bg-primary-100 rounded-full p-6 shadow-lg mb-6 animate-pulse">
+          <ChatBubbleOvalLeftEllipsisIcon class="h-16 w-16 text-primary-500" />
         </div>
-        <h2 class="text-3xl font-bold text-primary-700 mb-2">Bienvenido, Asesor</h2>
-        <p class="mb-4 text-text-400 text-center max-w-md">
-          Para comenzar a atender a los clientes, haz clic en el botón para conectarte al chat en línea.<br>
-          <span class="text-xs text-primary-400 block mt-2">Recuerda mantenerte disponible durante tu turno.</span>
+
+        <!-- Título -->
+        <h2 class="text-4xl font-bold text-primary-700 mb-3">¡Hola, Asesor!</h2>
+
+        <!-- Subtítulo -->
+        <p class="text-base text-text-500 max-w-md mb-6">
+          Estás desconectado del chat de soporte. Conéctate para empezar a recibir mensajes de los clientes.<br />
+          <span class="text-xs text-primary-400 block mt-3 font-bold">Recuerda mantenerte disponible durante tu turno.</span>
         </p>
+
+        <!-- Botón de conexión -->
         <button
-          class="btn btn-primary px-8 py-3 text-lg font-semibold rounded-full shadow-lg hover:bg-primary-600 transition"
+          class="btn bg-primary-500 text-base font-medium shadow-md hover:shadow-xl hover:bg-primary-500 border-none"
           @click="connectSupport">
-          <span class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M13 16h-1v-4h-1m4 0h-1v4h-1m-4 0h-1v-4h-1" />
-            </svg>
-            Conectarme como soporte
-          </span>
+          <ArrowRightOnRectangleIcon class="h-5 w-5" />
+          Conectarme como soporte
         </button>
       </div>
     </template>
+
     <template v-else>
       <div class="grid grid-cols-12 gap-4 w-full h-full">
         <div class="col-span-4 bg-primary-200 rounded-lg shadow p-4 overflow-y-auto">
@@ -93,6 +91,10 @@ import { useAuthStore } from "@/stores/authStore";
 import ChatListPanel from "@/modules/dashboard/components/ClientsChatSection/ChatListPanel.vue";
 import ChatDetails from "@/modules/dashboard/components/ClientsChatSection/ChatDetails.vue";
 import ConnectionStatusBar from "@/modules/dashboard/components/ClientsChatSection/ConnectionStatusBar.vue";
+import {
+  ChatBubbleOvalLeftEllipsisIcon,
+  ArrowRightOnRectangleIcon,
+} from '@heroicons/vue/24/outline'
 
 const chatStore = useChatStore();
 const authStore = useAuthStore();
