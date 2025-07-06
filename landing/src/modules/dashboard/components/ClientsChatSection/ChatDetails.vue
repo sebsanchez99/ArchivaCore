@@ -1,5 +1,5 @@
 <template>
-    <div class="flex-1 flex flex-col h-[500px]">
+    <div class="flex-1 flex flex-col h-full">
         <div v-if="!chat" class="flex flex-col items-center justify-center flex-1 text-center text-text-500">
             <div class="avatar mb-4">
                 <div class="w-20 rounded-full bg-primary-100 p-4">
