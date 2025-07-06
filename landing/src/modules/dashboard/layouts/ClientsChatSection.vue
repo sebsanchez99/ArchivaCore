@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-6xl mx-auto px-4 py-6 h-[80vh] flex items-center justify-center">
+  <div class="max-w-6xl mx-auto px-4 py-6 h-[83vh] flex items-center justify-center">
     <template v-if="!connected">
       <div class="w-full flex flex-col items-center justify-center h-full">
         <div class="bg-primary-100 rounded-full p-6 shadow mb-4">
@@ -66,10 +66,7 @@
               </div>
             </template>
           </div>
-
         </div>
-
-
       </div>
     </template>
   </div>
@@ -111,7 +108,10 @@ interface Chat {
 const chats = ref<Chat[]>([]);
 
 const selectedChatId = ref<string | null>(null);
-const selectChat = (id: string) => selectedChatId.value = id;
+const selectChat = (id: string) => {
+  selectedChatId.value = id;
+  chatStore.markAsRead(id); // 👈 Marcar como leído
+};
 
 const selectedChat = computed(() =>
   chats.value.find(chat => chat.id === selectedChatId.value) || null
@@ -171,14 +171,15 @@ function connectSupport() {
     if (!chatId) return;
     const fromType = from === userId ? "agent" : "user";
     chatStore.addMessageToChat(chatId, message, fromType);
+
     const chat = chats.value.find(c => c.id === chatId);
-    if (chat) {
-      chat.time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    if (chat) chat.time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+    if (selectedChatId.value !== chatId) {
+      chatStore.markAsUnread(chatId);
     }
   });
 }
-
-
 
 function handleDisconnect() {
   disconnectChat();

@@ -137,7 +137,7 @@
                         class="flex items-center justify-center gap-2 py-4">
                         <span class="loading loading-spinner text-primary-500"></span>
                         <span class="text-sm text-gray-500 font-medium">
-                           Parece que hay problemas de conexión. Intentando reconectar...
+                            Parece que hay problemas de conexión. Intentando reconectar...
                         </span>
                     </div>
                     <div v-else class="flex gap-2 items-center">
@@ -156,6 +156,7 @@
 
 <script setup lang="ts">
 import { ref, watch, nextTick, onUnmounted, computed } from "vue";
+import { useRoute } from "vue-router";
 import {
     ChatBubbleBottomCenterTextIcon,
     PaperAirplaneIcon,
@@ -182,6 +183,7 @@ import {
 } from "@/services/chatService";
 import type { ChatMessage } from "@/interfaces/chat";
 
+const route = useRoute();
 const chatStore = useChatStore();
 const authStore = useAuthStore();
 
@@ -200,6 +202,7 @@ let connectingTimeout: ReturnType<typeof setTimeout> | null = null;
 
 function startChat() {
     chatStarted.value = true;
+    chatStore.markAsRead(empresaId);
     chatStore.clearMessages(empresaId);
     chatStore.setConnectionStatus("connecting");
     chatStore.setRoom(empresaId, "");
@@ -252,7 +255,20 @@ function startChat() {
     onMessage((msg) => {
         const msgFrom = msg.from === empresaId ? "user" : "agent";
         chatStore.addMessageToChat(empresaId, msg.message, msgFrom);
+
+        if (msgFrom === "agent") {
+            const isTabActive = document.visibilityState === "visible";
+            const isChatVisible = route.path.includes("/dashboard/support");
+
+            if (chatStarted.value && isTabActive && isChatVisible) {
+                chatStore.markAsRead(empresaId);
+            } else {
+                chatStore.markAsUnread(empresaId);
+            }
+        }
     });
+
+
 
     onAgentStatus((status) => {
         chatStore.setAgentOnline(status);
@@ -303,6 +319,21 @@ watch(
     },
     { deep: true }
 );
+
+watch(
+  () => route.path,
+  (newPath) => {
+    const isChatVisible = newPath.includes("/dashboard/support");
+    if (isChatVisible && chatStarted.value) {
+      // Solo si hay mensajes pendientes
+      if (chatStore.hasUnreadMessages(empresaId)) {
+        chatStore.markAsRead(empresaId);
+      }
+    }
+  },
+  { immediate: true }
+);
+
 
 onUnmounted(() => {
     disconnectChat();

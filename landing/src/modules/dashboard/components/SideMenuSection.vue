@@ -20,12 +20,20 @@
               class="btn btn-ghost flex items-center justify-start gap-2 border-none transition-all duration-300 group hover:shadow hover:bg-primary-600"
               active-class="bg-primary-600">
               <component :is="item.icon"
-                class="w-5 h-5  mr-2 transition-opacity duration-300 hover:text-primary-800 opacity-70" />
-              <span class="text-white font-medium transition-opacity duration-300 ">
+                class="w-5 h-5 mr-2 transition-opacity duration-300 hover:text-primary-800 opacity-70" />
+              <span class="text-white font-medium transition-opacity duration-300">
                 {{ item.label }}
               </span>
+
+              <!-- Badge si hay mensajes sin leer -->
+              <span v-if="(item.label === 'Soporte Clientes' || item.label === 'Soporte') && unreadSupportMessages > 0"
+                class="ml-auto bg-indigo-200 text-indigo-800 text-xs font-semibold px-2 py-0.5 rounded-full">
+                {{ unreadSupportMessages }}
+              </span>
+
             </RouterLink>
           </li>
+
         </ul>
       </div>
 
@@ -47,6 +55,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import {
   HomeIcon,
   CloudArrowDownIcon,
@@ -58,9 +67,24 @@ import {
   ChatBubbleLeftRightIcon
 } from "@heroicons/vue/24/solid";
 import { useAuthStore } from "@/stores/authStore";
+import { useChatStore } from "@/stores/chatStore";
+
+const chatStore = useChatStore();
+
+const unreadSupportMessages = computed(() => {
+  if (rol === "empresa") {
+    return chatStore.unreadMessages[authStore.getCompanyId] || 0;
+  }
+
+  // Si es soporte o superusuario, cuenta todos
+  return Object.values(chatStore.unreadMessages).filter(v => v > 0).length;
+});
+
 
 const authStore = useAuthStore();
 const rol = authStore.getRol?.toLowerCase?.() || "empresa";
+console.log("🔍 unreadMessages:", chatStore.unreadMessages);
+console.log("📌 unreadSupportMessages:", unreadSupportMessages.value);
 
 // Todas las opciones posibles
 const allItems = [
