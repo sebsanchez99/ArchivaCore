@@ -8,13 +8,10 @@
                 <WalletIcon class="w-4" />
                 <h3>Gestionar Suscripción</h3>
             </button>
-            <button class="btn btn-ghost btn-circle hover:bg-primary-400 border-none shadow-2xl">
-                <BellIcon class="w-7 text-white" />
-            </button>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { BellIcon, WalletIcon } from "@heroicons/vue/24/solid";
+import { WalletIcon } from "@heroicons/vue/24/solid";
 </script>
