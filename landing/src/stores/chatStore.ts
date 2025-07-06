@@ -11,6 +11,7 @@ export const useChatStore = defineStore("chat", {
     loading: false,
     connectionStatus: "offline" as ChatConnectionStatus,
     rooms: {} as Record<string, string>,
+    unreadMessages: {} as Record<string, number>,
     chatStarted: false,
   }),
   actions: {
@@ -47,5 +48,20 @@ export const useChatStore = defineStore("chat", {
     setRoom(chatId: string, room: string) {
       this.rooms[chatId] = room;
     },
+    markAsUnread(chatId: string) {
+      if (!this.unreadMessages[chatId]) {
+        this.unreadMessages[chatId] = 1;
+      } else {
+        this.unreadMessages[chatId]++;
+      }
+    },
+    markAsRead(chatId: string) {
+      console.log(`Marking chat ${chatId} as read`);
+
+      this.unreadMessages[chatId] = 0;
+    },
+    hasUnreadMessages(empresaId: string) {
+      return this.unreadMessages[empresaId] > 0;
+    }
   },
 });
