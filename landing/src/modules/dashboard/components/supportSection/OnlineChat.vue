@@ -92,21 +92,32 @@
 
                 <!-- Mensajes -->
                 <div ref="chatContainer" class="flex-1 overflow-y-auto py-4 space-y-2">
-                    <div v-for="(msg, index) in chatStore.messages[empresaId] || []"
-                        :key="index" :class="getMessageClass(msg.from)">
-                        <div v-if="msg.from === 'agent'" class="chat-image avatar pa-3">
-                            <div class="bg-accent-200 text-white rounded-full p-3 shadow font-bold">
-                                AS
+                    <div v-for="(msg, index) in chatStore.messages[empresaId] || []" :key="index">
+                        <!-- Sistema -->
+                        <div v-if="msg.from === 'system'" class="text-center my-2">
+                            <span
+                                class="inline-block bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-full shadow-sm">
+                                {{ msg.text }}
+                            </span>
+                        </div>
+
+                        <!-- Agente o usuario -->
+                        <div v-else :class="getMessageClass(msg.from)">
+                            <div v-if="msg.from === 'agent'" class="chat-image avatar pa-3">
+                                <div class="bg-accent-200 text-white rounded-full p-3 shadow font-bold">
+                                    AS
+                                </div>
+                            </div>
+                            <div class="chat-header text-xs text-text-300 flex justify-between ml-2 font-semibold">
+                                {{ getMessageHeader(msg.from) }}
+                                <time class="ml-2">{{ msg.time }}</time>
+                            </div>
+                            <div class="chat-bubble text-text-400 text-sm bg-primary-100">
+                                {{ msg.text }}
                             </div>
                         </div>
-                        <div class="chat-header text-xs text-text-300 flex justify-between ml-2 font-semibold">
-                            {{ getMessageHeader(msg.from) }}
-                            <time class="ml-2">{{ msg.time }}</time>
-                        </div>
-                        <div class="chat-bubble text-text-400 text-sm bg-primary-100">
-                            {{ msg.text }}
-                        </div>
                     </div>
+
                 </div>
 
                 <!-- Input -->

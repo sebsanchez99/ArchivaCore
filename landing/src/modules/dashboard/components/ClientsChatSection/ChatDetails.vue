@@ -32,28 +32,39 @@
 
             <!-- Mensajes -->
             <div ref="chatContainer" class="flex-1 overflow-y-auto py-4 space-y-4">
-                <div v-for="(msg, index) in messages" :key="index" :class="getMessageClass(msg.from)">
-                    <template v-if="msg.from === 'user'">
-                        <!-- Avatar del cliente -->
-                        <div class="chat-image avatar mr-2">
-                            <div class="bg-accent-200 text-white rounded-full font-bold p-3 shadow">
-                                {{ getInitials(chat.name) }}
-                            </div>
-                        </div>
-                    </template>
-
-                    <div>
-                        <!-- Cabecera -->
-                        <div class="chat-header text-xs text-primary-600 flex justify-between ml-2 font-semibold">
-                            {{ msg.from === 'agent' ? 'Agente Soporte' : chat.name }}
-                            <time class="ml-2">{{ msg.time }}</time>
-                        </div>
-                        <!-- Burbuja de mensaje -->
-                        <div class="chat-bubble text-text-400 text-sm bg-primary-100">
+                <div v-for="(msg, index) in messages" :key="index">
+                    <!-- Mensajes del sistema -->
+                    <div v-if="msg.from === 'system'" class="text-center my-2">
+                        <span class="inline-block bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-full shadow-sm">
                             {{ msg.text }}
+                        </span>
+                    </div>
+
+                    <!-- Mensajes normales (cliente o asesor) -->
+                    <div v-else :class="getMessageClass(msg.from)">
+                        <template v-if="msg.from === 'user'">
+                            <!-- Avatar del cliente -->
+                            <div class="chat-image avatar mr-2">
+                                <div class="bg-accent-200 text-white rounded-full font-bold p-3 shadow">
+                                    {{ getInitials(chat.name) }}
+                                </div>
+                            </div>
+                        </template>
+
+                        <div>
+                            <!-- Cabecera -->
+                            <div class="chat-header text-xs text-primary-600 flex justify-between ml-2 font-semibold">
+                                {{ msg.from === 'agent' ? 'Agente Soporte' : chat.name }}
+                                <time class="ml-2">{{ msg.time }}</time>
+                            </div>
+                            <!-- Burbuja de mensaje -->
+                            <div class="chat-bubble text-text-400 text-sm bg-primary-100">
+                                {{ msg.text }}
+                            </div>
                         </div>
                     </div>
                 </div>
+
             </div>
 
 
@@ -144,23 +155,23 @@ watch(() => props.messages, async () => {
 
 // Escuchar solo los mensajes del room actual
 onMounted(() => {
-  systemHandler = (data) => {
-    if (!props.chat) return;
+    systemHandler = (data) => {
+        if (!props.chat) return;
 
-    console.log("[FRONT] Mensaje del sistema recibido:", data);
-    console.log(authStore.getRol);
+        console.log("[FRONT] Mensaje del sistema recibido:", data);
+        console.log(authStore.getRol);
 
-    if (data.type === "agent-disconnect" && authStore.getRol === "Asesor") return;
-    if (data.type === "user-disconnect" && authStore.getRol === "Empresa") return;
+        if (data.type === "agent-disconnect" && authStore.getRol === "Asesor") return;
+        if (data.type === "user-disconnect" && authStore.getRol === "Empresa") return;
 
-    chatStore.addMessageToChat(props.chat.id, data.message, "system");
-  };
+        chatStore.addMessageToChat(props.chat.id, data.message, "system");
+    };
 
-  onSystemMessage(systemHandler);
+    onSystemMessage(systemHandler);
 });
 
 onUnmounted(() => {
-  // Desuscribirse del evento al desmontar
-  offSystemMessage(systemHandler);
+    // Desuscribirse del evento al desmontar
+    offSystemMessage(systemHandler);
 });
 </script>
