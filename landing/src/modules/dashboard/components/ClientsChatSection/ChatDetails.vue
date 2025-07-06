@@ -30,7 +30,7 @@
             </div>
 
             <!-- Mensajes -->
-            <div ref="chatContainer" class="flex-1 overflow-y-auto py-4 space-y-4">
+            <div ref="chatContainer" class="flex-1 overflow-y-auto py-4 space-y-4 scroll-smooth">
                 <div v-for="(msg, index) in messages" :key="index">
                     <!-- Mensajes del sistema -->
                     <div v-if="msg.from === 'system'" class="text-center my-2">
@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick, onMounted, computed, onUnmounted } from "vue";
+import { ref, watch, nextTick, onMounted, computed, onUnmounted, onUpdated } from "vue";
 import {
     ChatBubbleBottomCenterTextIcon,
     PaperAirplaneIcon,
@@ -145,6 +145,14 @@ function getInitials(name: string) {
     return name.trim().substring(0, 2).toUpperCase();
 }
 
+function scrollToBottom() {
+  nextTick(() => {
+    if (chatContainer.value) {
+      chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+    }
+  });
+}
+
 function getMessageClass(from: "user" | "agent" | "system") {
     if (from === "agent") return "chat chat-end";
     if (from === "system") return "chat chat-center";
@@ -152,11 +160,12 @@ function getMessageClass(from: "user" | "agent" | "system") {
 }
 
 // Auto-scroll al recibir nuevos mensajes
-watch(() => props.messages, async () => {
-    await nextTick();
-    if (chatContainer.value) {
-        chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
-    }
+watch(() => props.messages, () => {
+  scrollToBottom();
+}, { deep: true });
+
+onUpdated(() => {
+  scrollToBottom();
 });
 
 // Escuchar solo los mensajes del room actual

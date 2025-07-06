@@ -91,7 +91,7 @@
                 </div>
 
                 <!-- Mensajes -->
-                <div ref="chatContainer" class="flex-1 overflow-y-auto py-4 space-y-2">
+                <div ref="chatContainer" class="flex-1 overflow-y-auto py-4 space-y-2 scroll-smooth">
                     <div v-for="(msg, index) in chatStore.messages[empresaId] || []" :key="index">
                         <!-- Sistema -->
                         <div v-if="msg.from === 'system'" class="text-center my-2">
