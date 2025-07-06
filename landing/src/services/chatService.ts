@@ -127,6 +127,11 @@ export function endChat(empresaId: string, room: string) {
   }
 }
 
+export function offSystemMessage(callback: (data: { message: string, from: string, type: string }) => void) {
+  if (socket) socket.off("system-message", callback);
+}
+
+
 /**
  * Desconecta el chat.
  */

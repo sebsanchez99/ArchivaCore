@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick, onMounted, computed } from "vue";
+import { ref, watch, nextTick, onMounted, computed, onUnmounted } from "vue";
 import {
     ChatBubbleBottomCenterTextIcon,
     PaperAirplaneIcon,
@@ -82,11 +82,13 @@ import { useAuthStore } from "@/stores/authStore";
 import {
     sendMessageToRoom,
     endChat as endChatService,
-    onSystemMessage
+    onSystemMessage,
+    offSystemMessage
 } from "@/services/chatService";
 import type { ChatMessage } from "@/interfaces/chat";
 
 const props = defineProps<{ chat: any; messages: ChatMessage[] }>();
+let systemHandler: (data: any) => void;
 const emit = defineEmits(["chatFinalizado"]);
 
 const chatStore = useChatStore();
@@ -142,15 +144,23 @@ watch(() => props.messages, async () => {
 
 // Escuchar solo los mensajes del room actual
 onMounted(() => {
-    onSystemMessage((data) => {
-        if (!props.chat) return;
-        // Evita mostrar el mensaje si es sobre el asesor desconectado Y el asesor es quien lo está viendo
-        if (data.type === "agent-disconnect" && (authStore.getRol === "Asesor" || authStore.getRol === "Superusuario")) return;
-        if (data.type === "chat-ended" && (authStore.getRol === "Asesor" || authStore.getRol === "Superusuario")) return;
-        if (data.type === "user-disconnect" && authStore.getRol === "Empresa") return;
+  systemHandler = (data) => {
+    if (!props.chat) return;
 
-        chatStore.addMessageToChat(props.chat.id, data.message, "system");
-    });
+    console.log("[FRONT] Mensaje del sistema recibido:", data);
+    console.log(authStore.getRol);
 
+    if (data.type === "agent-disconnect" && authStore.getRol === "Asesor") return;
+    if (data.type === "user-disconnect" && authStore.getRol === "Empresa") return;
+
+    chatStore.addMessageToChat(props.chat.id, data.message, "system");
+  };
+
+  onSystemMessage(systemHandler);
+});
+
+onUnmounted(() => {
+  // Desuscribirse del evento al desmontar
+  offSystemMessage(systemHandler);
 });
 </script>
