@@ -29,6 +29,7 @@ function handleJoin(socket, { userId, role, nombreEmpresa }, context) {
       if (!empresa.socket?.connected) continue
       assignEmpresaToAsesor(empresa, { socket, userId }, context)
     }
+
   } else if (['Usuario', 'Empresa'].includes(role)) {
     const asesores = Array.from(context.asesores.values())
       .filter(({ socket }) => socket.connected)
@@ -37,8 +38,18 @@ function handleJoin(socket, { userId, role, nombreEmpresa }, context) {
       context.empresasPendientes.push({ userId, socket, nombreEmpresa })
       emitSinAsesor(socket)
     } else {
-      const asesor = asesores[0]
-      assignEmpresaToAsesor({ userId, socket, nombreEmpresa }, asesor, context)
+      // 🔄 Asignación por menor carga
+      const asesorConMenorCarga = asesores.reduce((min, curr) => {
+        const currCount = (context.empresasAsignadas.get(curr.userId) || []).length
+        const minCount = (context.empresasAsignadas.get(min.userId) || []).length
+        return currCount < minCount ? curr : min
+      })
+
+      assignEmpresaToAsesor(
+        { userId, socket, nombreEmpresa },
+        asesorConMenorCarga,
+        context
+      )
     }
   }
 }
