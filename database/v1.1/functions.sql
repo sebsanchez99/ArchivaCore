@@ -888,13 +888,14 @@ CREATE OR REPLACE FUNCTION insertar_chat_mensaje(
     p_remitente UUID,
     p_destinatario UUID,
     p_mensaje TEXT,
-    p_empresa UUID
+    p_empresa UUID,
+    p_room VARCHAR
 ) RETURNS UUID AS $$
 DECLARE
     v_id UUID;
 BEGIN
-    INSERT INTO ChatMensaje (Chat_Remitente, Chat_Destinatario, Chat_Mensaje, Chat_Empresa)
-    VALUES (p_remitente, p_destinatario, p_mensaje, p_empresa)
+    INSERT INTO ChatMensaje (Chat_Remitente, Chat_Destinatario, Chat_Mensaje, Chat_Empresa, Chat_Room)
+    VALUES (p_remitente, p_destinatario, p_mensaje, p_empresa, p_room)
     RETURNING Chat_ID INTO v_id;
     RETURN v_id;
 END;
@@ -902,9 +903,7 @@ $$ LANGUAGE plpgsql;
 
 -- Listar mensajes entre dos usuarios (en una empresa)
 CREATE OR REPLACE FUNCTION listar_chat_mensajes(
-    p_remitente UUID,
-    p_destinatario UUID,
-    p_empresa UUID
+    p_room VARCHAR
 ) RETURNS TABLE (
     chat_id UUID,
     remitente UUID,
@@ -916,9 +915,7 @@ BEGIN
     RETURN QUERY
     SELECT Chat_ID, Chat_Remitente, Chat_Destinatario, Chat_Mensaje, Chat_Fecha
     FROM ChatMensaje
-    WHERE ((Chat_Remitente = p_remitente AND Chat_Destinatario = p_destinatario)
-        OR (Chat_Remitente = p_destinatario AND Chat_Destinatario = p_remitente))
-      AND Chat_Empresa = p_empresa
+    WHERE Chat_Room = p_room
     ORDER BY Chat_Fecha ASC;
 END;
 $$ LANGUAGE plpgsql;
@@ -952,5 +949,36 @@ CREATE OR REPLACE FUNCTION eliminar_chat_mensaje(
 BEGIN
     DELETE FROM ChatMensaje WHERE Chat_ID = p_chat_id;
     RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION eliminar_mensajes_por_room(
+    p_room VARCHAR
+) RETURNS INTEGER AS $$
+DECLARE
+    v_count INTEGER;
+BEGIN
+    DELETE FROM ChatMensaje
+    WHERE Chat_Room = p_room
+    RETURNING 1 INTO v_count;
+
+    RETURN COALESCE(v_count, 0);
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION listar_rooms_usuario(
+    p_usuario UUID
+) RETURNS TABLE (
+    room VARCHAR,
+    ultimo_mensaje TIMESTAMP
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT Chat_Room, MAX(Chat_Fecha) as ultimo_mensaje
+    FROM ChatMensaje
+    WHERE Chat_Remitente = p_usuario OR Chat_Destinatario = p_usuario
+    GROUP BY Chat_Room
+    ORDER BY ultimo_mensaje DESC;
 END;
 $$ LANGUAGE plpgsql;
