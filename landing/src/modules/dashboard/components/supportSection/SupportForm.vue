@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-primary-50 p-6 rounded shadow w-full max-w-lg mx-auto h-[500px]">
+    <div class="bg-primary-50 p-6 rounded shadow w-full max-w-lg mx-auto h-[80vh]">
         <div class="flex items-center gap-2">
             <EnvelopeIcon class="w-5 text-accent-500" />
             <h2 class="text-xl font-semibold text-text-500 mb-1">Enviar una consulta</h2>

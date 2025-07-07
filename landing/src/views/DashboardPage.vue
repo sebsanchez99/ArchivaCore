@@ -14,7 +14,11 @@
 
             <div
                 class="p-5 bg-white h-[calc(100vh-4rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-primary-400 scrollbar-track-primary-100">
-                <RouterView />
+                <RouterView v-slot="{ Component }">
+                    <KeepAlive :include="['SupportSection', 'ClientsChatSection']">
+                        <component :is="Component" />
+                    </KeepAlive>
+                </RouterView>
             </div>
 
 

@@ -41,6 +41,6 @@ router.use('/supa', passport.authenticate('jwt', { session: false }), checkRole(
 router.use('/web/auth', authWebRouter)
 
 
-router.use('/web/supabase', supabaseWebRouter)
+router.use('/web/supabase', passport.authenticate('jwt', { session: false }), supabaseWebRouter)
 
 module.exports = router;
