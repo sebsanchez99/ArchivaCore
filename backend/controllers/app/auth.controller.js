@@ -16,7 +16,7 @@ const ResponseUtil = require('../../utils/response.util')
  */
 const login = async (req, res) => {
     try {
-        const { _usu_id, _usu_activo, _rol_nombre, _emp_id, _emp_nombre} = req.user   
+        const { _usu_id, _usu_nombre, _usu_activo, _rol_nombre, _emp_id, _emp_nombre} = req.user   
         const authHelper = new AuthHelper()
         const payload = {
             userId: _usu_id,
@@ -36,7 +36,13 @@ const login = async (req, res) => {
             return res.json(ResponseUtil.fail('Su plan ha expirado. Contacte con el administrador.'))
         }      
         const token = authHelper.generateToken(payload)
-        res.json(ResponseUtil.success('Token generado exitosamente', token))      
+        res.json(ResponseUtil.success('Token generado exitosamente', {
+            token,
+            userId: _usu_id,
+            username: req.user._usu_nombre,
+            userRole: _rol_nombre,
+            companyName: _emp_nombre,
+        }))
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
     }
