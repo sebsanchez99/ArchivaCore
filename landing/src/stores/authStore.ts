@@ -39,8 +39,6 @@ export const useAuthStore = defineStore("auth", {
     getCompanyName: (state) => {
       if (state.companyName) return state.companyName;
       const data = localStorage.getItem("authData");
-      console.log(data);
-      
       return data ? JSON.parse(data).companyName : null;
     },
     getActive: (state) => {
@@ -143,8 +141,6 @@ export const useAuthStore = defineStore("auth", {
         this.error = null;
         const response = await authService.loginCompany(payload);
         const serverResponse = response.data as ServerResponseModel;
-        console.log(serverResponse.data);
-        
         this.loading = false;
         if (!serverResponse.result) {
           this.error = serverResponse.data?.message || "Usuario o contraseña incorrectos";

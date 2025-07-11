@@ -222,7 +222,6 @@ function addOrUpdateChat(empresaId: string, room: string, nombreEmpresa: string)
       messages: [],
     };
     chats.value.push(chat);
-    console.log("[FRONT] Chat agregado:", chat);
     if (!selectedChatId.value) selectedChatId.value = empresaId;
   }
 
@@ -231,8 +230,6 @@ function addOrUpdateChat(empresaId: string, room: string, nombreEmpresa: string)
   if (selectedChatId.value === empresaId) {
     chatStore.setRoom(empresaId, room);
   }
-
-  console.log("[FRONT] Estado actual de chats:", chats.value);
 }
 
 defineOptions({ name: 'ClientsChatSection' });
