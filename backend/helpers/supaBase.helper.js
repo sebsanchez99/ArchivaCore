@@ -106,7 +106,8 @@ class SupaBaseHelper {
   }
 
   async calculateTotalStorage(companyName) {
-    const structure = await this.#builderStructure(companyName, '', true);
+    const lowerCompanyName = companyName.toLowerCase().replace(/\s+/g, '')
+    const structure = await this.#builderStructure(lowerCompanyName, '', true);
     if (!structure) {
       return ResponseUtil.fail('No se pudo calcular el almacenamiento total');
     }
@@ -190,10 +191,10 @@ class SupaBaseHelper {
     const documents = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'rtf'];
     const videos = ['mp4', 'mov', 'avi', 'mkv', 'webm', 'flv'];
 
-    if (images.includes(extension)) return 'images';
-    if (documents.includes(extension)) return 'documents';
+    if (images.includes(extension)) return 'imágenes';
+    if (documents.includes(extension)) return 'documentos';
     if (videos.includes(extension)) return 'videos';
-    return 'others';
+    return 'otros';
   }
 
   async #createRecicleFolder(companyName) {

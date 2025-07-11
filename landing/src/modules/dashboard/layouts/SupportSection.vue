@@ -18,4 +18,6 @@
 <script lang="ts" setup>
 import OnlineChat from "@/modules/dashboard/components/supportSection/OnlineChat.vue";
 import SupportForm from "@/modules/dashboard/components/supportSection/SupportForm.vue";
+
+defineOptions({ name: 'SupportSection' })
 </script>

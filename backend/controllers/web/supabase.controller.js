@@ -3,7 +3,7 @@ const SupabaseHelper = require('../../helpers/supaBase.helper')
 
 const getTotalStorage = async (req, res) => {
     try {
-        const { companyName } = req.body
+        const { companyName } = req.user
         const supabaseHelper = new SupabaseHelper()
         const result = await supabaseHelper.calculateTotalStorage(companyName)
         res.json(result)
