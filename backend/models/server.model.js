@@ -8,7 +8,7 @@ const { createServer } = require("node:http")
 const { configServer } = require("../config/config")
 const router = require("../router/router")
 const passport = require("../middlewares/passport/passport")
-const WebSocketServer = require("./websocket.model")
+const WebSocketServer = require("../websocket/websocketserver")
 
 /**
  * Representa el servidor Express.

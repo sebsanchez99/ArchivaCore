@@ -354,6 +354,7 @@ RETURNS TABLE (
     _Emp_Correo VARCHAR(150),
     _Emp_Hash TEXT,
     _Emp_Activo BOOLEAN,
+    _Emp_FechaInicioPlan DATE,
     _Plan_Nombre VARCHAR(100),
     _Plan_Duracion INT,
     _Plan_Almacenamiento BIGINT,
@@ -369,6 +370,7 @@ BEGIN
         e.Emp_Correo,
         e.Emp_Hash,
         e.Emp_Activo,
+        e.Emp_FechaInicioPlan,
         p.Plan_Nombre,
         p.Plan_Duracion,
         p.Plan_Almacenamiento,
@@ -874,5 +876,109 @@ BEGIN
     DELETE FROM LogActividad WHERE Log_Fecha < p_fecha_limite RETURNING 1 INTO v_count_actividad;
     DELETE FROM LogEmpresa WHERE LogEmp_Fecha < p_fecha_limite RETURNING 1 INTO v_count_empresa;
     RETURN COALESCE(v_count_actividad, 0) + COALESCE(v_count_empresa, 0);
+END;
+$$ LANGUAGE plpgsql;
+
+-- ===============================================
+-- ========== FUNCIONES DE CHAT ========
+-- ===============================================
+
+-- Insertar mensaje en chat
+CREATE OR REPLACE FUNCTION insertar_chat_mensaje(
+    p_remitente UUID,
+    p_destinatario UUID,
+    p_mensaje TEXT,
+    p_empresa UUID,
+    p_room VARCHAR
+) RETURNS UUID AS $$
+DECLARE
+    v_id UUID;
+BEGIN
+    INSERT INTO ChatMensaje (Chat_Remitente, Chat_Destinatario, Chat_Mensaje, Chat_Empresa, Chat_Room)
+    VALUES (p_remitente, p_destinatario, p_mensaje, p_empresa, p_room)
+    RETURNING Chat_ID INTO v_id;
+    RETURN v_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Listar mensajes entre dos usuarios (en una empresa)
+CREATE OR REPLACE FUNCTION listar_chat_mensajes(
+    p_room VARCHAR
+) RETURNS TABLE (
+    chat_id UUID,
+    remitente UUID,
+    destinatario UUID,
+    mensaje TEXT,
+    fecha TIMESTAMP
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT Chat_ID, Chat_Remitente, Chat_Destinatario, Chat_Mensaje, Chat_Fecha
+    FROM ChatMensaje
+    WHERE Chat_Room = p_room
+    ORDER BY Chat_Fecha ASC;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Listar últimos mensajes por usuario en una empresa (bandeja de entrada)
+CREATE OR REPLACE FUNCTION listar_ultimos_chats_usuario(
+    p_usuario UUID,
+    p_empresa UUID
+) RETURNS TABLE (
+    chat_id UUID,
+    remitente UUID,
+    destinatario UUID,
+    mensaje TEXT,
+    fecha TIMESTAMP
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT DISTINCT ON (LEAST(Chat_Remitente, Chat_Destinatario), GREATEST(Chat_Remitente, Chat_Destinatario))
+        Chat_ID, Chat_Remitente, Chat_Destinatario, Chat_Mensaje, Chat_Fecha
+    FROM ChatMensaje
+    WHERE (Chat_Remitente = p_usuario OR Chat_Destinatario = p_usuario)
+      AND Chat_Empresa = p_empresa
+    ORDER BY LEAST(Chat_Remitente, Chat_Destinatario), GREATEST(Chat_Remitente, Chat_Destinatario), Chat_Fecha DESC;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Eliminar mensaje por ID
+CREATE OR REPLACE FUNCTION eliminar_chat_mensaje(
+    p_chat_id UUID
+) RETURNS BOOLEAN AS $$
+BEGIN
+    DELETE FROM ChatMensaje WHERE Chat_ID = p_chat_id;
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION eliminar_mensajes_por_room(
+    p_room VARCHAR
+) RETURNS INTEGER AS $$
+DECLARE
+    v_count INTEGER;
+BEGIN
+    DELETE FROM ChatMensaje
+    WHERE Chat_Room = p_room
+    RETURNING 1 INTO v_count;
+
+    RETURN COALESCE(v_count, 0);
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION listar_rooms_usuario(
+    p_usuario UUID
+) RETURNS TABLE (
+    room VARCHAR,
+    ultimo_mensaje TIMESTAMP
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT Chat_Room, MAX(Chat_Fecha) as ultimo_mensaje
+    FROM ChatMensaje
+    WHERE Chat_Remitente = p_usuario OR Chat_Destinatario = p_usuario
+    GROUP BY Chat_Room
+    ORDER BY ultimo_mensaje DESC;
 END;
 $$ LANGUAGE plpgsql;

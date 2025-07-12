@@ -115,7 +115,7 @@ class AdminHelper{
         return ResponseUtil.success('Roles obtenidos con éxito', result.rows)
     }
 
-    async changeUserState(userId, currentIdUser, newState) {
+    async changeUserState(userId, currentIdUser, newState) {        
         if(userId === currentIdUser){
             return ResponseUtil.fail('Operación inválida.')
         }

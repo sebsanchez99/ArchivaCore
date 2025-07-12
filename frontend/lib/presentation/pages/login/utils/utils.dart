@@ -1,13 +1,16 @@
 part of '../view/login_view.dart';
 
-// Ejecuta método de bloc para autenticar usuario
+// Ejecuta método de loginBloc para autenticar usuario
 void _submit(BuildContext context) async {
-  final LoginBloc bloc = context.read();
-  final result = await bloc.authUser();
+  final LoginBloc loginBloc = context.read<LoginBloc>();
+  final Globalcubit globalBloc = context.read<Globalcubit>();
+  final result = await loginBloc.authUser();
   // Verifica que el contexto siga siendo válido antes de interactuar con la UI
   if (context.mounted) {
     result.when(
       right: (response) {
+        final user = UserSessionModel.fromJson(response.data);
+        globalBloc.setUser(user);
         response.result ? Navigator.pushReplacementNamed(context, '/home') : _showAlertDialog(context, response.message);
       },  
       left: (failure) => _showAlertDialog(context,'Credenciales incorrectas. Intente de nuevo.' ),

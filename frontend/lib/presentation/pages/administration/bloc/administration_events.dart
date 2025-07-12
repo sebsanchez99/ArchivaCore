@@ -22,7 +22,13 @@ class AdministrationEvents with _$AdministrationEvents {
   //Evento que elimina a los usuarios
   factory AdministrationEvents.deleteUsers({
     required String userID,
-  }) = DeleteUserEvent;
+  })
+   = DeleteUserEvent;
+  //Evento que elimina a los usuarios
+  factory AdministrationEvents.changeUserState({
+    required String userID,
+    required bool state,
+  }) = ChangeUserStateEvent;
 
   factory AdministrationEvents.changeRole({
     required String role,

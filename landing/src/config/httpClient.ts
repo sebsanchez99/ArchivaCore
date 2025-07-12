@@ -11,7 +11,15 @@ const httpClient = axios.create({
 // Interceptores de solicitud
 httpClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("authToken");
+    const authData = localStorage.getItem("authData");
+    let token = null;
+    if (authData) {
+      try {
+        token = JSON.parse(authData).token;
+      } catch (e) {
+        token = null;
+      }
+    }
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

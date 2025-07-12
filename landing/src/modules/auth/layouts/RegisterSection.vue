@@ -23,6 +23,15 @@
           placeholder="Ingrese el nombre de su empresa"
         />
 
+        <!-- Empresa -->
+        <FormField
+          id="fullname"
+          label="Nombre completo del representante"
+          v-model="fields.fullname"
+          :error="errors.fullname"
+          placeholder="Ingrese el nombre completo del representante"
+        />
+
         <!-- Contraseña -->
         <PasswordField
           id="password"
@@ -63,10 +72,37 @@
           </template>
         </button>
 
-        <!-- Mensaje de error -->
-        <p v-if="authStore.error" class="text-red-500 text-sm mt-2 text-center">
-          {{ authStore.error }}
-        </p>
+        <div
+          v-if="result && result.result"
+          class="alert alert-success mt-4 shadow-lg"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" color="white">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2l4-4" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+          </svg>
+          <span class="text-white">{{ result.message }}</span>
+        </div>
+
+        <div
+          v-else-if="result && result.message"
+          class="alert alert-error mt-4 shadow-lg"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" color="white">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-1.414-1.414A9 9 0 105.636 18.364l1.414 1.414A9 9 0 1018.364 5.636z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01" />
+          </svg>
+          <span class="text-white">{{ result.message }}</span>
+        </div>
+        <div
+          v-else-if="authStore.error"
+          class="alert alert-error mt-4 shadow-lg"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" color="white">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-1.414-1.414A9 9 0 105.636 18.364l1.414 1.414A9 9 0 1018.364 5.636z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01" />
+          </svg>
+          <span class="text-white">{{ authStore.error }}</span>
+        </div>
       </form>
 
       <p class="text-center text-sm text-gray-600 mt-4">
@@ -77,29 +113,33 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { onMounted, ref } from "vue";
 import { useFormValidation } from "@/composables/useFormValidation";
 import { useTogglePassword } from "@/composables/useTogglePassword";
 import { useAuthStore } from "@/stores/authStore";
+import { validEmail, onlyLettersAndSpaces, strongPassword, passwordsMatch, required } from "@/utils/validators";
+import type { ServerResponseModel } from "@/interfaces/serverResponseModel";
 import FormField from "@/components/inputs/FormField.vue";
 import PasswordField from "@/components/inputs/PasswordField.vue";
-import { onMounted } from "vue";
-import { useRouter } from "vue-router";
+
+const result = ref<ServerResponseModel | null>(null);
 
 // Form validation setup
 const { fields, errors, validateAll } = useFormValidation(
   {
     companyEmail: "",
     companyName: "",
+    fullname: "",
     password: "",
     confirmPassword: "",
   },
   {
-    companyEmail: (value) => (!value.includes("@") ? "El correo electrónico debe ser válido" : null),
-    companyName: (value) => (value.length < 3 ? "El nombre de la empresa debe tener al menos 3 caracteres" : null),
-    password: (value) => (value.length < 5 ? "La contraseña debe tener al menos 5 caracteres" : null),
-    confirmPassword: (value, fields) =>
-      value !== fields.password ? "Las contraseñas no coinciden" : null,
+    companyEmail: [required, validEmail],
+    companyName: [required, onlyLettersAndSpaces],
+    fullname: [required, onlyLettersAndSpaces],
+    password: [required, strongPassword],
+    confirmPassword: [required, passwordsMatch],
   }
 );
 
@@ -109,7 +149,6 @@ const { showPassword: showConfirmPassword, togglePassword: toggleConfirmPassword
 
 // Auth store
 const authStore = useAuthStore();
-const router = useRouter();
 
 // Limpiar el error al montar la vista
 onMounted(() => {
@@ -118,24 +157,15 @@ onMounted(() => {
 
 // Register function
 const register = async () => {
-  if (!validateAll()) {
-    return;
-  }
-
-  try {
-    console.log("Registrando empresa:", fields.companyName, fields.companyEmail, fields.password);
-    
-    const response = await authStore.registerCompany({
-      companyName: fields.companyName,
-      companyEmail: fields.companyEmail,
-      password: fields.password,
-    });
-
-    if (response.result) {
-      router.push("/login");
-    }
-  } catch (error) {
-    console.error("Error al registrar la empresa:", error);
-  }
+  if (!validateAll()) return;
+  authStore.loading = true;
+  const response = await authStore.registerCompany({
+    companyName: fields.companyName,
+    fullname: fields.fullname,
+    companyEmail: fields.companyEmail,
+    password: fields.password,
+  });
+  result.value = response;
+  authStore.loading = false;
 };
 </script>

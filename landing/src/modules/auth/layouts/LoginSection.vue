@@ -6,17 +6,30 @@
 
       <form @submit.prevent="login">
         <!-- Correo Electrónico -->
-        <FormField id="email" label="Correo Electrónico" v-model="fields.companyEmail" :error="errors.companyEmail"
-          placeholder="ejemplo@correo.com" />
+        <FormField
+          id="email"
+          label="Correo Electrónico"
+          v-model="fields.companyEmail"
+          :error="errors.companyEmail"
+          placeholder="ejemplo@correo.com"
+        />
 
         <!-- Contraseña -->
-        <PasswordField id="password" label="Contraseña" v-model="fields.password" :error="errors.password"
-          :show-password="showPassword" @toggle-password="togglePassword" />
+        <PasswordField
+          id="password"
+          label="Contraseña"
+          v-model="fields.password"
+          :error="errors.password"
+          :show-password="showPassword"
+          @toggle-password="togglePassword"
+        />
 
         <!-- Botón de Inicio de Sesión -->
-        <button type="submit"
+        <button 
+          type="submit"
           class="w-full bg-primary-500 text-white py-2 mt-2 rounded-lg font-semibold shadow-sm hover:bg-primary-600 transition cursor-pointer"
-          :disabled="authStore.loading">
+          :disabled="authStore.loading"
+        >
           <template v-if="authStore.loading">
             <svg class="animate-spin h-5 w-5 mr-2 inline-block text-white" xmlns="http://www.w3.org/2000/svg"
               fill="none" viewBox="0 0 24 24">
@@ -31,9 +44,16 @@
         </button>
 
         <!-- Mensaje de error -->
-        <p v-if="authStore.error" class="text-red-500 text-sm mt-2 text-center">
-          {{ authStore.error }}
-        </p>
+        <div
+          v-if="authStore.error"
+          class="alert alert-error mt-4 shadow-lg"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" color="white">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-1.414-1.414A9 9 0 105.636 18.364l1.414 1.414A9 9 0 1018.364 5.636z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01" />
+          </svg>
+          <span class="text-white">{{ authStore.error }}</span>
+        </div>  
       </form>
 
       <p class="text-center text-sm text-gray-600 mt-4">
@@ -45,13 +65,14 @@
 </template>
 
 <script setup>
+import { onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { useFormValidation } from "@/composables/useFormValidation";
 import { useTogglePassword } from "@/composables/useTogglePassword";
 import { useAuthStore } from "@/stores/authStore";
+import { required } from "@/utils/validators";
 import FormField from "@/components/inputs/FormField.vue";
 import PasswordField from "@/components/inputs/PasswordField.vue";
-import { onMounted } from "vue";
-import { useRouter } from "vue-router";
 
 // Form validation setup
 const { fields, errors, validateAll } = useFormValidation(
@@ -60,8 +81,8 @@ const { fields, errors, validateAll } = useFormValidation(
     password: "",
   },
   {
-    companyEmail: (value) => (!value.includes("@") ? "El correo electrónico debe ser válido" : null),
-    password: (value) => (value.length < 6 ? "La contraseña debe tener al menos 6 caracteres" : null),
+    companyEmail: [required],
+    password: [required],
   }
 );
 
@@ -80,18 +101,13 @@ onMounted(() => {
 
 // Función de inicio de sesión
 const login = async () => {
-  if (!validateAll()) {
-    console.log("Errores en el formulario:", errors);
-    return;
-  }
+  if (!validateAll()) return
+  authStore.loading = true;
   const response = await authStore.loginCompany({
     companyEmail: fields.companyEmail,
     password: fields.password,
   });
-  if (response.result) {
-    console.log("Inicio de sesión exitoso");
-    router.replace({ name: "dashboard" });
-  }
-
+  authStore.loading = false;
+  if (response.result) router.replace({ name: "dashboard" });
 };
 </script>

@@ -34,6 +34,7 @@ class _CustomInputState extends State<CustomInput> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: widget.controller,
       maxLines: widget.maxLines ?? 1,
       enabled: widget.enabled, 
       validator: widget.validator,

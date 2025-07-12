@@ -50,7 +50,7 @@ adminRouter.get('/getRoles', getRoles);
 /**
  * @memberof Rutas.AdminRoutes
  * @name delete/api/v1/admin/changeUserState
- * @description Obtiene los roles disponibles en el sistema.
+ * @description Cambia el estado del usuario.
  */
 adminRouter.put('/changeUserState', changeUserState);
 

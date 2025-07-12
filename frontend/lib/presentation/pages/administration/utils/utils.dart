@@ -38,3 +38,15 @@ Future<void> _showInfoDialog(BuildContext context, String userID) async {
     ),
   );
 }
+
+Future<void> _showInfoChangeStateDialog(BuildContext context, String userID, bool state) async {
+  final bloc = context.read<AdministrationBloc>();
+  final dialogPhrase = state ? 'activar' : 'desactivar';
+  return showDialog(
+    context: context,
+    builder:(context) => InfoDialog(
+      message: '¿Desea $dialogPhrase el usuario?',
+      onPressed: () => bloc.add(ChangeUserStateEvent(userID: userID, state: state)),
+    ),
+  );
+}

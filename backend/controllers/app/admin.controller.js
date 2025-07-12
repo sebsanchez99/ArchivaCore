@@ -99,10 +99,10 @@ const getRoles = async (req, res) => {
 
 const changeUserState = async (req, res) => {
     try {
-        const { id } = req.user
+        const { userId } = req.user
         const { idRol, newState } = req.body
         const adminHelper = new AdminHelper()
-        const result = await adminHelper.changeUserState(idRol, id, newState)
+        const result = await adminHelper.changeUserState(idRol, userId, newState)
         res.json(result)
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))

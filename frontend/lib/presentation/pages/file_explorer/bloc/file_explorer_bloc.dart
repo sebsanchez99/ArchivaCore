@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/domain/models/folder_model.dart';
 import 'package:frontend/domain/models/folder_response.dart';
 import 'package:frontend/domain/repositories/file_explorer_repository.dart';
-import 'package:frontend/presentation/global/enums/file_explorer_view_type.dart';
+import 'package:frontend/domain/enums/file_explorer_view_type.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_events.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_state.dart';
 

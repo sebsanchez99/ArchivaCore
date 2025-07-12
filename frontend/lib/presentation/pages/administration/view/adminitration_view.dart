@@ -201,13 +201,13 @@ class TableRow extends DataTableSource {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-              icon: Icon(
-                user.active ? Icons.toggle_on : Icons.toggle_off,
-                color: user.active ? Colors.green : Colors.grey,
-                size: 30,
-              ),
-              tooltip: user.active ? 'Desactivar' : 'Activar',
-              onPressed: () {},
+                icon: Icon(
+                  user.active ? Icons.toggle_on : Icons.toggle_off,
+                  color: user.active ? Colors.green : Colors.grey,
+                  size: 30,
+                ),
+                tooltip: user.active ? 'Desactivar' : 'Activar',
+                onPressed: () => _showInfoChangeStateDialog(context, user.id, !user.active),
               ),
               IconButton(
                 icon: Icon(Icons.edit, color: SchemaColors.primary800),

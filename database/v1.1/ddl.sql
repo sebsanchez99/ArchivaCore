@@ -98,6 +98,7 @@ CREATE TABLE ChatMensaje(
     Chat_Remitente UUID NOT NULL,
     Chat_Destinatario UUID,
     Chat_Mensaje TEXT NOT NULL,
+    Chat_Room VARCHAR(100) NOT NULL, 
     Chat_Fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Chat_Empresa UUID NOT NULL,
     FOREIGN KEY (Chat_Remitente) REFERENCES Usuario(Usu_ID) ON DELETE CASCADE,

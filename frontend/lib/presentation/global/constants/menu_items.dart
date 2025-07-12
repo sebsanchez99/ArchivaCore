@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/presentation/pages/chat/view/chat_view.dart';
 import 'package:frontend/presentation/pages/recycling/view/recycling_view.dart';
 import 'package:frontend/presentation/pages/notification/notification_view.dart';
 import 'package:frontend/presentation/pages/resume_analizer/view/resume_analizer_view.dart';
@@ -20,7 +21,7 @@ final Map<int, Map<String, dynamic>> menuItems = {
   },
   2: {
     "title": "Notificaciones",
-    "icon": Icon(Icons.folder),
+    "icon": Icon(Icons.notifications),
     "widget": NotificationView(),
   },
   3: {
@@ -28,9 +29,14 @@ final Map<int, Map<String, dynamic>> menuItems = {
     "icon": Icon(LucideIcons.bot),
     "widget": ResumeAnalizerView(),
   },
-  3: {
+  4: {
     "title": "Reciclaje",
     "icon": Icon(Icons.delete),
     "widget": RecyclingView(),
+  },
+  5: {
+    "title": "Soporte",
+    "icon": Icon(Icons.support_agent),
+    "widget": ChatView(),
   },
 };
