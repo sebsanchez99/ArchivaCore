@@ -34,7 +34,7 @@ class LoginBloc extends Bloc<LoginEvents, LoginState> {
     await result.whenOrNull(
       right: (response) async{
         if (response.result) {
-         await  _secureStorage.setToken(response.data);
+         await  _secureStorage.setToken(response.data['token']);
         }
       }
     );

@@ -13,7 +13,8 @@
         <!-- Subtítulo -->
         <p class="text-base text-text-500 max-w-md mb-6">
           Estás desconectado del chat de soporte. Conéctate para empezar a recibir mensajes de los clientes.<br />
-          <span class="text-xs text-primary-400 block mt-3 font-bold">Recuerda mantenerte disponible durante tu turno.</span>
+          <span class="text-xs text-primary-400 block mt-3 font-bold">Recuerda mantenerte disponible durante tu
+            turno.</span>
         </p>
 
         <!-- Botón de conexión -->
@@ -84,11 +85,15 @@ import {
   onSocketReconnecting,
   onSocketError,
 } from "@/services/chatService";
+
 import { useChatStore } from "@/stores/chatStore";
 import { useAuthStore } from "@/stores/authStore";
+
 import ChatListPanel from "@/modules/dashboard/components/ClientsChatSection/ChatListPanel.vue";
 import ChatDetails from "@/modules/dashboard/components/ClientsChatSection/ChatDetails.vue";
 import ConnectionStatusBar from "@/modules/dashboard/components/ClientsChatSection/ConnectionStatusBar.vue";
+import type { Chat } from "@/interfaces/chat";
+
 import {
   ChatBubbleOvalLeftEllipsisIcon,
   ArrowRightOnRectangleIcon,
@@ -97,23 +102,15 @@ import {
 const chatStore = useChatStore();
 const authStore = useAuthStore();
 
-interface Chat {
-  id: string;
-  name: string;
-  online: boolean;
-  time: string;
-  messages: any[];
-}
-
 const username = authStore.getUsername;
+const userId = authStore.getUserId;
+const role = authStore.getRol;
+
 const chats = ref<Chat[]>([]);
-
 const selectedChatId = ref<string | null>(null);
-const selectChat = (id: string) => {
-  selectedChatId.value = id;
-  chatStore.markAsRead(id); 
-};
+const connected = ref(false);
 
+const connectionStatus = computed(() => chatStore.connectionStatus);
 const selectedChat = computed(() =>
   chats.value.find(chat => chat.id === selectedChatId.value) || null
 );
@@ -123,11 +120,14 @@ const selectedChatMessages = computed(() => {
   return chatStore.messages[selectedChat.value.id] || [];
 });
 
-const connected = ref(false);
-const connectionStatus = computed(() => chatStore.connectionStatus);
+function getCurrentTime(): string {
+  return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
 
-const userId = authStore.getUserId;
-const role = authStore.getRol;
+function selectChat(id: string) {
+  selectedChatId.value = id;
+  if (chatStore.connected) chatStore.markAsRead(id);
+}
 
 function connectSupport() {
   chatStore.setConnectionStatus('connecting');
@@ -142,38 +142,44 @@ function connectSupport() {
   onSocketDisconnect(() => {
     chatStore.setConnected(false);
     chatStore.setConnectionStatus("offline");
+    chats.value.forEach(chat => {
+      chat.online = false;
+      if (selectedChatId.value !== chat.id) {
+        chatStore.markAsUnread(chat.id);
+      }
+    });
   });
 
   onSocketReconnecting(() => {
     chatStore.setConnectionStatus("reconnecting");
+    chats.value.forEach(chat => chat.online = false);
+  });
+  onSocketError(() => chatStore.setConnectionStatus("offline"));
+
+  onEmpresaAsignada(({ empresaId, room, nombreEmpresa }) => {
+    addOrUpdateChat(empresaId, room, nombreEmpresa);
   });
 
-  onSocketError(() => {
-    chatStore.setConnectionStatus("offline");
+  onEmpresasAsignadas(empresas => {
+    empresas.forEach(({ empresaId, room, nombreEmpresa }) => {
+      addOrUpdateChat(empresaId, room, nombreEmpresa);
+    });
   });
 
-  // El resto igual...
-  onEmpresaAsignada((data) => {
-    addOrUpdateChat(data.empresaId, data.room, data.nombreEmpresa);
-  });
-
-  onEmpresasAsignadas((empresas) => {
-    empresas.forEach(e => addOrUpdateChat(e.empresaId, e.room, e.nombreEmpresa));
-  });
-
-  onEmpresaStatus((data) => {
-    const chat = chats.value.find(c => c.id === data.empresaId);
-    if (chat) chat.online = data.online;
+  onEmpresaStatus(({ empresaId, online }) => {
+    const chat = chats.value.find(c => c.id === empresaId);
+    if (chat) chat.online = online;
   });
 
   onMessage(({ from, message, room }) => {
-    const chatId = Object.keys(chatStore.rooms).find(key => chatStore.rooms[key] === room);
+    const chatId = Object.keys(chatStore.rooms).find(id => chatStore.rooms[id] === room);
     if (!chatId) return;
+
     const fromType = from === userId ? "agent" : "user";
     chatStore.addMessageToChat(chatId, message, fromType);
 
     const chat = chats.value.find(c => c.id === chatId);
-    if (chat) chat.time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    if (chat) chat.time = getCurrentTime();
 
     if (selectedChatId.value !== chatId) {
       chatStore.markAsUnread(chatId);
@@ -183,31 +189,27 @@ function connectSupport() {
 
 function handleDisconnect() {
   disconnectChat();
+  resetChatState();
+}
+
+function resetChatState() {
   connected.value = false;
-  selectedChatId.value = null;
   chats.value = [];
+  selectedChatId.value = null;
   chatStore.clearMessages();
   chatStore.setRoom("", "");
-  connected.value = false;
-  chatStore.setConnectionStatus('offline');
+  chatStore.setConnected(false);
+  chatStore.setConnectionStatus("offline");
 }
 
 function onFinalizedChat(chatId: string) {
-  // Eliminar el chat de la lista
-  chats.value = chats.value.filter(c => c.id !== chatId);
-
-  // Limpiar mensajes del store
+  chats.value = chats.value.filter(chat => chat.id !== chatId);
   chatStore.clearMessages(chatId);
-
-  // Borrar el room del store
   chatStore.setRoom(chatId, "");
-
-  // Si el chat eliminado era el seleccionado, deseleccionarlo
   if (selectedChatId.value === chatId) {
     selectedChatId.value = null;
   }
 }
-
 
 function addOrUpdateChat(empresaId: string, room: string, nombreEmpresa: string) {
   let chat = chats.value.find(c => c.id === empresaId);
@@ -216,22 +218,19 @@ function addOrUpdateChat(empresaId: string, room: string, nombreEmpresa: string)
       id: empresaId,
       name: nombreEmpresa,
       online: true,
-      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      messages: []
+      time: getCurrentTime(),
+      messages: [],
     };
     chats.value.push(chat);
-    console.log("[FRONT] Chat agregado:", chat);
     if (!selectedChatId.value) selectedChatId.value = empresaId;
   }
 
-  // Registrar room en el store
   chatStore.setRoom(empresaId, room);
 
   if (selectedChatId.value === empresaId) {
     chatStore.setRoom(empresaId, room);
   }
-
-  console.log("[FRONT] Estado actual de chats:", chats.value);
 }
+
 defineOptions({ name: 'ClientsChatSection' });
 </script>

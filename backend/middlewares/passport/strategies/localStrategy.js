@@ -17,6 +17,25 @@ async function isPasswordValid(password, hash) {
   return await bcrypt.compare(password, hash)
 }
 
+async function authenticateEntity({ query, identifier, password, fieldHash }, done) {
+  try {
+    const result = await pool.query(query, [identifier]);
+    if (result.rows.length === 0) {
+      return done(null, false, { message: "No encontrado" });
+    }
+
+    const entity = result.rows[0];
+    const isMatch = await bcrypt.compare(password, entity[fieldHash]);
+    if (!isMatch) {
+      return done(null, false, { message: "Contraseña incorrecta" });
+    }
+
+    return done(null, entity);
+  } catch (error) {
+    return done(error);
+  }
+}
+
 /**
  * Autenticación para empresa o usuario soporte/superadmin.
  */

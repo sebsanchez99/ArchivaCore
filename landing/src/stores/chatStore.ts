@@ -14,54 +14,61 @@ export const useChatStore = defineStore("chat", {
     unreadMessages: {} as Record<string, number>,
     chatStarted: false,
   }),
+
   actions: {
     setChatStarted(value: boolean) {
       this.chatStarted = value;
     },
 
-    addMessageToChat(chatId: string, text: string, from: "user" | "agent" | "system") {
-      const now = new Date();
-      const time = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-      if (!this.messages[chatId]) this.messages[chatId] = [];
+    addMessageToChat(chatId: string, text: string, from: ChatMessage["from"]) {
+      const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+      if (!this.messages[chatId]) {
+        this.messages[chatId] = [];
+      }
+
       this.messages[chatId].push({ text, from, time });
     },
+
     clearMessages(chatId?: string) {
       if (chatId) {
-        this.messages[chatId] = [];
+        delete this.messages[chatId];
       } else {
         this.messages = {};
       }
     },
+
     setConnected(status: boolean) {
       this.connected = status;
       this.connectionStatus = status ? "online" : "offline";
     },
+
     setAgentOnline(status: boolean) {
       this.agentOnline = status;
     },
+
     setLoading(status: boolean) {
       this.loading = status;
     },
+
     setConnectionStatus(status: ChatConnectionStatus) {
       this.connectionStatus = status;
     },
+
     setRoom(chatId: string, room: string) {
       this.rooms[chatId] = room;
     },
-    markAsUnread(chatId: string) {
-      if (!this.unreadMessages[chatId]) {
-        this.unreadMessages[chatId] = 1;
-      } else {
-        this.unreadMessages[chatId]++;
-      }
-    },
-    markAsRead(chatId: string) {
-      console.log(`Marking chat ${chatId} as read`);
 
+    markAsUnread(chatId: string) {
+      this.unreadMessages[chatId] = (this.unreadMessages[chatId] || 0) + 1;
+    },
+
+    markAsRead(chatId: string) {
       this.unreadMessages[chatId] = 0;
     },
-    hasUnreadMessages(empresaId: string) {
-      return this.unreadMessages[empresaId] > 0;
-    }
+
+    hasUnreadMessages(chatId: string): boolean {
+      return (this.unreadMessages[chatId] || 0) > 0;
+    },
   },
 });
