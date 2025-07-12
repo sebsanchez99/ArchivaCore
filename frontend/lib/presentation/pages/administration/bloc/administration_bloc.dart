@@ -21,6 +21,7 @@ class AdministrationBloc extends Bloc<AdministrationEvents, AdministrationState>
     on<PutUserEvent>(_onPutUser);
     on<DeleteUserEvent>(_onDelete);
     on<ChangeRoleEvent>(_onChangeRole);
+    on<ChangeUserStateEvent>(_onChangeUserState);
     on<ChangePasswordEvent>(_onChangePassword);
     on<ChangeUsernameEvent>(_onChangeUsername);
     on<ChangeFullnameEvent>(_onChangeFullname);
@@ -101,6 +102,21 @@ class AdministrationBloc extends Bloc<AdministrationEvents, AdministrationState>
   Future<void> _onDelete(DeleteUserEvent event, Emitter<AdministrationState> emit) async {
     emit(AdministrationState.loading());
     final result = await _administrationRepository.deleteUsers(event.userID);
+    emit(
+      result.when(
+        right: (response) {
+          add(AdministrationEvents.initialize());
+          return AdministrationState.loaded(response: response);
+        },
+        left: (failure) => AdministrationState.failed(failure),
+      ),
+    );
+  }
+
+  //Método que actualiza estado de usuario
+  Future<void> _onChangeUserState(ChangeUserStateEvent event, Emitter<AdministrationState> emit) async {
+    emit(AdministrationState.loading());
+    final result = await _administrationRepository.changeUserState(event.userID, event.state);
     emit(
       result.when(
         right: (response) {

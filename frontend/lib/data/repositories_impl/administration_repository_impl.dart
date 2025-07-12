@@ -48,4 +48,9 @@ class AdministrationRepositoryImpl implements AdministrationRepository {
       orElse: () => <RoleModel>[]
     );
   }
+  
+  @override
+  HttpFuture<ServerResponseModel> changeUserState(String userID, bool state) {
+    return _administrationService.changeUserState(userID, state);
+  }
 }

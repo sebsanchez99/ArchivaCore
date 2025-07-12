@@ -76,5 +76,20 @@ class AdministrationService {
     (response) => ServerResponseModel.fromJson(response),
     );
   }
+
+  /// Envía una petición para obtener roles
+  /// [ServerResponseModel] con el resultado de la operación  
+  HttpFuture<ServerResponseModel> changeUserState(String userID, bool state){
+    return DioHandler.handleRequest(
+    () => _dio.put(
+      '/admin/changeUserState',
+      data: {
+        'idRol': userID,
+        'newState': state
+      }
+    ),
+    (response) => ServerResponseModel.fromJson(response),
+    );
+  }
 }
 

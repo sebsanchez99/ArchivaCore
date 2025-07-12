@@ -27,4 +27,6 @@ abstract class AdministrationRepository {
 
   /// Método que lista usuarios
   Future<List<RoleModel>> getRoles();
+
+  HttpFuture<ServerResponseModel> changeUserState(String userID, bool state);
 }
