@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/presentation/pages/chat/view/chat_view.dart';
 import 'package:frontend/presentation/pages/recycling/view/recycling_view.dart';
 import 'package:frontend/presentation/pages/resume_analizer/view/resume_analizer_view.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -26,5 +27,10 @@ final Map<int, Map<String, dynamic>> menuItems = {
     "title": "Reciclaje",
     "icon": Icon(Icons.delete),
     "widget": RecyclingView(),
+  },
+  5: {
+    "title": "Soporte",
+    "icon": Icon(Icons.support_agent),
+    "widget": ChatView(),
   },
 };
