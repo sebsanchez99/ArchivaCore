@@ -21,7 +21,7 @@ final Map<int, Map<String, dynamic>> menuItems = {
   },
   2: {
     "title": "Notificaciones",
-    "icon": Icon(Icons.folder),
+    "icon": Icon(Icons.notifications),
     "widget": NotificationView(),
   },
   3: {
@@ -29,7 +29,7 @@ final Map<int, Map<String, dynamic>> menuItems = {
     "icon": Icon(LucideIcons.bot),
     "widget": ResumeAnalizerView(),
   },
-  3: {
+  4: {
     "title": "Reciclaje",
     "icon": Icon(Icons.delete),
     "widget": RecyclingView(),

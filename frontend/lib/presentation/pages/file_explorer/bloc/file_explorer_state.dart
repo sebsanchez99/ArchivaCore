@@ -19,4 +19,4 @@ class FileExplorerState with _$FileExplorerState {
   }) = _LoadedState;
   //Estado de falla de la vista de archivos
   factory FileExplorerState.failed(HttpRequestFailure failure) = _FailedState;
-}
+} 

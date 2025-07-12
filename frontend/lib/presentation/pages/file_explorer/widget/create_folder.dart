@@ -1,4 +1,3 @@
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/drop_button.dart';
@@ -8,8 +7,7 @@ import 'package:frontend/presentation/widgets/folder/custom_folder.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 class CreateFolder extends StatelessWidget {
-  CreateFolder({super.key});
-
+  const CreateFolder({super.key});
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
