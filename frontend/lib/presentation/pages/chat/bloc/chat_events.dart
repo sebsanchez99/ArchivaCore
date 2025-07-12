@@ -26,6 +26,4 @@ class ChatEvents with _$ChatEvents {
   const factory ChatEvents.agentStatusUpdated(AgentStatusModel status) = AgentStatusUpdated;
 
   const factory ChatEvents.connectionStatusChanged(ConnectionStatusType status) = ConnectionStatusChanged;
-  const factory ChatEvents.messageChanged(String message) = MessageChanged;
-
 }

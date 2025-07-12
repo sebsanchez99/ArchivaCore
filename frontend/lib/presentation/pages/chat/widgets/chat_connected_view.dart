@@ -5,53 +5,23 @@ import 'package:frontend/presentation/global/cubit/globalcubit.dart';
 import 'package:frontend/presentation/pages/chat/bloc/chat_bloc.dart';
 import 'package:frontend/presentation/pages/chat/bloc/chat_events.dart';
 import 'package:frontend/presentation/pages/chat/bloc/chat_state.dart';
+import 'package:frontend/presentation/pages/chat/utils/utils.dart';
 import 'package:frontend/presentation/pages/chat/widgets/system_text_bubble.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_icon_button.dart';
 import 'package:frontend/presentation/widgets/custom_input.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-class ChatConnectedView extends StatefulWidget {
+class ChatConnectedView extends StatelessWidget {
   const ChatConnectedView({super.key});
 
   @override
-  State<ChatConnectedView> createState() => _ChatConnectedViewState();
-}
-
-class _ChatConnectedViewState extends State<ChatConnectedView> {
-  final ScrollController _scrollController = ScrollController();
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
-    });
-  }
-
-  void _sendMessage(BuildContext context, String message, String room, String userId) {
-    context.read<ChatBloc>().add(
-          ChatEvents.sendMessage(room: room, message: message, fromUserId: userId),
-        );
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final messageController = context.watch<ChatBloc>().messageController;
+    final scrollController = context.watch<ChatBloc>().scrollController;
+
     return BlocConsumer<ChatBloc, ChatState>(
-      listenWhen: (previous, current) =>
-          current.mapOrNull(loaded: (_) => true) ?? false,
-      listener: (context, state) {
-        _scrollToBottom();
-      },
+      listenWhen: (previous, current) => current.mapOrNull(loaded: (_) => true) ?? false,
+      listener: (context, state) => scrollToBottom(scrollController),
       builder: (context, state) {
         return state.map(
           loaded: (loadedState) {
@@ -59,7 +29,6 @@ class _ChatConnectedViewState extends State<ChatConnectedView> {
             final isAgentOnline = loadedState.agentOnline;
             final isChatFinalized = loadedState.isChatFinalized;
             final room = loadedState.currentRoom;
-            final message = loadedState.message;
             final userId = context.watch<Globalcubit>().state.user!.id;
 
             return Stack(
@@ -103,11 +72,7 @@ class _ChatConnectedViewState extends State<ChatConnectedView> {
                             icon: LucideIcons.powerOff,
                             message: "Finalizar chat",
                             backgroundColor: SchemaColors.error,
-                            onPressed: () {
-                              if (room != null) {
-                                context.read<ChatBloc>().add(ChatEvents.disconnect());
-                              }
-                            },
+                            onPressed: () => context.read<ChatBloc>().add(ChatEvents.disconnect()),
                           ),
                         ],
                       ),
@@ -116,7 +81,7 @@ class _ChatConnectedViewState extends State<ChatConnectedView> {
                     // Lista de eventos
                     Expanded(
                       child: ListView.builder(
-                        controller: _scrollController,
+                        controller: scrollController,
                         padding: const EdgeInsets.all(12),
                         itemCount: events.length,
                         itemBuilder: (context, index) {
@@ -147,33 +112,11 @@ class _ChatConnectedViewState extends State<ChatConnectedView> {
                                 ),
                               );
                             },
-                            systemMessage: (message, from, type) {
-                              return SystemTextBubble(
-                                message,
-                                icon: LucideIcons.info,
-                                color: SchemaColors.info,
-                              );
-                            },
-                            assignedAdvisor: (_, __, msg) {
-                              return SystemTextBubble(msg, icon: LucideIcons.userCheck, color: SchemaColors.success);
-                            },
-                            info: (msg) {
-                              return SystemTextBubble(msg, icon: LucideIcons.info, color: SchemaColors.info);
-                            },
-                            noAdvisor: (msg) {
-                              return SystemTextBubble(
-                                msg,
-                                icon: LucideIcons.alertTriangle,
-                                color: Colors.orangeAccent,
-                              );
-                            },
-                            error: (msg) {
-                              return SystemTextBubble(
-                                '❌ $msg',
-                                icon: LucideIcons.alertCircle,
-                                color: SchemaColors.error,
-                              );
-                            },
+                            systemMessage: (message, from, type) => SystemTextBubble(message, icon: LucideIcons.info, color: SchemaColors.info),
+                            assignedAdvisor: (_, __, msg) => SystemTextBubble(msg, icon: LucideIcons.userCheck, color: SchemaColors.success),
+                            info: (msg)  => SystemTextBubble(msg, icon: LucideIcons.info, color: SchemaColors.info),
+                            noAdvisor: (msg) => SystemTextBubble( msg, icon: LucideIcons.alertTriangle, color: Colors.orangeAccent),
+                            error: (msg) => SystemTextBubble( msg, icon: LucideIcons.alertCircle, color: SchemaColors.error),
                           );
                         },
                       ),
@@ -190,14 +133,13 @@ class _ChatConnectedViewState extends State<ChatConnectedView> {
                           children: [
                             Expanded(
                               child: CustomInput(
-                                onChanged: (text) => context.read<ChatBloc>().add(ChatEvents.messageChanged(text)),
+                                controller: messageController,
                                 enabled: isAgentOnline,
                                 hintText: isAgentOnline ? 'Escribe un mensaje...' : 'Esperando al agente',
                                 isPassword: false,
                                 onSubmitted: (_) {
-
                                   if (room != null) {
-                                    _sendMessage(context, message, room, userId);
+                                    sendMessage(context, room, userId, messageController);
                                   }
                                 },
                               ),
@@ -210,9 +152,7 @@ class _ChatConnectedViewState extends State<ChatConnectedView> {
                                 color: SchemaColors.primary300,
                               ),
                               child: IconButton(
-                                onPressed: isAgentOnline && room != null
-                                    ? () => _sendMessage(context, message, room, userId)
-                                    : null,
+                                onPressed: isAgentOnline && room != null ? () => sendMessage(context, room, userId, messageController) : null,
                                 icon: const Icon(LucideIcons.send, size: 20,),
                                 color: SchemaColors.neutral,
                               ),

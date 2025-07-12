@@ -15,6 +15,7 @@ class ChatBloc extends Bloc<ChatEvents, ChatState> {
   StreamSubscription<AgentStatusModel>? _statusSub;
   StreamSubscription<ConnectionStatusType>? _userconnectionStatus;
   final TextEditingController messageController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
 
   ChatBloc(super.initialState, {
     required ChatRepository chatRepository,
@@ -25,7 +26,6 @@ class ChatBloc extends Bloc<ChatEvents, ChatState> {
     on<ChatEventReceived>(_onChatEventReceived);
     on<AgentStatusUpdated>(_onAgentStatusChanged);
     on<ConnectionStatusChanged>(_onConnectionStatusChanged); 
-    on<MessageChanged>(_onMessageChanged); 
   }
 
   Future<void> _onConnect(ConnectEvent event, Emitter<ChatState> emit) async {
@@ -88,6 +88,7 @@ class ChatBloc extends Bloc<ChatEvents, ChatState> {
       },
       right: (_) {},
     );
+    messageController.clear();
   }
 
   void _onChatEventReceived(ChatEventReceived event, Emitter<ChatState> emit) {
@@ -123,18 +124,13 @@ class ChatBloc extends Bloc<ChatEvents, ChatState> {
     );
   }
 
-  void _onMessageChanged(MessageChanged event, Emitter<ChatState> emit) {
-    state.mapOrNull(
-      loaded: (loaded) => emit(loaded.copyWith(message: event.message)),
-    );
-  }
-
   @override
   Future<void> close() {
     _eventSub?.cancel();
     _statusSub?.cancel();
     _userconnectionStatus?.cancel();
     messageController.dispose();
+    scrollController.dispose();
     return super.close();
   }
 }

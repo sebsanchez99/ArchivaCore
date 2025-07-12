@@ -13,7 +13,6 @@ class ChatState with _$ChatState {
     @Default(false) bool agentOnline,
     @Default(false) bool isChatFinalized,
     String? errorMessage,
-    @Default('') String message,
   }) = _LoadedState;
 }
 
