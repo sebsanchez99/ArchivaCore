@@ -1,94 +1,101 @@
-const LocalStrategy = require('passport-local').Strategy
-const bcrypt = require('bcrypt')
-const pool = require('../../../libs/postgres')
+const { Strategy: LocalStrategy } = require('passport-local');
+const bcrypt = require('bcrypt');
+const pool = require('../../../libs/postgres');
+
+const QUERIES = {
+  EMPRESA: 'SELECT * FROM obtener_empresa_por_correo($1)',
+  USUARIO: 'SELECT * FROM obtener_usuario($1)',
+};
+
+const HASH_FIELDS = {
+  EMPRESA: '_emp_hash',
+  USUARIO: '_usu_hash',
+};
 
 /**
- * Obtiene una entidad (usuario o empresa) desde la base de datos.
+ * Ejecuta un query y devuelve la primera fila o null.
  */
-async function getEntity(query, identifier) {
-  const result = await pool.query(query, [identifier])
-  return result.rows[0] || null
+async function fetchEntity(query, identifier) {
+  const result = await pool.query(query, [identifier]);
+  return result.rows[0] || null;
 }
 
 /**
- * Compara la contraseña con el hash almacenado.
+ * Verifica una contraseña contra un hash.
  */
-async function isPasswordValid(password, hash) {
-  return await bcrypt.compare(password, hash)
+async function verifyPassword(plain, hash) {
+  return bcrypt.compare(plain, hash);
 }
 
-async function authenticateEntity({ query, identifier, password, fieldHash }, done) {
+/**
+ * Autentica una entidad usando query dinámico y campo hash.
+ */
+async function authenticateEntity({ query, identifier, password, hashField }, done) {
   try {
-    const result = await pool.query(query, [identifier]);
-    if (result.rows.length === 0) {
-      return done(null, false, { message: "No encontrado" });
-    }
+    const entity = await fetchEntity(query, identifier);
+    if (!entity) return done(null, false, { message: 'No encontrado' });
 
-    const entity = result.rows[0];
-    const isMatch = await bcrypt.compare(password, entity[fieldHash]);
-    if (!isMatch) {
-      return done(null, false, { message: "Contraseña incorrecta" });
-    }
+    const isValid = await verifyPassword(password, entity[hashField]);
+    if (!isValid) return done(null, false, { message: 'Contraseña incorrecta' });
 
     return done(null, entity);
-  } catch (error) {
-    return done(error);
+  } catch (err) {
+    return done(err);
   }
 }
 
 /**
- * Autenticación para empresa o usuario soporte/superadmin.
+ * Autenticación de empresas o usuarios especiales (Soporte / Superusuario).
  */
 async function authenticateCompanyOrSpecialUser({ identifier, password }, done) {
   try {
     // 1. Buscar empresa
-    let entity = await getEntity('SELECT * FROM obtener_empresa_por_correo($1)', identifier)
+    let entity = await fetchEntity(QUERIES.EMPRESA, identifier);
     if (entity) {
-      const valid = await isPasswordValid(password, entity['_emp_hash'])
-      if (!valid) return done(null, false, { message: 'Contraseña incorrecta' })
-      entity.rol = 'Empresa'
-      return done(null, entity)
+      const isValid = await verifyPassword(password, entity[HASH_FIELDS.EMPRESA]);
+      if (!isValid) return done(null, false, { message: 'Contraseña incorrecta' });
+
+      entity.rol = 'Empresa';
+      return done(null, entity);
     }
 
-    // 2. Buscar usuario soporte o superadmin
-    entity = await getEntity('SELECT * FROM obtener_usuario($1)', identifier)
-    
+    // 2. Buscar usuario Soporte o Superusuario
+    entity = await fetchEntity(QUERIES.USUARIO, identifier);
     if (entity && ['Soporte', 'Superusuario'].includes(entity._rol_nombre)) {
-      const valid = await isPasswordValid(password, entity['_usu_hash'])
-      if (!valid) return done(null, false, { message: 'Contraseña incorrecta' })
-      return done(null, entity)
+      const isValid = await verifyPassword(password, entity[HASH_FIELDS.USUARIO]);
+      if (!isValid) return done(null, false, { message: 'Contraseña incorrecta' });
+
+      return done(null, entity);
     }
 
-    // No encontrado
-    return done(null, false, { message: 'No encontrado' })
-  } catch (error) {
-    return done(error)
+    return done(null, false, { message: 'No encontrado' });
+  } catch (err) {
+    return done(err);
   }
 }
 
+// Estrategia para usuarios normales
+const localStrategy = new LocalStrategy(async (username, password, done) => {
+  await authenticateEntity({
+    query: QUERIES.USUARIO,
+    identifier: username,
+    password,
+    hashField: HASH_FIELDS.USUARIO,
+  }, done);
+});
+
+// Estrategia para empresa o usuario soporte/superadmin
 const localCompanyStrategy = new LocalStrategy(
   {
     usernameField: 'companyEmail',
-    passwordField: 'password'
+    passwordField: 'password',
   },
   async (companyEmail, password, done) => {
-    await authenticateCompanyOrSpecialUser({
-      identifier: companyEmail,
-      password
-    }, done)
+    await authenticateCompanyOrSpecialUser({ identifier: companyEmail, password }, done);
   }
-)
-
-const localStrategy = new LocalStrategy(async (username, password, done) => {
-  await authenticateEntity({
-    query: 'SELECT * FROM obtener_usuario($1)',
-    identifier: username,
-    password,
-    fieldHash: '_usu_hash'
-  }, done)
-})
+);
 
 module.exports = {
   localStrategy,
-  localCompanyStrategy
-}
+  localCompanyStrategy,
+};
