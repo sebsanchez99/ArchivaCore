@@ -10,13 +10,7 @@ class FileExplorerService {
 
   HttpFuture<ServerResponseModel> getFolders() {
     return DioHandler.handleRequest(
-      () => _dio.get(
-        '/supa/listFoldersForUser',
-        data: {
-          'companyName': 'empresa1',
-          'userName': 'usuario1'
-        }
-      ),
+      () => _dio.get('/supa/listFoldersForUser'),
       (response) => ServerResponseModel.fromJson(response),
     );
   }
