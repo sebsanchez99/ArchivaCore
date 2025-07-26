@@ -6,6 +6,7 @@ const adminAppRouter = require('./app/admin.router')
 const folderRouter = require('./app/folder.router')
 const authWebRouter = require('./web/auth.router')
 const supabaseWebRouter = require('./web/supabase.router')
+const adminWebRouter = require('./web/admin.router')
 
 const router = Router()
 
@@ -40,6 +41,7 @@ router.use('/supa', passport.authenticate('jwt', { session: false }), checkRole(
 // Ruta de autenticación
 router.use('/web/auth', authWebRouter)
 
+router.use('/web/admin', passport.authenticate('jwt', { session: false }), checkRole('Superusuario'), adminWebRouter)
 
 router.use('/web/supabase', passport.authenticate('jwt', { session: false }), supabaseWebRouter)
 
