@@ -335,12 +335,14 @@ RETURNS TABLE(
     _Emp_Nombre VARCHAR(150),
     _Emp_NombreCompleto VARCHAR(150),
     _Emp_Correo VARCHAR(150),
+    _Emp_FechaRegistro TIMESTAMP,
     _Emp_Activo BOOLEAN,
+    _Emp_FechaInicio DATE,
     _Plan_Nombre VARCHAR(100)
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT e.Emp_ID, e.Emp_Nombre, e.Emp_NombreCompleto, e.Emp_Correo, e.Emp_Activo, p.Plan_Nombre
+    SELECT e.Emp_ID, e.Emp_Nombre, e.Emp_NombreCompleto, e.Emp_Correo, e.Emp_Creado, e.Emp_Activo, e.Emp_FechaInicioPlan, p.Plan_Nombre
     FROM Empresa e
     JOIN Plan p ON e.Emp_Plan = p.Plan_ID;
 END;
@@ -815,16 +817,16 @@ $$ LANGUAGE plpgsql;
 -- Historial de auditoría general (LogActividad)
 CREATE OR REPLACE FUNCTION obtener_historial_actividad()
 RETURNS TABLE (
-    log_id UUID,
-    tabla VARCHAR(50),
-    registro UUID,
-    tipo VARCHAR(50),
-    descripcion TEXT,
-    fecha TIMESTAMP,
-    usuario UUID,
-    usuario_nombre VARCHAR(150),
-    datos_anteriores JSONB,
-    datos_nuevos JSONB
+    _log_id UUID,
+    _tabla VARCHAR(50),
+    _registro UUID,
+    _tipo VARCHAR(50),
+    _descripcion TEXT,
+    _fecha TIMESTAMP,
+    _usuario UUID,
+    _usuario_nombre VARCHAR(150),
+    _datos_anteriores JSONB,
+    _datos_nuevos JSONB
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -850,7 +852,8 @@ CREATE OR REPLACE FUNCTION eliminar_logs_actividad_antiguos(
 DECLARE
     v_count INTEGER;
 BEGIN
-    DELETE FROM LogActividad WHERE Log_Fecha < p_fecha_limite RETURNING 1 INTO v_count;
+    DELETE FROM LogActividad WHERE Log_Fecha < p_fecha_limite;
+    GET DIAGNOSTICS v_count = ROW_COUNT;
     RETURN COALESCE(v_count, 0);
 END;
 $$ LANGUAGE plpgsql;
