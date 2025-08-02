@@ -27,9 +27,9 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     emit(
       result.when(
         right: (response) {
-          final responseData = response.data as Map<String, dynamic>;
-          final content = FolderResponse.fromJson(responseData);
-          return FileExplorerState.loaded(viewType: FileExplorerViewType.list(), folders: content.folders, filteredFolders: content.folders, response: response);
+          final responseData = response.data;
+          List<FolderModel> folders = (responseData is Map<String, dynamic>) ? FolderResponse.fromJson(responseData).folders : [];
+          return FileExplorerState.loaded(viewType: FileExplorerViewType.list(), folders: folders, filteredFolders: folders, response: response);
         }, 
         left: (failure) => FileExplorerState.failed(failure),
       ),

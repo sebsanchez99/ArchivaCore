@@ -6,7 +6,7 @@ const {
     deleteAllFiles, 
     deleteCompany, 
     deleteFiles, 
-    createSubFolder
+    createFolder
 } = require('../../controllers/app/folder.controllers')
 
 const router = Router()
@@ -53,6 +53,6 @@ router.delete('/deleteCompany', deleteCompany)
  */
 router.delete('/deleteFiles', deleteFiles)
 
-router.post('/createSubFolder', createSubFolder)
+router.post('/createFolder', createFolder)
 
 module.exports = router

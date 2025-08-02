@@ -21,18 +21,6 @@ class AdminHelper{
         const result = await pool.query('SELECT * FROM listar_usuarios_por_empresa($1)', [companyId] )
         const usersList = result.rows
         return ResponseUtil.success('La operación se realizó con éxito', usersList)
-        
-    }
-
-    /**
-     * Método que obtiene id de rol
-     * @param {string} rolName Nombre de rol del usuario  
-     * @returns {ResponseUtil} Resultado de la operación en formato JSON
-     */
-    async obtenerRol(rolName){
-        const result = await pool.query('SELECT * FROM obtener_id_rol($1)', [rolName])
-        const idRol = result.rows[0].obtener_id_rol 
-        return idRol
     }
 
     /**
@@ -93,6 +81,60 @@ class AdminHelper{
         return ResponseUtil.success('Usuario eliminado con éxito')
 
     }
+    
+    async getRoles() {
+        const result = await pool.query('SELECT * FROM obtener_roles()')
+        return ResponseUtil.success('Roles obtenidos con éxito', result.rows)
+    }
+    
+    async changeUserState(userId, currentIdUser, newState) {        
+        if(userId === currentIdUser){
+            return ResponseUtil.fail('Operación inválida.')
+        }
+        await pool.query('SELECT * FROM cambiar_estado_usuario($1, $2)', [userId, newState])
+        return ResponseUtil.success('Estado de usuario actualizado con éxito')
+    }
+    
+    async getClients() {
+        const result = await pool.query('SELECT * FROM listar_empresas()')
+        const usersList = result.rows
+        return ResponseUtil.success('La operación se realizó con éxito', usersList)
+    }
+    
+    async changeCompanyPassword(companyId, newPassword) {
+        const hashPassword = await bcrypt.hash( newPassword ,  10 )
+        await pool.query('SELECT * FROM cambiar_contrasena_empresa($1, $2)', [companyId, hashPassword])
+        return ResponseUtil.success('Se ha actualizado la contraseña de la empresa correctamente.')
+    }
+
+    async changeCompanyState(companyId, newState) {
+        await pool.query('SELECT * FROM cambiar_estado_empresa($1, $2)', [companyId, newState])
+        const resultPhrase = newState ? 'activado' : 'desactivado' 
+        return ResponseUtil.success(`Se ha ${resultPhrase} la empresa con éxito.`)
+    }
+
+    async deleteCompany(companyId) {
+        await pool.query('SELECT * FROM eliminar_empresa($1)', [companyId])
+        return ResponseUtil.success('Se ha eliminado la empresa con éxito.')
+    }
+
+    async getLogs() {
+        const result = await pool.query('SELECT * FROM obtener_historial_actividad()')
+        const logs = result.rows
+        return ResponseUtil.success('Historial obtenido con éxito', logs)
+    }
+
+    async getCompanyLogs(companyId) {
+        const result = await pool.query('SELECT * FROM obtener_historial_auditoria_empresa($1)', [companyId])
+        const companyLogs = result.rows
+        return ResponseUtil.success('Historial de empresa obtenido con éxito.', companyLogs)
+    }
+
+    async deleteLogs(date) {
+        const result = await pool.query('SELECT * FROM eliminar_logs_actividad_antiguos($1)', [date])
+        const deletedRecords = result.rows[0].eliminar_logs_actividad_antiguos
+        return ResponseUtil.success(`Se han eliminado ${deletedRecords} registros desde la fecha ${date} con éxito.`)
+    }
 
     /**
      * @private
@@ -108,19 +150,6 @@ class AdminHelper{
     async #verifyTotalOfUsers(companyId) {
         const result = await pool.query('SELECT * FROM empresa_puede_registrar_usuario($1)', [companyId])
         return result.rows[0].empresa_puede_registrar_usuario;
-    }
-       
-    async getRoles() {
-        const result = await pool.query('SELECT * FROM obtener_roles()')
-        return ResponseUtil.success('Roles obtenidos con éxito', result.rows)
-    }
-
-    async changeUserState(userId, currentIdUser, newState) {        
-        if(userId === currentIdUser){
-            return ResponseUtil.fail('Operación inválida.')
-        }
-        await pool.query('SELECT * FROM cambiar_estado_usuario($1, $2)', [userId, newState])
-        return ResponseUtil.success('Estado de usuario actualizado con éxito')
     }
 }    
 

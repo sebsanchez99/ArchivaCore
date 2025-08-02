@@ -28,11 +28,17 @@ const configSupaBase = {
     supaBaseKey: process.env.SUPABASE_API_KEY,
 }
 
+//Configurar servicio de Gemini
+const configGemini = {
+    geminiApiKey: process.env.GEMINI_API_KEY
+}
+
 
 module.exports = {
     configServer,
     configDB,
     configToken,
-    configSupaBase
+    configSupaBase,
+    configGemini
 }
 

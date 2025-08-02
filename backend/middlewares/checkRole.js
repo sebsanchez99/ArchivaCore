@@ -15,7 +15,7 @@
 const checkRole = (...allowedRoles) => {
     return (req, res, next) => {
       // Verificar si el rol del usuario está en la lista de roles permitidos
-      if (!allowedRoles.includes(req.user.role)) {
+      if (!allowedRoles.includes(req.user.role || req.user.rol)) {
         return res.status(403).json({ message: "Acceso no autorizado" });
       }
       next();

@@ -21,9 +21,8 @@ const ResponseUtil = require('../../utils/response.util')
 const folderListForUser = async(req, res) => {
     try {
         const { companyName } = req.user
-        const companyNameToLowerCase = companyName.toLowerCase().replace(/\s+/g, '')
         const supaBaseHelper = new SupaBaseHelper()
-        const result = await supaBaseHelper.folderListForUser(companyNameToLowerCase)
+        const result = await supaBaseHelper.folderListForUser(companyName)
         res.json(result)
     }catch (error){
         res.status(500).send(ResponseUtil.fail(error.message))
@@ -125,16 +124,17 @@ const deleteFiles = async(req, res) => {
 
 /**
  * @memberof Controladores.FolderController
- * @function createSubFolder
+ * @function createFolder
  * @description Controlador que permite crear subCarpetas en el bucket seleccionado de SupaBase Storage
  * @param {*} req 
  * @param {*} res 
  */
-const createSubFolder = async (req, res) => {
+const createFolder = async (req, res) => {
     try {
-        const { companyName, userName, folderName } = req.body;
+        const { companyName } = req.user
+        const { folderName, routeFolder } = req.body;
         const supaBaseHelper = new SupaBaseHelper();
-        const result = await supaBaseHelper.createSubFolder(companyName, `${userName}/${folderName}`, folderName);
+        const result = await supaBaseHelper.createFolder(companyName, routeFolder, folderName);
         res.json(result);
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message));
@@ -148,6 +148,6 @@ module.exports = {
     deleteAllFiles,
     deleteCompany,
     deleteFiles, 
-    createSubFolder
+    createFolder
 }
 

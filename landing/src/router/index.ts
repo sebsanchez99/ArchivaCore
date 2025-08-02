@@ -75,6 +75,11 @@ const router = createRouter({
           path: 'clients',
           name: 'clients',
           component: () => import('@/modules/dashboard/layouts/ClientsSection.vue')
+        },
+        {
+          path: 'logs',
+          name: 'logs',
+          component: () => import('@/modules/dashboard/layouts/LogsSection.vue')
         }
       ]
     }

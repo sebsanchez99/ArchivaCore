@@ -108,6 +108,15 @@ const login = async () => {
     password: fields.password,
   });
   authStore.loading = false;
-  if (response.result) router.replace({ name: "dashboard" });
+  if (response.result) {
+    const role = authStore.getRol;
+    const homeRoutesByRole = {
+      Empresa: 'dashboard',
+      Superusuario: 'dashboard/chat',
+      Asesor: 'dashboard/chat',
+    }
+    const target = homeRoutesByRole[role] || 'dashboard/home';
+    router.replace(target)
+  };
 };
 </script>
