@@ -9,6 +9,10 @@ void _submit(BuildContext context) async {
   if (context.mounted) {
     result.when(
       right: (response) {
+        if (response.result == false) {
+          _showAlertDialog(context, response.message);
+          return;
+        }
         final user = UserSessionModel.fromJson(response.data);
         globalBloc.setUser(user);
         response.result ? Navigator.pushReplacementNamed(context, '/home') : _showAlertDialog(context, response.message);
