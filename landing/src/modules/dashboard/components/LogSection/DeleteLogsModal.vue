@@ -45,6 +45,4 @@ defineExpose({ open })
 input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%);
 }
-
-
 </style>
