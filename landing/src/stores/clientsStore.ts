@@ -55,8 +55,6 @@ export const useClientsStore = defineStore('clients', {
         async fetchCompanyLogs(companyId: string | null) {
             try {
                 const response = await clientService.getCompanyLogs({ companyId })
-                console.log(response.data.data);
-                
                 this.companyLogs = response.data.data.map((l : any) => ({
                     id: l.log_id,
                     table: l.tabla,
@@ -95,6 +93,15 @@ export const useClientsStore = defineStore('clients', {
         async deleteCompany(companyId: string) {
             try {
                 const response = await clientService.deleteClient({ companyId })
+                this.response = response.data
+            } catch (error) {
+                this.error = 'Error interno del servidor'
+            }
+        },
+
+        async deleteLogs(date: string) {
+            try {
+                const response = await clientService.deleteLogs({ date })
                 this.response = response.data
             } catch (error) {
                 this.error = 'Error interno del servidor'
