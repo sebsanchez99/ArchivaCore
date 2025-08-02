@@ -7,6 +7,7 @@ const folderRouter = require('./app/folder.router')
 const authWebRouter = require('./web/auth.router')
 const supabaseWebRouter = require('./web/supabase.router')
 const adminWebRouter = require('./web/admin.router')
+const microRouter = require('../router/app/micro.router')
 
 const router = Router()
 
@@ -35,7 +36,7 @@ router.use('/admin', passport.authenticate('jwt', { session: false }), checkRole
  * @memberof Rutas
  * @description Rutas relacionadas con el Storage Supabase
 */
-router.use('/supa', passport.authenticate('jwt', { session: false }), checkRole('Usuario', 'Empresa', 'Administrador'),folderRouter)
+router.use('/supa', passport.authenticate('jwt', { session: false }), checkRole('Usuario', 'Empresa', 'Administrador'), folderRouter)
 
 // Rutas de página web
 // Ruta de autenticación
@@ -44,5 +45,9 @@ router.use('/web/auth', authWebRouter)
 router.use('/web/admin', passport.authenticate('jwt', { session: false }), checkRole('Superusuario'), adminWebRouter)
 
 router.use('/web/supabase', passport.authenticate('jwt', { session: false }), supabaseWebRouter)
+
+
+
+router.use("/microservice", passport.authenticate('jwt', {session: false}), checkRole('Administrador','Empresa', 'Superusuario'), microRouter)
 
 module.exports = router;
