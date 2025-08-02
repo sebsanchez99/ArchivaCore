@@ -37,6 +37,7 @@
             @delete="openDeleteModal"
             @changePassword="openChangePasswordModal"
             @toggleStatus="openChangeStateModal"
+            @showLogs="openCompanyLogs"
           />
           <tr v-if="filteredCompanies.length === 0">
             <td colspan="8" class="text-center py-4 text-gray-400">No se encontraron empresas</td>
@@ -88,6 +89,7 @@
     />
 
     <ChangePasswordModal ref="changePasswordModal" :company="selectedCompany" @passwordChanged="handleChangePassword" />
+    <CompanyLogDetails ref="companyLogDetails" :client="selectedCompany" @close="handleCancel" />
 
     <SuccessModal ref="successModal" @close="resetMessages" />
     <ErrorModal ref="errorModal" @close="resetMessages" />
@@ -95,7 +97,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useClientsStore } from '@/stores/clientsStore'
 
@@ -104,6 +106,7 @@ import ErrorModal from "@/components/modals/ErrorModal.vue"
 import SuccessModal from "@/components/modals/SuccessModal.vue"
 import CompanyRow from '@/modules/dashboard/components/ClientsSection/CompanyRow.vue'
 import ChangePasswordModal from '@/modules/dashboard/components/ClientsSection/ChangePasswordModal.vue'
+import CompanyLogDetails from '@/modules/dashboard/components/ClientsSection/CompanyLogDetails.vue'
 
 import {
   MagnifyingGlassIcon,
@@ -119,6 +122,7 @@ const { clients } = storeToRefs(clientsStore)
 const deleteModal = ref<InstanceType<typeof InfoModal> | null>(null)
 const changeStateModal = ref<InstanceType<typeof InfoModal> | null>(null)
 const changePasswordModal = ref<InstanceType<typeof ChangePasswordModal> | null>(null)
+const companyLogDetails = ref<InstanceType<typeof CompanyLogDetails> | null>(null)
 const successModal = ref<InstanceType<typeof SuccessModal> | null>(null)
 const errorModal = ref<InstanceType<typeof ErrorModal> | null>(null)
 
@@ -148,6 +152,10 @@ function openChangePasswordModal(company: Client) {
 function openChangeStateModal(company: Client) {
   selectedCompany.value = company
   changeStateModal.value?.open()
+}
+
+function openCompanyLogs(company: Client) {
+  selectedCompany.value = company
 }
 
 async function handleDeleteCompany() {
@@ -229,4 +237,6 @@ const paginatedCompanies = computed(() => {
 
 const startItem = computed(() => (currentPage.value - 1) * perPage)
 const endItem = computed(() => startItem.value + paginatedCompanies.value.length)
+
+onUnmounted(() => clientsStore.resetMessages())
 </script>
