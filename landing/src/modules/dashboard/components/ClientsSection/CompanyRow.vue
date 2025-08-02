@@ -44,11 +44,15 @@
                     class="btn btn-xs text-white hover:bg-primary-600 hover:border-none bg-primary-500 border-none">
                     Cambiar contraseña
                 </button>
-
+                
                 <button @click="$emit('toggleStatus', client)" :class="client.active
                     ? 'btn btn-xs bg-yellow-500 text-white hover:bg-yellow-600 border-none'
                     : 'btn btn-xs bg-green-500 text-white hover:bg-green-600 border-none'">
                     {{ client.active ? 'Desactivar' : 'Activar' }}
+                </button>
+                <button @click="$emit('showLogs', client)"
+                    class="btn btn-xs text-white hover:bg-cyan-600 hover:border-none bg-cyan-500 border-none">
+                    Ver actividad
                 </button>
             </div>
         </td>
@@ -60,7 +64,7 @@
 import type { Client } from '@/interfaces/client'
 
 defineProps<{ client: Client }>()
-defineEmits(['delete', 'changePassword', 'toggleStatus'])
+defineEmits(['delete', 'changePassword', 'toggleStatus', 'showLogs'])
 
 function formatDate(date: Date): string {
     return new Date(date).toLocaleDateString('es-ES', {
