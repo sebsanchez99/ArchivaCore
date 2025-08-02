@@ -55,17 +55,19 @@ export const useClientsStore = defineStore('clients', {
         async fetchCompanyLogs(companyId: string | null) {
             try {
                 const response = await clientService.getCompanyLogs({ companyId })
+                console.log(response.data.data);
+                
                 this.companyLogs = response.data.data.map((l : any) => ({
-                    id: l._log_id,
-                    table: l._tabla,
-                    register: l._registro,
-                    type: l._tipo,
-                    description: l._descripcion,
-                    date: new Date(l._fecha),
-                    user: l._usuario || null,
-                    username: l._usuario_nombre || null,
-                    oldData: l._datos_anteriores || null,
-                    newData: l._datos_nuevos || null
+                    id: l.log_id,
+                    table: l.tabla,
+                    register: l.registro,
+                    type: l.tipo,
+                    description: l.descripcion,
+                    date: new Date(l.fecha),
+                    user: l.usuario || null,
+                    username: l.usuario_nombre || null,
+                    oldData: l.datos_anteriores || null,
+                    newData: l.datos_nuevos || null
                 }))
             } catch (error) {
                 this.error = 'No se pudieron cargar los logs de la empresa'

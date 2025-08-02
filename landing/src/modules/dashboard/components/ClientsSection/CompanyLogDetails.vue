@@ -78,20 +78,6 @@
               <div><span class="font-medium text-gray-600">Usuario:</span> <span class="text-gray-800">{{ log.username || 'Desconocido' }}</span></div>
               <div><span class="font-medium text-gray-600">Usuario ID:</span> <span class="text-gray-800">{{ log.user || 'N/A' }}</span></div>
             </div>
-
-            <div class="mt-3">
-              <h4 class="text-xs font-semibold text-gray-500 mb-1">Datos anteriores:</h4>
-              <div class="overflow-auto max-h-52 rounded border border-gray-200 bg-white p-3 text-xs font-mono text-gray-700 whitespace-pre-wrap break-words">
-                {{ formatObject(log.oldData) }}
-              </div>
-            </div>
-
-            <div class="mt-3">
-              <h4 class="text-xs font-semibold text-gray-500 mb-1">Datos nuevos:</h4>
-              <div class="overflow-auto max-h-52 rounded border border-gray-200 bg-white p-3 text-xs font-mono text-gray-700 whitespace-pre-wrap break-words">
-                {{ formatObject(log.newData) }}
-              </div>
-            </div>
           </div>
 
           <!-- Paginación -->
