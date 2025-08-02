@@ -18,7 +18,7 @@ export default {
         return httpClient.put<ServerResponseModel>('/admin/updateState', payload)
     },
 
-    getCompanyLogs(payload: { companyyId: string }) {
+    getCompanyLogs(payload: { companyId: string | null}) {
         return httpClient.get<ServerResponseModel>('/admin/getCompanyLogs', { params: payload })
     },
 
