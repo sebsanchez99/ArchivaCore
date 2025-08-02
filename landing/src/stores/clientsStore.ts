@@ -2,13 +2,16 @@ import { defineStore } from "pinia";
 import clientService from "@/services/clientsService";
 import type { Client } from "@/interfaces/client";
 import type { ServerResponseModel } from "@/interfaces/serverResponseModel";
+import type { Log } from "@/interfaces/log";
 
 export const useClientsStore = defineStore('clients', {
     state: () => ({
         loading: false,
         error: null as string | null,
         response: null as ServerResponseModel | null,
-        clients:[]  as Client[]
+        clients:[]  as Client[],
+        logs: [] as Log[],
+        companyLogs: [] as Log[]
     }),
     actions: {
         async fetchClients() {
@@ -26,6 +29,46 @@ export const useClientsStore = defineStore('clients', {
                 }))
             } catch (error) {
                 this.error = 'No se pudieron cargar los clientes';
+            }
+        },
+
+        async fecthLogs() {
+            try {
+                const response = await clientService.getLogs()
+                this.logs = response.data.data.map((l : any) => ({
+                    id: l._log_id,
+                    table: l._tabla,
+                    register: l._registro,
+                    type: l._tipo,
+                    description: l._descripcion,
+                    date: new Date(l._fecha),
+                    user: l._usuario || null,
+                    username: l._usuario_nombre || null,
+                    oldData: l._datos_anteriores || null,
+                    newData: l._datos_nuevos || null
+                }))
+            } catch (error) {
+                this.error = 'No se pudieron cargar los logs'
+            }
+        },
+
+        async fetchCompanyLogs(companyId: string | null) {
+            try {
+                const response = await clientService.getCompanyLogs({ companyId })
+                this.companyLogs = response.data.data.map((l : any) => ({
+                    id: l._log_id,
+                    table: l._tabla,
+                    register: l._registro,
+                    type: l._tipo,
+                    description: l._descripcion,
+                    date: new Date(l._fecha),
+                    user: l._usuario || null,
+                    username: l._usuario_nombre || null,
+                    oldData: l._datos_anteriores || null,
+                    newData: l._datos_nuevos || null
+                }))
+            } catch (error) {
+                this.error = 'No se pudieron cargar los logs de la empresa'
             }
         },
         
