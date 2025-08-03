@@ -51,7 +51,6 @@ RETURNS TABLE (
     usu_id UUID,
     usu_nombre VARCHAR(100),
     usu_nombre_completo VARCHAR(150),
-    usu_rol INT,
     rol_nombre VARCHAR(100),
     usu_activo BOOLEAN
 ) AS $$
@@ -61,7 +60,6 @@ BEGIN
         u.Usu_ID,
         u.Usu_Nombre,
         u.Usu_NombreCompleto,
-        u.Usu_Rol,
         r.Rol_Nombre,
         u.Usu_Activo
     FROM Usuario u
