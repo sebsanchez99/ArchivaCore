@@ -3,6 +3,7 @@ import clientService from "@/services/clientsService";
 import type { Client } from "@/interfaces/client";
 import type { ServerResponseModel } from "@/interfaces/serverResponseModel";
 import type { Log } from "@/interfaces/log";
+import type { AdminUser } from "@/interfaces/adminUser";
 
 export const useClientsStore = defineStore('clients', {
     state: () => ({
@@ -10,6 +11,7 @@ export const useClientsStore = defineStore('clients', {
         error: null as string | null,
         response: null as ServerResponseModel | null,
         clients:[]  as Client[],
+        adminUsers: [] as AdminUser[],
         logs: [] as Log[],
         companyLogs: [] as Log[]
     }),
@@ -107,7 +109,71 @@ export const useClientsStore = defineStore('clients', {
                 this.error = 'Error interno del servidor'
             }
         },
-        
+
+        async getAdminUsers() {
+            try {
+                const response = await clientService.getAdminUsers()
+                console.log(response.data.data);
+                
+                this.adminUsers = response.data.data.map((u : any) => ({
+                    id: u.usu_id,
+                    name: u.usu_nombre,
+                    fullname: u.usu_nombre_completo,
+                    active: u.usu_activo,
+                    roleName: u.rol_nombre
+                }))
+            } catch (error) {
+                this.error = 'Error al obtener los usuarios administradores'
+            }
+        },
+
+        async createSuperuser(username: string, fullname: string, password: string) {
+            try {
+                const response = await clientService.createSuperuser({ username, fullname, password })
+                this.response = response.data
+            } catch (error) {
+                this.error = 'Error interno del servidor'
+            }
+        },
+
+        async createSupportUser(username: string, fullname: string, password: string) {
+            try {
+                const response = await clientService.createSupportUser({ username, fullname, password })
+                console.log(response.data);
+                
+                this.response = response.data
+            } catch (error) {
+                this.error = 'Error interno del servidor'
+            }
+        },
+
+        async updateAdminUser(username: string | null, fullname: string | null, password: string | null) {
+            try {
+                const response = await clientService.updateAdminUser({ username, fullname, password })
+                this.response = response.data
+            } catch (error) {
+                this.error = 'Error interno del servidor'
+            }
+        },
+
+        async changeStateAdminUser(userId: string, newState:boolean) {
+           try {
+               const response = await clientService.changeStateAdminUser({ userId, newState })
+               this.response = response.data
+           } catch (error) {
+                this.error = 'Error interno del servidor'
+           } 
+        },
+
+        async deleteAdminUser(userId: string) {
+            try {
+                const response = await clientService.deleteAdminUser({ userId })
+                this.response = response.data
+            } catch (error) {
+                this.error = 'Error interno del servidor'
+            }
+        },
+
         resetMessages() {
             this.response = null;
             this.error = null;

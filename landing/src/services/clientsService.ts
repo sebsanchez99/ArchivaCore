@@ -28,5 +28,30 @@ export default {
 
     deleteLogs(payload: { date: string }) {
         return httpClient.delete<ServerResponseModel>('/admin/deleteLogs', { data: payload })
-    }
+    },
+
+    getAdminUsers() {
+        return httpClient.get<ServerResponseModel>('/admin/getAdminUsers')
+    },
+
+    createSuperuser(payload: { username: string, fullname: string, password: string }) {
+        return httpClient.post<ServerResponseModel>('/admin/createSuperuser', payload)
+    },
+
+    createSupportUser(payload: { username: string, fullname: string, password: string }) {
+        return httpClient.post<ServerResponseModel>('/admin/createSupportUser', payload)
+    },
+
+    updateAdminUser(payload: { username: string | null, fullname: string | null, password: string | null }) {
+        return httpClient.put<ServerResponseModel>('/admin/updateAdminUser', payload)
+    },
+
+    changeStateAdminUser(payload: { userId: string, newState:boolean }) {
+        return httpClient.put<ServerResponseModel>('/admin/changeStateAdminUser', payload)
+    },
+
+    deleteAdminUser(payload: { userId: string }) {
+        return httpClient.delete<ServerResponseModel>('/admin/deleteAdminUser', { data: payload })
+    },
+
 }

@@ -95,6 +95,7 @@ const allItems = [
   { label: "Clientes", icon: UserIcon, path: "/dashboard/clients", roles: ["superusuario"] },
   { label: "Configuración", icon: Cog6ToothIcon, path: "/dashboard/settings", roles: ["empresa"] },
   { label: "Auditoría", icon: Cog6ToothIcon, path: "/dashboard/logs", roles: ["superusuario"] },
+  { label: "Usuarios", icon: Cog6ToothIcon, path: "/dashboard/users", roles: ["superusuario"] },
 ];
 
 // Filtra según el rol
