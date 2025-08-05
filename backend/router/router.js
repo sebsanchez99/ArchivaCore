@@ -46,8 +46,7 @@ router.use('/web/admin', passport.authenticate('jwt', { session: false }), check
 
 router.use('/web/supabase', passport.authenticate('jwt', { session: false }), supabaseWebRouter)
 
-
-
+// Ruta de microServicio HV 
 router.use("/microservice", passport.authenticate('jwt', {session: false}), checkRole('Administrador','Empresa', 'Superusuario'), microRouter)
 
 module.exports = router;

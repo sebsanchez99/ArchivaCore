@@ -1,6 +1,7 @@
 const path = require('path')
 const poolNewClient = require('../libs/supaBase')
 const ResponseUtil = require('../utils/response.util')
+const { log } = require('console')
 
 /**
  * @class Esta clase contiene métodos para la gestión de carpetas de usuarios
@@ -206,6 +207,76 @@ class SupaBaseHelper {
 
   #buildBucketName(companyName) {
     return companyName.toLowerCase().replace(/\s+/g, '')
+  }
+
+  async moveFileToRecycle({ bucketId, currentPath, fileName }) {
+    try {
+      const fullSourcePath = `${currentPath}/${fileName}`
+      const fullRecyclePath = `reciclaje/${fileName}`
+     
+      // Copiar archivo al destino "reciclaje"
+      const { data: copyData, error: copyError } = await poolNewClient.from(bucketId)
+        .copy(fullSourcePath, fullRecyclePath)
+
+      if (copyError) {
+        return ResponseUtil.fail('Error al copiar el archivo a reciclaje', copyError.message)
+      }
+
+      // Eliminar archivo original
+      const { error: deleteError } = await poolNewClient.from(bucketId)
+        .remove([fullSourcePath])
+
+      if (deleteError) {
+        return ResponseUtil.fail('Archivo copiado pero no eliminado del origen', deleteError.message)
+      }
+
+      return ResponseUtil.success('Archivo movido correctamente a reciclaje', copyData)
+    } catch (err) {
+      return ResponseUtil.fail('Error inesperado al mover archivo a reciclaje', err.message)
+    }
+  }
+
+  async restoreFileFromRecycle({ bucket, originalPath, fileName }) {
+    try {
+      const recyclePath = `reciclaje/${fileName}`
+      const targetPath = `${originalPath}/${fileName}`
+      console.log('PARAMS:', bucket, originalPath, fileName)
+      
+      // Copiar desde reciclaje a ruta original
+      const { data: copyData, error: copyError } = await poolNewClient.from(bucket)
+        .copy(recyclePath, targetPath)
+
+      if (copyError) {
+        return ResponseUtil.fail('Error al restaurar el archivo desde reciclaje', copyError.message)
+      }
+
+      // Eliminar archivo en carpeta reciclaje
+      const { error: deleteError } = await poolNewClient.from(bucket)
+        .remove([recyclePath])
+
+      if (deleteError) {
+        return ResponseUtil.fail('Archivo restaurado pero no eliminado de reciclaje', deleteError.message)
+      }
+
+      return ResponseUtil.success('Archivo restaurado correctamente', copyData)
+    } catch (err) {
+      return ResponseUtil.fail('Error inesperado al restaurar archivo', err.message)
+    }
+  }
+
+  async listRecycleFolder(bucket) {
+    try {
+      const { data, error } = await poolNewClient.from(bucket)
+        .list('reciclaje/', { limit: 100 })
+
+      if (error) {
+        return ResponseUtil.fail('Error al listar la carpeta de reciclaje', error.message)
+      }
+
+      return ResponseUtil.success('Carpeta reciclaje listada correctamente', data)
+    } catch (err) {
+      return ResponseUtil.fail('Error inesperado al listar reciclaje', err.message)
+    }
   }
 }
 
