@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-8xl mx-auto">
+  <div class="max-w-7xl mx-auto">
     <div v-if="clientsStore.loading" class="flex justify-center items-center h-64">
       <span class="loading loading-spinner loading-lg text-primary-500"></span>
     </div>
