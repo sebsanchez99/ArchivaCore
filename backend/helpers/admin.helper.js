@@ -57,7 +57,7 @@ class AdminHelper{
      * @param {*} idCompany Empresa de usuario
      * @returns Resultado de la operación en formato JSON
      */
-    async userUpdate(id, fullname, username, password, idRol, idCompany){
+    async userUpdate(id, username, fullname, password, idRol, idCompany){
         const hashPassword = password != null ? await bcrypt.hash( password ,  10 ) : password
         await pool.query(
             'SELECT * FROM actualizar_usuario( $1, $2, $3, $4, $5, $6 )',
