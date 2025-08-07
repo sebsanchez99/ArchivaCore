@@ -14,8 +14,8 @@
           :error="errors.confirmPassword" placeholder="Confirmar nueva contraseña" :showPassword="showPassword"
           @toggle-password="togglePassword" />
         <div class="modal-action flex justify-end gap-2">
-          <button type="button" class="btn" @click="close">Cancelar</button>
-          <button type="submit" class="btn bg-primary-500 text-white">Guardar</button>
+          <button type="button" class="btn btn-error text-white" @click="close">Cancelar</button>
+          <button type="submit" class="btn bg-primary-500 text-white border-none hover:bg-primary-600">Guardar</button>
         </div>
       </form>
     </div>
