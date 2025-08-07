@@ -134,17 +134,6 @@ const totalPages = computed(() => Math.ceil(filteredLogs.value.length / itemsPer
 const tableOptions = computed(() => [...new Set(clientStore.companyLogs.map(log => log.table))])
 const typeOptions = computed(() => [...new Set(clientStore.companyLogs.map(log => log.type))])
 
-watch(() => props.client, async (client) => {
-  if (client && dialog.value && !dialog.value.open) {
-    currentPage.value = 1
-    filters.value = { table: '', type: '', startDate: '', endDate: '' }
-    loading.value = true
-    await clientStore.fetchCompanyLogs(client.id)
-    loading.value = false
-    dialog.value.showModal()
-  }
-})
-
 function close() {
   dialog.value?.close()
 }
@@ -153,10 +142,24 @@ function formatDate(date?: Date | string) {
   return date ? new Date(date).toLocaleString('es-ES') : ''
 }
 
+function open(client: Client) {
+  if (dialog.value && !dialog.value.open) {
+    currentPage.value = 1
+    filters.value = { table: '', type: '', startDate: '', endDate: '' }
+    loading.value = true
+    clientStore.fetchCompanyLogs(client.id).then(() => {
+      loading.value = false
+      dialog.value?.showModal()
+    })
+  }
+}
+
 function formatObject(obj: Record<string, any> | null | undefined) {
   if (!obj) return 'Sin datos'
   const clone = { ...obj }
   if ('usu_hash' in clone) clone.usu_hash = 'Contraseña cambiada'
   return JSON.stringify(clone, null, 2)
 }
+
+defineExpose({ open, close })
 </script>

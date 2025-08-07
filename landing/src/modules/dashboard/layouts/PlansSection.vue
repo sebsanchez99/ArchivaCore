@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-6xl mx-auto">
+  <div class="max-w-7xl mx-auto">
     <div class="mb-8" ref="plansSection">
       <h2 class="text-2xl font-semibold text-text-500 mb-1">Planes y Facturación</h2>
       <p class="text-sm text-text-400 mb-6">Administra tu suscripción y actualiza tu plan</p>

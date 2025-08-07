@@ -1,5 +1,5 @@
 <template>
-    <div class="max-w-6xl mx-auto">
+    <div class="max-w-7xl mx-auto">
       <SectionHeader title="Descargar ArchivaCore" subtitle="Obtenga la aplicación de escritorio para una experiencia completa"/>
   
       <div class="bg-primary-50 border border-primary-100 rounded-xl shadow-sm p-6">

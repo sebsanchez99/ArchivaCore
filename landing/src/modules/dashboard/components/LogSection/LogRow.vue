@@ -6,8 +6,8 @@
     <td>{{ log.date }}</td>
     <td>{{ log.username || 'Desconocido' }}</td>
     <td>
-      <button class="btn btn-xs bg-primary-500 text-white" @click="$emit('viewDetail', log)">
-        Ver detalle
+      <button class="btn btn-sm bg-cyan-500 text-white border-none" @click="$emit('viewDetail', log)">
+        Ver detalles
       </button>
     </td>
   </tr>

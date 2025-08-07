@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-6xl mx-auto px-4 py-6 h-[83vh] flex items-center justify-center">
+  <div class="max-w-7xl mx-auto px-4 py-6 h-[83vh] flex items-center justify-center">
     <template v-if="!connected">
       <div class="w-full flex flex-col items-center justify-center h-full text-center px-4">
         <!-- Ícono decorativo con animación -->

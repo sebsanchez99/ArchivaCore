@@ -8,17 +8,17 @@
         <svg class="w-7 h-7 text-primary-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
         </svg>
-        <h3 class="font-bold text-2xl text-primary-600">Detalle de Log</h3>
+        <h3 class="font-bold text-xl text-primary-600">Detalle de Log</h3>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 mb-4">
-        <div><span class="font-semibold text-gray-600">ID:</span> <span class="text-gray-800">{{ log?.id }}</span></div>
-        <div><span class="font-semibold text-gray-600">Tabla:</span> <span class="text-gray-800">{{ log?.table }}</span></div>
-        <div><span class="font-semibold text-gray-600">Registro:</span> <span class="text-gray-800">{{ log?.register }}</span></div>
-        <div><span class="font-semibold text-gray-600">Tipo:</span> <span class="text-gray-800">{{ log?.type }}</span></div>
-        <div class="md:col-span-2"><span class="font-semibold text-gray-600">Descripción:</span> <span class="text-gray-800">{{ log?.description }}</span></div>
-        <div><span class="font-semibold text-gray-600">Fecha:</span> <span class="text-gray-800">{{ formatDate(log?.date) }}</span></div>
-        <div><span class="font-semibold text-gray-600">Usuario:</span> <span class="text-gray-800">{{ log?.username || 'Desconocido' }}</span></div>
-        <div><span class="font-semibold text-gray-600">Usuario ID:</span> <span class="text-gray-800">{{ log?.user || 'N/A' }}</span></div>
+        <div><span class="font-semibold text-sm text-gray-600">ID:</span> <span class="text-gray-800 text-sm">{{ log?.id }}</span></div>
+        <div><span class="font-semibold text-sm text-gray-600">Tabla:</span> <span class="text-gray-800 text-sm">{{ log?.table }}</span></div>
+        <div><span class="font-semibold text-sm text-gray-600">Registro:</span> <span class="text-gray-800 text-sm">{{ log?.register }}</span></div>
+        <div><span class="font-semibold text-sm text-gray-600">Tipo:</span> <span class="text-gray-800 text-sm">{{ log?.type }}</span></div>
+        <div class="md:col-span-2"><span class="font-semibold text-sm text-gray-600">Descripción:</span> <span class="text-gray-800 text-sm">{{ log?.description }}</span></div>
+        <div><span class="font-semibold text-sm text-gray-600">Fecha:</span> <span class="text-gray-800 text-sm">{{ formatDate(log?.date) }}</span></div>
+        <div><span class="font-semibold text-sm text-gray-600">Usuario:</span> <span class="text-gray-800 text-sm">{{ log?.username || 'Desconocido' }}</span></div>
+        <div><span class="font-semibold text-sm text-gray-600">Usuario ID:</span> <span class="text-gray-800 text-sm">{{ log?.user || 'N/A' }}</span></div>
       </div>
       <div class="divider my-2">Datos anteriores</div>
       <pre class="bg-gray-50 border border-gray-200 p-3 rounded text-xs whitespace-pre-wrap break-all max-w-full mb-4 font-mono text-gray-700">{{ formatObject(log?.oldData) }}</pre>

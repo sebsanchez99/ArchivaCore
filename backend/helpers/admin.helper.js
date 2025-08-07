@@ -47,7 +47,6 @@ class AdminHelper{
             [username, fullname, hashPassword, rolUser, idCompany]
         )
         return ResponseUtil.success('EL usuario se creó con éxito')
-        
     }
 
     /**
@@ -58,7 +57,7 @@ class AdminHelper{
      * @param {*} idCompany Empresa de usuario
      * @returns Resultado de la operación en formato JSON
      */
-    async userUpdate(id, fullname, username, password, idRol, idCompany){
+    async userUpdate(id, username, fullname, password, idRol, idCompany){
         const hashPassword = password != null ? await bcrypt.hash( password ,  10 ) : password
         await pool.query(
             'SELECT * FROM actualizar_usuario( $1, $2, $3, $4, $5, $6 )',
@@ -134,6 +133,38 @@ class AdminHelper{
         const result = await pool.query('SELECT * FROM eliminar_logs_actividad_antiguos($1)', [date])
         const deletedRecords = result.rows[0].eliminar_logs_actividad_antiguos
         return ResponseUtil.success(`Se han eliminado ${deletedRecords} registros desde la fecha ${date} con éxito.`)
+    }
+
+    async getAdminUsers() {
+        const result = await pool.query('SELECT * FROM listar_usuarios_superusuario_asesor()')
+        const adminUsers = result.rows
+        return ResponseUtil.success('Usuarios listados con éxito', adminUsers)
+    }
+
+    async createSuperuser(username, fullname, password) {
+        const userExist = await this.#verifyUser(username)
+        if (userExist) {
+           return ResponseUtil.fail('El nombre de usuario ya existe, por favor elije otro.')
+        }
+        const hashPassword =  await bcrypt.hash( password ,  10 )
+        await pool.query(   
+            'SELECT * FROM crear_usuario_superusuario($1, $2, $3)',
+            [username, fullname, hashPassword]
+        )
+        return ResponseUtil.success('EL usuario se creó con éxito')
+    }
+
+    async createSupportUser(username, fullname, password) {
+        const userExist = await this.#verifyUser(username)
+        if (userExist) {
+           return ResponseUtil.fail('El nombre de usuario ya existe, por favor elije otro.')
+        }
+        const hashPassword =  await bcrypt.hash( password ,  10 )
+        await pool.query(   
+            'SELECT * FROM crear_usuario_asesor($1, $2, $3)',
+            [username, fullname, hashPassword]
+        )
+        return ResponseUtil.success('EL usuario se creó con éxito')
     }
 
     /**

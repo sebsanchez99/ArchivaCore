@@ -29,8 +29,12 @@ export function useFormValidation(initialFields: Record<string, string>, validat
   };
 
   const resetFields = () => {
-    Object.assign(fields, initialFields);
-    Object.keys(errors).forEach((key) => delete errors[key]);
+    for (const key in fields) {
+      fields[key] = initialFields[key] ?? "";
+    }
+    for (const key in errors) {
+      delete errors[key];
+    }
   };
 
   const watchFields = () => {

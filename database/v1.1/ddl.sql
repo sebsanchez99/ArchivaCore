@@ -128,3 +128,15 @@ CREATE TABLE UsuarioBackup (
     CONSTRAINT fk_backup_empresa FOREIGN KEY (Empresa) REFERENCES Empresa(Emp_ID) ON DELETE CASCADE,
     CONSTRAINT fk_backup_usuario FOREIGN KEY (Usuario) REFERENCES Usuario(Usu_ID) ON DELETE CASCADE
 );
+
+
+CREATE TABLE ReciclajeArchivo (
+    Reciclaje_ID UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    Reciclaje_Nombre VARCHAR(255) NOT NULL,
+    Reciclaje_Ruta TEXT NOT NULL UNIQUE, -- la ruta en Supabase, única
+    Reciclaje_FechaEliminacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Reciclaje_Usuario UUID, -- opcional: quién lo eliminó
+    Reciclaje_Empresa UUID, -- opcional: empresa relacionada
+    FOREIGN KEY (Reciclaje_Usuario) REFERENCES Usuario(Usu_ID) ON DELETE SET NULL,
+    FOREIGN KEY (Reciclaje_Empresa) REFERENCES Empresa(Emp_ID) ON DELETE SET NULL
+);
