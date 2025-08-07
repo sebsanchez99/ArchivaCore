@@ -147,7 +147,6 @@ async function handleDeleteCompany() {
   if (!selectedCompany.value) return
 
   clientsStore.loading = true
-  clientsStore.resetMessages()
   await clientsStore.deleteCompany(selectedCompany.value.id)
   
   if (clientsStore.response?.result) {
@@ -156,6 +155,7 @@ async function handleDeleteCompany() {
   } else {
     errorModal.value?.show(getMessage('No se pudo eliminar la empresa.'))
   }
+  clientsStore.resetMessages()
   clientsStore.loading = false
   selectedCompany.value = null
 }
@@ -164,7 +164,6 @@ async function handleChangeStateCompany() {
   if (!selectedCompany.value) return
 
   clientsStore.loading = true
-  clientsStore.resetMessages()
   const newState = !selectedCompany.value.active
   await clientsStore.changeUserStatus(selectedCompany.value.id, newState)
   
@@ -174,6 +173,7 @@ async function handleChangeStateCompany() {
   } else {
     errorModal.value?.show(getMessage('No se pudo cambiar el estado de la empresa.'))
   }
+  clientsStore.resetMessages()
   clientsStore.loading = false
   selectedCompany.value = null
 }
@@ -188,6 +188,7 @@ async function handleChangePassword() {
   } else {
     errorModal.value?.show(getMessage('No se pudo cambiar la contraseña.'))
   }
+  clientsStore.resetMessages()
   clientsStore.loading = false
   selectedCompany.value = null
 }
