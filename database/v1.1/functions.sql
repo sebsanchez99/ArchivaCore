@@ -657,6 +657,8 @@ BEGIN
     FOREACH v_usuario IN ARRAY p_usuarios LOOP
         INSERT INTO NotificacionUsuario (NotUsu_Notificacion, NotUsu_Usuario)
         VALUES (v_id, v_usuario);
+        
+        PERFORM limpiar_notificaciones_usuario(v_usuario);
     END LOOP;
 
     RETURN v_id;
@@ -739,6 +741,30 @@ CREATE OR REPLACE FUNCTION eliminar_notificaciones_usuario(
 BEGIN
     DELETE FROM NotificacionUsuario
     WHERE NotUsu_Usuario = p_usuario;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION limpiar_notificaciones_usuario(p_usuario UUID)
+RETURNS INTEGER AS $$
+DECLARE
+    v_count INTEGER := 0;
+BEGIN
+    -- Solo elimina si hay más de 50 notificaciones
+    IF (
+        SELECT COUNT(*) FROM NotificacionUsuario WHERE NotUsu_Usuario = p_usuario
+    ) > 50 THEN
+        DELETE FROM NotificacionUsuario
+        WHERE NotUsu_Usuario = p_usuario
+          AND NotUsu_Notificacion IN (
+              SELECT NotUsu_Notificacion
+              FROM NotificacionUsuario
+              WHERE NotUsu_Usuario = p_usuario
+              ORDER BY NotUsu_Notificacion ASC
+              LIMIT 30
+          );
+        GET DIAGNOSTICS v_count = ROW_COUNT;
+    END IF;
+    RETURN v_count;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -981,5 +1007,74 @@ BEGIN
     WHERE Chat_Remitente = p_usuario OR Chat_Destinatario = p_usuario
     GROUP BY Chat_Room
     ORDER BY ultimo_mensaje DESC;
+END;
+$$ LANGUAGE plpgsql;
+
+-- ===============================================
+-- ========== FUNCIONES DE RECICLAJE =============
+-- ===============================================
+
+-- Crear archivo en reciclaje
+CREATE OR REPLACE FUNCTION crear_reciclaje_archivo(
+    p_nombre VARCHAR(255),
+    p_ruta TEXT,
+    p_usuario UUID DEFAULT NULL,
+    p_empresa UUID DEFAULT NULL
+) RETURNS UUID AS $$
+DECLARE
+    v_id UUID;
+BEGIN
+    INSERT INTO ReciclajeArchivo (
+        Reciclaje_ID, Reciclaje_Nombre, Reciclaje_Ruta, Reciclaje_Usuario, Reciclaje_Empresa
+    ) VALUES (
+        uuid_generate_v4(), p_nombre, p_ruta, p_usuario, p_empresa
+    )
+    RETURNING Reciclaje_ID INTO v_id;
+    RETURN v_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Eliminar archivo de reciclaje por ID
+CREATE OR REPLACE FUNCTION eliminar_reciclaje_archivo(
+    p_id UUID
+) RETURNS BOOLEAN AS $$
+BEGIN
+    DELETE FROM ReciclajeArchivo WHERE Reciclaje_ID = p_id;
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Obtener archivos de reciclaje por empresa
+CREATE OR REPLACE FUNCTION obtener_reciclaje_archivos_por_empresa(
+    p_empresa UUID
+) RETURNS TABLE (
+    reciclaje_id UUID,
+    nombre VARCHAR,
+    ruta TEXT,
+    fecha_eliminacion TIMESTAMP,
+    usuario UUID
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT Reciclaje_ID, Reciclaje_Nombre, Reciclaje_Ruta, Reciclaje_FechaEliminacion, Reciclaje_Usuario
+    FROM ReciclajeArchivo
+    WHERE Reciclaje_Empresa = p_empresa;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Eliminar todos los archivos de reciclaje (opcional: por empresa)
+CREATE OR REPLACE FUNCTION eliminar_todos_reciclaje_archivos(
+    p_empresa UUID DEFAULT NULL
+) RETURNS INTEGER AS $$
+DECLARE
+    v_count INTEGER;
+BEGIN
+    IF p_empresa IS NULL THEN
+        DELETE FROM ReciclajeArchivo;
+    ELSE
+        DELETE FROM ReciclajeArchivo WHERE Reciclaje_Empresa = p_empresa;
+    END IF;
+    GET DIAGNOSTICS v_count = ROW_COUNT;
+    RETURN COALESCE(v_count, 0);
 END;
 $$ LANGUAGE plpgsql;
