@@ -194,23 +194,13 @@ async function handleChangeStateUser() {
   selectedUser.value = null
 }
 
-function handleCancel() {
-  selectedUser.value = null
-}
-
-function changeStateText(state?: boolean) {
-  return state ? 'desactivar' : 'activar'
-}
-
-function resetMessages() {
-  clientsStore.resetMessages()
-}
 
 async function handleUserSaved() {
   if (!selectedUser.value) return
+  
   clientsStore.loading = true
   const result = clientsStore.response?.result
-    if (result) {
+  if (result) {
     successModal.value?.show(getMessage('Usuario actualizado con éxito.'))
     refresh()
   } else {
@@ -234,6 +224,19 @@ async function handleUserCreated() {
   selectedUser.value = null
   clientsStore.resetMessages()
 }
+
+function resetMessages() {
+  clientsStore.resetMessages()
+}
+
+function handleCancel() {
+  selectedUser.value = null
+}
+
+function changeStateText(state?: boolean) {
+  return state ? 'desactivar' : 'activar'
+}
+
 
 function getMessage(defaultMsg: string) {
   return clientsStore.response?.message || defaultMsg

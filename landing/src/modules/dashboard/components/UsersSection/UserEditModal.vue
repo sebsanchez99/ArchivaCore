@@ -1,5 +1,5 @@
 <template>
-  <dialog ref="dialog" class="modal z-50">
+  <dialog ref="dialog" class="modal">
     <div class="modal-box bg-white max-w-md">
       <form @submit.prevent="submit">
         <h3 class="font-bold text-lg mb-4">Editar usuario</h3>
@@ -23,16 +23,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import FormField from '@/components/inputs/FormField.vue'
 import PasswordField from '@/components/inputs/PasswordField.vue'
 import { useFormValidation } from '@/composables/useFormValidation'
-import { strongPassword, passwordsMatch } from '@/utils/validators'
+import { required, onlyLettersAndSpaces, strongPassword } from '@/utils/validators'
 import { useTogglePassword } from '@/composables/useTogglePassword'
 import type { AdminUser } from '@/interfaces/adminUser'
+import { useClientsStore } from '@/stores/clientsStore'
 
 const props = defineProps<{ user: AdminUser | null }>()
 const emit = defineEmits(['saved'])
+const dialog = ref<HTMLDialogElement | null>(null)
+
+const { showPassword, togglePassword } = useTogglePassword()
+const clientsStore = useClientsStore()
 
 const initialFields = {
   name: '',
@@ -42,49 +47,41 @@ const initialFields = {
 }
 
 const validators = {
-  // Solo valida si el campo tiene valor
+  name: [required],
+  fullname: [required, onlyLettersAndSpaces],
   password: [
-    (value: string) => !value || strongPassword(value) || 'Contraseña débil',
+    (value: string) => {
+      if (!value) return ''  
+      return strongPassword(value)
+    }
   ],
   confirmPassword: [
-    (value: string, fields: any) =>
-      !fields.password || value === fields.password || 'Las contraseñas no coinciden',
+    (value: string, fields: any) => {
+      if (!fields.password) return ''
+      return value === fields.password ? '' : 'Las contraseñas no coinciden'
+    },
   ],
 }
 
 const { fields, errors, validateAll, resetFields } = useFormValidation(initialFields, validators)
-const { showPassword, togglePassword } = useTogglePassword()
-const dialog = ref<HTMLDialogElement | null>(null)
 
 function open(user: AdminUser) {
-  if (dialog.value && !dialog.value.open) {
-
-    fields.name = props.user!.name
-    fields.fullname = props.user!.fullname
-    fields.password = ''
-    fields.confirmPassword = ''
-    errors.name = ''
-    errors.fullname = ''
-    errors.password = ''
-    errors.confirmPassword = ''
-    dialog.value?.showModal()
-  }
+  resetFields()
+  fields.name = user.name
+  fields.fullname = user.fullname
+  dialog.value?.showModal()
 }
-
 
 function close() {
   dialog.value?.close()
 }
 
-function submit() {
-  if (!validateAll()) return
-  // Solo envía los campos que el usuario editó
-  const payload: any = {}
-  if (fields.name && fields.name !== props.user?.name) payload.name = fields.name
-  if (fields.fullname && fields.fullname !== props.user?.fullname) payload.fullname = fields.fullname
-  if (fields.password) payload.password = fields.password
-  emit('saved', payload)
-  close()
+async function submit() {
+  validateAll()  
+  await clientsStore.updateAdminUser(props.user!.id , fields.name, fields.fullname, fields.password)
+  resetFields()
+  if(clientsStore.response?.result) close()
+  emit('saved')
 }
 
 defineExpose({ open, close })

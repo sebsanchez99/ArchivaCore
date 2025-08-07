@@ -113,8 +113,6 @@ export const useClientsStore = defineStore('clients', {
         async getAdminUsers() {
             try {
                 const response = await clientService.getAdminUsers()
-                console.log(response.data.data);
-                
                 this.adminUsers = response.data.data.map((u : any) => ({
                     id: u.usu_id,
                     name: u.usu_nombre,
@@ -139,17 +137,15 @@ export const useClientsStore = defineStore('clients', {
         async createSupportUser(username: string, fullname: string, password: string) {
             try {
                 const response = await clientService.createSupportUser({ username, fullname, password })
-                console.log(response.data);
-                
                 this.response = response.data
             } catch (error) {
                 this.error = 'Error interno del servidor'
             }
         },
 
-        async updateAdminUser(username: string | null, fullname: string | null, password: string | null) {
+        async updateAdminUser(userId: string, username: string | null, fullname: string | null, password: string | null) {
             try {
-                const response = await clientService.updateAdminUser({ username, fullname, password })
+                const response = await clientService.updateAdminUser({ userId, username, fullname, password })
                 this.response = response.data
             } catch (error) {
                 this.error = 'Error interno del servidor'

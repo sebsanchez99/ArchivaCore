@@ -42,7 +42,7 @@ export default {
         return httpClient.post<ServerResponseModel>('/admin/createSupportUser', payload)
     },
 
-    updateAdminUser(payload: { username: string | null, fullname: string | null, password: string | null }) {
+    updateAdminUser(payload: { userId: string, username: string | null, fullname: string | null, password: string | null }) {
         return httpClient.put<ServerResponseModel>('/admin/updateAdminUser', payload)
     },
 
