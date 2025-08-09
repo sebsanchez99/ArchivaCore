@@ -2,11 +2,8 @@
   <div class="card bg-white shadow rounded border-red-100 flex flex-col p-5">
     <!-- Header -->
     <div class="p-4 bg-red-100">
-      <div class="flex items-center gap-3">
-        <ExclamationTriangleIcon class="h-6 w-6 text-red-500" />
-        <h2 class="text-xl font-semibold text-red-500">Eliminar cuenta</h2>
-      </div>
-      <p class="text-sm text-red-400">Elimine permanentemente su cuenta y todos sus datos. Esta acción no se puede deshacer.</p>
+      <h2 class="text-xl font-semibold text-red-500">Eliminar cuenta</h2>
+      <p class="text-sm text-red-400">Elimine permanentemente su cuenta y todos sus datos</p>
     </div>
 
     <!-- Contenido -->

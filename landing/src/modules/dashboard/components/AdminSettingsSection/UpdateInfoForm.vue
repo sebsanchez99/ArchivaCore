@@ -5,9 +5,9 @@
             <p class="text-sm text-text-300">Actualice la información de su cuenta</p>
         </div>
         <div class="p-6">
-            <FormField id="companyName" label="Nombre de la empresa" v-model="fields.companyName"
-                :placeholder="companyName" :error="errors.companyName" />
-            <FormField id="fullname" label="Nombre de responsable" v-model="fields.fullname" :placeholder="fullname"
+            <FormField id="username" label="Nombre de usuario" v-model="fields.username"
+                :placeholder="username" :error="errors.username" />
+            <FormField id="fullname" label="Nombre completo del usuario" v-model="fields.fullname" :placeholder="fullname"
                 :error="errors.fullname" />
         </div>
 
@@ -50,15 +50,15 @@ const successModal = ref<InstanceType<typeof SuccessModal> | null>(null)
 const errorModal = ref<InstanceType<typeof ErrorModal> | null>(null)
 const updateModal = ref<InstanceType<typeof InfoModal> | null>(null)
 
-const companyName = ref(authStore.getCompanyName)
+const username = ref(authStore.getUsername)
 const fullname = ref(authStore.getFullname)
 
 const validators = {
-    companyName: [required],
+    username: [required],
     fullname: [required, onlyLettersAndSpaces]
 }
 
-const { fields, errors, validateAll } = useFormValidation({ companyName: companyName.value, fullname: fullname.value }, validators)
+const { fields, errors, validateAll } = useFormValidation({ username: username.value, fullname: fullname.value }, validators)
 
 function openUpdateModal() {
     const isValid = validateAll()
@@ -67,17 +67,17 @@ function openUpdateModal() {
 }
 
 async function update() {
-    // settingsStore.loading = true
-    // await settingsStore.updateCompanyInfo(fields.companyName, fields.fullname)
-    // const result = settingsStore.response?.result
-    // if (result) {
-    //     successModal.value?.show(getMessage('Información actualizada con éxito.'))
-    //     authStore.logout()
-    //     setTimeout(() => { router.push('/login') }, 2000)
-    // } else {
-    //     errorModal.value?.show(getMessage('No se pudo actualizar la información. Intente más tarde.'))
-    // }
-    // settingsStore.loading = false
+    settingsStore.loading = true
+    await settingsStore.updateUserInfo(fields.username, fields.fullname)
+    const result = settingsStore.response?.result
+    if (result) {
+        successModal.value?.show(getMessage('Información actualizada con éxito.'))
+        authStore.logout()
+        setTimeout(() => { router.push('/login') }, 2000)
+    } else {
+        errorModal.value?.show(getMessage('No se pudo actualizar la información. Intente más tarde.'))
+    }
+    settingsStore.loading = false
 }
 
 function handleCancel() {

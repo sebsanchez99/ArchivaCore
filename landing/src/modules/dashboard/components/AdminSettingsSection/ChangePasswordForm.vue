@@ -91,7 +91,7 @@ function openChangePassword() {
 
 async function changePassword() {
   settingsStore.loading = true
-  await settingsStore.changeCompanyPassword(fields.password)
+  await settingsStore.changeUserPassword(fields.password)
   const result = settingsStore.response?.result
   if (result) {
     successModal.value?.show(getMessage('Contraseña actualizada con éxito.'))
