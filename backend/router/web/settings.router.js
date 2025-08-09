@@ -2,9 +2,9 @@ const { Router } = require('express')
 const checkRole = require('../../middlewares/checkRole')
 const {  
     changeCompanyPassword,
-    updateCompanyInfo,
     changeUserPassword,
-    updateUserInfo
+    updateUserInfo,
+    deleteCompanyAccount
 } = require('../../controllers/web/settings.controller')
 
 const router = Router()
@@ -12,13 +12,13 @@ const router = Router()
 // http://localhost:3000/api/v1/web/settings/changeCompanyPassword
 router.put('/changeCompanyPassword', checkRole('Empresa'), changeCompanyPassword)
 
-// http://localhost:3000/api/v1/web/settings/updateCompanyInfo
-router.put('/updateCompanyInfo', checkRole('Empresa'), updateCompanyInfo)
-
 // http://localhost:3000/api/v1/web/settings/changeUserPassword
-router.put('/changeUserPassword', checkRole('SuperUsuario', 'Asesor'), changeUserPassword)
+router.put('/changeUserPassword', checkRole('Superusuario', 'Asesor'), changeUserPassword)
 
 // http://localhost:3000/api/v1/web/settings/updateUserInfo
-router.put('/updateUserInfo', checkRole('SuperUsuario', 'Asesor'), updateUserInfo)
+router.put('/updateUserInfo', checkRole('Superusuario', 'Asesor'), updateUserInfo)
+
+// http://localhost:3000/api/v1/web/settings/deleteCompanyAccount
+router.delete('/deleteCompanyAccount', checkRole('Empresa'), deleteCompanyAccount)
 
 module.exports = router

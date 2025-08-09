@@ -58,7 +58,8 @@ class SupaBaseHelper {
   }
 
   async deleteAllFiles(companyName) {
-    const { data, error } = await poolNewClient.emptyBucket(companyName)
+    const bucketName = this.#buildBucketName(companyName)
+    const { data, error } = await poolNewClient.emptyBucket(bucketName)
 
     if (error) {
       return ResponseUtil.fail('Hubo un error al conectar con Supabase', error)
@@ -67,11 +68,17 @@ class SupaBaseHelper {
   }
 
   async deleteCompany(companyName) {
-    const { data, error } = await poolNewClient.deleteBucket(companyName)
+    const bucketName = this.#buildBucketName(companyName)
+    const { data, error } = await poolNewClient.deleteBucket(bucketName)
     if (error) {
-      return ResponseUtil.fail('Hubo un error al conectar con Supabase', error)
+      return ResponseUtil.fail('Error al eliminar la cuenta.', error)
     }
     return ResponseUtil.success('La operación se realizó con éxito', data)
+  }
+
+  async changeBucketName(companyName) {
+    const bucketName = this.#buildBucketName(companyName)
+    const {  } = await poolNewClient.updateBucket(bucketName, {})
   }
 
   async deleteFiles(companyName, userName, fileName) {
@@ -108,6 +115,7 @@ class SupaBaseHelper {
   async calculateTotalStorage(companyName) {
     const bucketName = this.#buildBucketName(companyName)
     const structure = await this.#builderStructure(bucketName, '', true)
+    
     if (!structure) {
       return ResponseUtil.fail('No se pudo calcular el almacenamiento total')
     }
