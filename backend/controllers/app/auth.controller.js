@@ -16,7 +16,7 @@ const ResponseUtil = require('../../utils/response.util')
  */
 const login = async (req, res) => {
     try {
-        const { _usu_id, _usu_nombre, _usu_activo, _rol_nombre, _emp_id, _emp_nombre} = req.user   
+        const { _usu_id, _usu_activo, _rol_nombre, _emp_id, _emp_nombre} = req.user 
         const authHelper = new AuthHelper()
         const payload = {
             userId: _usu_id,
@@ -48,6 +48,19 @@ const login = async (req, res) => {
     }
 }
 
+const changePassword = async (req, res) => {
+    try {
+        const { userId } = req.user
+        const { newPassword } = req.body
+        const authHelper = new AuthHelper()
+        const result = await authHelper.changeUserPassword(userId, newPassword)
+        res.json(result)
+    } catch (error) {
+        res.status(500).send(ResponseUtil.fail(error.message))
+    }
+}
+
 module.exports = {
-    login
+    login,
+    changePassword
 }
