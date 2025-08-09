@@ -147,7 +147,7 @@ async function handleDeleteCompany() {
   if (!selectedCompany.value) return
 
   clientsStore.loading = true
-  await clientsStore.deleteCompany(selectedCompany.value.id)
+  await clientsStore.deleteCompany(selectedCompany.value.id, selectedCompany.value.name)
   
   if (clientsStore.response?.result) {
     successModal.value?.show(getMessage('Empresa eliminada correctamente.'))
