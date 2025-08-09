@@ -24,7 +24,7 @@ const login = async (req, res) => {
             company: _emp_id,
             companyName: _emp_nombre,
         }
-        if (_rol_nombre === 'Superusuario' || _rol_nombre === 'Soporte') {
+        if (_rol_nombre === 'Superusuario' || _rol_nombre === 'Asesor') {
             return res.json(ResponseUtil.fail('No posee permisos para ingresar.'))
         }
         
