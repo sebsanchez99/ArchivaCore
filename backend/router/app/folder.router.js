@@ -4,7 +4,6 @@ const {
     createFile, 
     downloadFile, 
     deleteAllFiles, 
-    deleteCompany, 
     deleteFiles, 
     createFolder
 } = require('../../controllers/app/folder.controllers')
@@ -38,13 +37,6 @@ router.get('/downloadFile', downloadFile)
  * @description Obtiene la lista de todos los archivos
  */
 router.delete('/deleteAllFiles', deleteAllFiles)
-
-/**
- * @memberof Rutas.FolderRouter
- * @name get/api/v1/supa/deleteCompany
- * @description Obtiene la lista de todos los archivos
- */
-router.delete('/deleteCompany', deleteCompany)
 
 /**
  * @memberof Rutas.FolderRouter
