@@ -1,77 +1,88 @@
 const AdminHelper = require('../../helpers/admin.helper')
+const SupaBaseHelper = require('../../helpers/supaBase.helper')
 const ResponseUtil = require('../../utils/response.util')
 
-const getClients = async(req, res) => {
-    try{
+const getClients = async (req, res) => {
+    try {
         const adminHelper = new AdminHelper()
         const result = await adminHelper.getClients()
         res.json(result)
-    } catch(error) {
+    } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
     }
 }
 
-const changeCompanyPassword = async(req, res) => {
-    try{
+const changeCompanyPassword = async (req, res) => {
+    try {
         const { companyId, newPassword } = req.body
         const adminHelper = new AdminHelper()
         const result = await adminHelper.changeCompanyPassword(companyId, newPassword)
         res.json(result)
-    } catch(error) {
+    } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
     }
 }
 
-const deleteClient = async(req, res) => {
-    try{
-        const { companyId } = req.body
+const deleteClient = async (req, res) => {
+    try {
+        const { companyId, companyName } = req.body
         const adminHelper = new AdminHelper()
-        const result = await adminHelper.deleteCompany(companyId)
-        res.json(result)
-    } catch(error) {
+        const supabaseHelper = new SupaBaseHelper()
+        const result = await adminHelper.deleteCompany(companyId);
+        const emptyBucketResult = await supabaseHelper.deleteAllFiles(companyName);
+        if (!emptyBucketResult.result) {
+            return res.json(ResponseUtil.fail('Error al eliminar los archivos del bucket.'));
+        }
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        const deleteBucketResult = await supabaseHelper.deleteCompany(companyName);
+        if (!deleteBucketResult.result || !result.result) {
+            return res.json(ResponseUtil.fail('Error al eliminar la cuenta.'));
+        }
+        return res.json(result);
+    } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
     }
 }
 
-const updateState = async(req, res) => {
-    try{
+const updateState = async (req, res) => {
+    try {
         const { companyId, newState } = req.body
         const adminHelper = new AdminHelper()
         const result = await adminHelper.changeCompanyState(companyId, newState)
         res.json(result)
-    } catch(error) {
+    } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
     }
 }
 
-const getCompanyLogs = async(req, res) => {
-    try{
+const getCompanyLogs = async (req, res) => {
+    try {
         const { companyId } = req.query
         const adminHelper = new AdminHelper()
         const result = await adminHelper.getCompanyLogs(companyId)
         res.json(result)
-    } catch(error) {
+    } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
     }
 }
 
-const getLogs = async(req, res) => {
-    try{
+const getLogs = async (req, res) => {
+    try {
         const adminHelper = new AdminHelper()
         const result = await adminHelper.getLogs()
         res.json(result)
-    } catch(error) {
+    } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
     }
 }
 
-const deleteLogs = async(req, res) => {
-    try{
+const deleteLogs = async (req, res) => {
+    try {
         const { date } = req.body
         const adminHelper = new AdminHelper()
         const result = await adminHelper.deleteLogs(date)
         res.json(result)
-    } catch(error) {
+    } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
     }
 }
@@ -88,7 +99,7 @@ const getAdminUsers = async (req, res) => {
 
 const createSuperuser = async (req, res) => {
     try {
-        const { username, fullname, password  } = req.body
+        const { username, fullname, password } = req.body
         const adminHelper = new AdminHelper()
         const result = await adminHelper.createSuperuser(username, fullname, password)
         res.json(result)
@@ -99,7 +110,7 @@ const createSuperuser = async (req, res) => {
 
 const createSupportUser = async (req, res) => {
     try {
-        const { username, fullname, password  } = req.body
+        const { username, fullname, password } = req.body
         const adminHelper = new AdminHelper()
         const result = await adminHelper.createSupportUser(username, fullname, password)
         res.json(result)
@@ -110,13 +121,13 @@ const createSupportUser = async (req, res) => {
 
 const updateAdminUser = async (req, res) => {
     try {
-        const { userId, username, fullname, password } = req.body 
+        const { userId, username, fullname, password } = req.body
         const adminHelper = new AdminHelper()
         const result = await adminHelper.userUpdate(userId, username, fullname, password)
         res.json(result)
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
-        
+
     }
 }
 
