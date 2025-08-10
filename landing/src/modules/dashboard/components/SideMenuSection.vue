@@ -66,7 +66,8 @@ import {
   UserIcon,
   UsersIcon,
   ChatBubbleLeftRightIcon,
-  ClipboardDocumentListIcon
+  ClipboardDocumentListIcon, 
+  QuestionMarkCircleIcon
 } from "@heroicons/vue/24/solid";
 
 import { useAuthStore } from "@/stores/authStore";
@@ -95,6 +96,7 @@ const allItems = [
   { label: "Planes y Facturación", icon: CreditCardIcon, path: "/dashboard/plans", roles: ["empresa"] },
 
   { label: "Soporte Clientes", icon: ChatBubbleLeftRightIcon, path: "/dashboard/chat", roles: ["asesor"] },
+  { label: "Centro de ayuda", icon: QuestionMarkCircleIcon, path: "/dashboard/faq", roles: ["asesor"] },
   { label: "Clientes", icon: UserIcon, path: "/dashboard/clients", roles: ["superusuario"] },
   { label: "Auditoría", icon: ClipboardDocumentListIcon, path: "/dashboard/logs", roles: ["superusuario"] },
   { label: "Usuarios", icon: UsersIcon, path: "/dashboard/users", roles: ["superusuario"] },
