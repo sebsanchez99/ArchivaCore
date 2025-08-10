@@ -25,6 +25,7 @@ const login = async (req, res) => {
             return res.json(ResponseUtil.success('Usuario autenticado con éxito', {
                 token,
                 companyId: user._emp_id,
+                fullname: user._emp_nombrecompleto,
                 companyName: user._emp_nombre,
                 active: user._emp_activo,
                 planName: user._plan_nombre,
