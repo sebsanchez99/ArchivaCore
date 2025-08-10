@@ -112,7 +112,7 @@ const login = async () => {
     const role = authStore.getRol;
     const homeRoutesByRole = {
       Empresa: 'dashboard',
-      Superusuario: 'dashboard/chat',
+      Superusuario: 'dashboard/clients',
       Asesor: 'dashboard/chat',
     }
     const target = homeRoutesByRole[role] || 'dashboard/home';
