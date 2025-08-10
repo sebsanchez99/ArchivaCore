@@ -20,7 +20,7 @@
       <!-- Contacto -->
       <div class="flex flex-col items-center md:items-start text-center md:text-left space-y-2">
         <h4 class="text-lg font-semibold text-gray-900">Contacto</h4>
-        <a href="mailto:info@devcore.com" class="hover:text-primary-500">info@devcore.com</a>
+        <a href="mailto:devcoresas@gmail.com" class="hover:text-primary-500">devcoresas@gmail.com</a>
         <a href="tel:+57345464645645" class="hover:text-primary-500">+57 345 464 645645</a>
         <p>Bogotá D.C</p>
       </div>
