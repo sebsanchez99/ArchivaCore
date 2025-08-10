@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import {
+import { 
   HomeIcon,
   CloudArrowDownIcon,
   Cog6ToothIcon,
@@ -64,8 +64,11 @@ import {
   CreditCardIcon,
   ArrowLeftEndOnRectangleIcon,
   UserIcon,
-  ChatBubbleLeftRightIcon
+  UsersIcon,
+  ChatBubbleLeftRightIcon,
+  ClipboardDocumentListIcon
 } from "@heroicons/vue/24/solid";
+
 import { useAuthStore } from "@/stores/authStore";
 import { useChatStore } from "@/stores/chatStore";
 
@@ -84,18 +87,20 @@ const unreadSupportMessages = computed(() => {
 
 const rol = authStore.getRol?.toLowerCase?.() || "empresa";
 
-
 // Todas las opciones posibles
 const allItems = [
   { label: "Inicio", icon: HomeIcon, path: "/dashboard/home", roles: ["empresa"] },
   { label: "Descargar App", icon: CloudArrowDownIcon, path: "/dashboard/download", roles: ["empresa"] },
   { label: "Soporte", icon: LifebuoyIcon, path: "/dashboard/support", roles: ["empresa"] },
   { label: "Planes y Facturación", icon: CreditCardIcon, path: "/dashboard/plans", roles: ["empresa"] },
-  { label: "Soporte Clientes", icon: ChatBubbleLeftRightIcon, path: "/dashboard/chat", roles: ["soporte", "superusuario"] },
+
+  { label: "Soporte Clientes", icon: ChatBubbleLeftRightIcon, path: "/dashboard/chat", roles: ["asesor"] },
   { label: "Clientes", icon: UserIcon, path: "/dashboard/clients", roles: ["superusuario"] },
+  { label: "Auditoría", icon: ClipboardDocumentListIcon, path: "/dashboard/logs", roles: ["superusuario"] },
+  { label: "Usuarios", icon: UsersIcon, path: "/dashboard/users", roles: ["superusuario"] },
+
   { label: "Configuración", icon: Cog6ToothIcon, path: "/dashboard/settings", roles: ["empresa"] },
-  { label: "Auditoría", icon: Cog6ToothIcon, path: "/dashboard/logs", roles: ["superusuario"] },
-  { label: "Usuarios", icon: Cog6ToothIcon, path: "/dashboard/users", roles: ["superusuario"] },
+  { label: "Configuración", icon: Cog6ToothIcon, path: "/dashboard/adminSettings", roles: ["asesor", "superusuario"] },
 ];
 
 // Filtra según el rol

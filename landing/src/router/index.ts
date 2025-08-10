@@ -57,6 +57,11 @@ const router = createRouter({
           component: () => import('@/modules/dashboard/layouts/SettingsSection.vue')
         },
         {
+          path: 'adminSettings',
+          name: 'adminSettings',
+          component: () => import('@/modules/dashboard/layouts/AdminSettingsSection.vue')
+        },
+        {
           path: 'support',
           name: 'support',
           component: () => import('@/modules/dashboard/layouts/SupportSection.vue')
