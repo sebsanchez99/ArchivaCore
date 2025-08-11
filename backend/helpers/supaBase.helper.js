@@ -240,7 +240,6 @@ class SupaBaseHelper {
     try {
       const recyclePath = `reciclaje/${fileName}`
       const targetPath = `${originalPath}/${fileName}`
-      console.log('PARAMS:', bucket, originalPath, fileName)
       
       // Copiar desde reciclaje a ruta original
       const { data: copyData, error: copyError } = await poolNewClient.from(bucket)
@@ -278,6 +277,38 @@ class SupaBaseHelper {
       return ResponseUtil.fail('Error inesperado al listar reciclaje', err.message)
     }
   }
+
+  async deleteFileFromRecycle({ bucket, fileName }) {
+  try {
+    const recyclePath = `reciclaje/${fileName}`
+
+    // Eliminar archivo de la carpeta reciclaje
+    const { error: deleteError } = await poolNewClient.from(bucket)
+      .remove([recyclePath])
+
+    if (deleteError) {
+      return ResponseUtil.fail('Error al eliminar el archivo de reciclaje', deleteError.message)
+    }
+
+    return ResponseUtil.success('Archivo eliminado definitivamente de reciclaje')
+  } catch (err) {
+    return ResponseUtil.fail('Error inesperado al eliminar archivo de reciclaje', err.message)
+  }
+}
+  async listUserNotifications(userId) {
+  try {
+    const { rows } = await pool.query(
+      'SELECT * FROM listar_notificaciones_usuario($1)',
+      [userId]
+    )
+
+    return ResponseUtil.success('Notificaciones listadas correctamente', rows)
+  } catch (err) {
+    return ResponseUtil.fail('Error inesperado al listar notificaciones', err.message)
+  }
+}
+
+
 }
 
 module.exports = SupaBaseHelper

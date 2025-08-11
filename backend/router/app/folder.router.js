@@ -9,7 +9,9 @@ const {
     createFolder,
     moveFileToRecycle,
     restoreFileFromRecycle,
-    listRecycleFolder
+    listRecycleFolder,
+    deleteFileFromRecycle,
+    listUserNotifications
 } = require('../../controllers/app/folder.controllers')
 
 const router = Router()
@@ -63,10 +65,35 @@ router.delete('/deleteFiles', deleteFiles)
  */
 router.post('/createFolder', createFolder)
 
+/**
+ * @memberof Rutas.FolderRouter
+ * @name get/api/v1/supa/moveToRecycle
+ * @description Mueve el archivo para a la carpeta reciclaje del bucket
+ */
 router.put('/moveToRecycle', moveFileToRecycle)
 
+/**
+ * @memberof Rutas.FolderRouter
+ * @name get/api/v1/supa/restoreFromRecycle
+ * @description Recupera el archivo de la carpeta reciclaje al path original
+ */
 router.put('/restoreFromRecycle', restoreFileFromRecycle)
 
+/**
+ * @memberof Rutas.FolderRouter
+ * @name get/api/v1/supa/listRecicle
+ * @description Lista los archivos de la carpeta reciclaje del bucket
+ */
 router.get('/listRecicle', listRecycleFolder)
+
+/**
+ * @memberof Rutas.FolderRouter
+ * @name get/api/v1/supa/listRecicle
+ * @description Borra el archivo de la carpeta reciclaje del bucket 
+ */
+router.get('/deleteFileRecycle', deleteFileFromRecycle)
+
+router.get('/notifications', listUserNotifications)
+
 
 module.exports = router
