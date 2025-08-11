@@ -1,25 +1,38 @@
 <template>
   <div class="max-w-7xl mx-auto px-4 py-6 h-[83vh] flex items-center justify-center">
     <template v-if="!connected">
-      <div class="w-full flex flex-col items-center justify-center h-full text-center px-4">
-        <!-- Ícono decorativo con animación -->
-        <div class="bg-primary-100 rounded-full p-6 shadow-lg mb-6 animate-pulse">
-          <ChatBubbleOvalLeftEllipsisIcon class="h-16 w-16 text-primary-500" />
+      <div
+        class="w-full flex flex-col items-center justify-center h-full text-center px-6 py-10">
+        <!-- Ícono decorativo animado -->
+        <div class="relative mb-8">
+          <div class="absolute -inset-4 bg-primary-100 rounded-full blur-xl opacity-40 animate-ping"></div>
+          <div class="bg-primary-100 rounded-full p-6 shadow-lg relative z-10">
+            <ChatBubbleOvalLeftEllipsisIcon class="h-16 w-16 text-primary-500" />
+          </div>
         </div>
 
-        <!-- Título -->
-        <h2 class="text-4xl font-bold text-primary-700 mb-3">¡Hola, {{ username }}!</h2>
+        <!-- Bienvenida -->
+        <h2 class="text-4xl font-extrabold text-primary-700 mb-2">
+          ¡Listo para ayudar, {{ authStore.getFullname }}!
+        </h2>
 
         <!-- Subtítulo -->
-        <p class="text-base text-text-500 max-w-md mb-6">
-          Estás desconectado del chat de soporte. Conéctate para empezar a recibir mensajes de los clientes.<br />
-          <span class="text-xs text-primary-400 block mt-3 font-bold">Recuerda mantenerte disponible durante tu
-            turno.</span>
+        <p class="text-base text-gray-600 max-w-md mb-6 leading-relaxed">
+          Esta es tu consola de soporte.
+          Aquí recibirás y responderás mensajes de clientes en tiempo real.
+          <span class="block mt-3 text-sm text-primary-400 font-semibold">
+            Recuerda conectarte para empezar a atender solicitudes.
+          </span>
+        </p>
+
+        <!-- Rol -->
+        <p class="mb-8 text-sm text-gray-500">
+          Rol: <span class="text-primary-600 font-medium">{{ authStore.getRol }}</span>
         </p>
 
         <!-- Botón de conexión -->
         <button
-          class="btn bg-primary-500 text-base font-medium shadow-md hover:shadow-xl hover:bg-primary-500 border-none"
+          class="btn bg-primary-500 text-white text-lg font-medium shadow-lg hover:shadow-xl hover:bg-primary-600 px-6 py-3 flex items-center gap-2 transition-all duration-200 border-none"
           @click="connectSupport">
           <ArrowRightOnRectangleIcon class="h-5 w-5" />
           Conectarme como soporte

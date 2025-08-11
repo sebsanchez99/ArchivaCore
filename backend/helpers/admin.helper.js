@@ -20,7 +20,7 @@ class AdminHelper{
     async listUsers(companyId){
         const result = await pool.query('SELECT * FROM listar_usuarios_por_empresa($1)', [companyId] )
         const usersList = result.rows
-        return ResponseUtil.success('La operación se realizó con éxito', usersList)
+        return ResponseUtil.success('La operación se realizó con éxito.', usersList)
     }
 
     /**
@@ -46,7 +46,7 @@ class AdminHelper{
             'SELECT * FROM agregar_usuario($1, $2, $3, $4, $5)',
             [username, fullname, hashPassword, rolUser, idCompany]
         )
-        return ResponseUtil.success('EL usuario se creó con éxito')
+        return ResponseUtil.success('EL usuario se creó con éxito.')
     }
 
     /**
@@ -63,7 +63,7 @@ class AdminHelper{
             'SELECT * FROM actualizar_usuario( $1, $2, $3, $4, $5, $6 )',
             [id, username, fullname, hashPassword, idRol, idCompany]
         )
-        return ResponseUtil.success('El usuario se actualizó con éxito')
+        return ResponseUtil.success('El usuario se actualizó con éxito.')
     }
 
     /**
@@ -74,16 +74,16 @@ class AdminHelper{
      */
     async deleteUsers(id, currentIdUser){
         if(id === currentIdUser){
-            return ResponseUtil.fail('El usuario no se puede eliminar a si mismo, elija otro')
+            return ResponseUtil.fail('El usuario no se puede eliminar a si mismo, elija otro.')
         }
         await pool.query('SELECT * FROM eliminar_usuario($1)', [id])
-        return ResponseUtil.success('Usuario eliminado con éxito')
+        return ResponseUtil.success('Usuario eliminado con éxito.')
 
     }
     
     async getRoles() {
         const result = await pool.query('SELECT * FROM obtener_roles()')
-        return ResponseUtil.success('Roles obtenidos con éxito', result.rows)
+        return ResponseUtil.success('Roles obtenidos con éxito.', result.rows)
     }
     
     async changeUserState(userId, currentIdUser, newState) {        
@@ -91,19 +91,24 @@ class AdminHelper{
             return ResponseUtil.fail('Operación inválida.')
         }
         await pool.query('SELECT * FROM cambiar_estado_usuario($1, $2)', [userId, newState])
-        return ResponseUtil.success('Estado de usuario actualizado con éxito')
+        return ResponseUtil.success('Estado de usuario actualizado con éxito.')
     }
     
     async getClients() {
         const result = await pool.query('SELECT * FROM listar_empresas()')
         const usersList = result.rows
-        return ResponseUtil.success('La operación se realizó con éxito', usersList)
+        return ResponseUtil.success('La operación se realizó con éxito.', usersList)
     }
     
     async changeCompanyPassword(companyId, newPassword) {
         const hashPassword = await bcrypt.hash( newPassword ,  10 )
         await pool.query('SELECT * FROM cambiar_contrasena_empresa($1, $2)', [companyId, hashPassword])
         return ResponseUtil.success('Se ha actualizado la contraseña de la empresa correctamente.')
+    }
+
+    async updateCompanyInfo(companyId, companyName, fullname) {
+        await pool.query('SELECT * FROM actualizar_empresa($1, $2, $3, $4, $5, $6, $7)', [companyId, companyName, fullname, null, null, null, null])
+        return ResponseUtil.success('La información se actualizó con éxito.')
     }
 
     async changeCompanyState(companyId, newState) {
@@ -120,7 +125,7 @@ class AdminHelper{
     async getLogs() {
         const result = await pool.query('SELECT * FROM obtener_historial_actividad()')
         const logs = result.rows
-        return ResponseUtil.success('Historial obtenido con éxito', logs)
+        return ResponseUtil.success('Historial obtenido con éxito.', logs)
     }
 
     async getCompanyLogs(companyId) {
@@ -138,7 +143,7 @@ class AdminHelper{
     async getAdminUsers() {
         const result = await pool.query('SELECT * FROM listar_usuarios_superusuario_asesor()')
         const adminUsers = result.rows
-        return ResponseUtil.success('Usuarios listados con éxito', adminUsers)
+        return ResponseUtil.success('Usuarios listados con éxito.', adminUsers)
     }
 
     async createSuperuser(username, fullname, password) {
@@ -151,7 +156,7 @@ class AdminHelper{
             'SELECT * FROM crear_usuario_superusuario($1, $2, $3)',
             [username, fullname, hashPassword]
         )
-        return ResponseUtil.success('EL usuario se creó con éxito')
+        return ResponseUtil.success('EL usuario se creó con éxito.')
     }
 
     async createSupportUser(username, fullname, password) {
@@ -164,7 +169,7 @@ class AdminHelper{
             'SELECT * FROM crear_usuario_asesor($1, $2, $3)',
             [username, fullname, hashPassword]
         )
-        return ResponseUtil.success('EL usuario se creó con éxito')
+        return ResponseUtil.success('EL usuario se creó con éxito.')
     }
 
     /**

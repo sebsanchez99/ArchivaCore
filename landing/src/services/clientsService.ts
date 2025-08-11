@@ -10,7 +10,7 @@ export default {
         return httpClient.put<ServerResponseModel>('/admin/changeCompanyPassword', payload)
     },
 
-    deleteClient(payload: { companyId: string }) {
+    deleteClient(payload: { companyId: string, companyName: string }) {
         return httpClient.delete<ServerResponseModel>('/admin/deleteClient', { data: payload })
     },
 

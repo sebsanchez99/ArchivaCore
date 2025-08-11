@@ -4,7 +4,6 @@ const {
     createFile, 
     downloadFile, 
     deleteAllFiles, 
-    deleteCompany, 
     deleteFiles, 
     createFolder,
     moveFileToRecycle,
@@ -43,13 +42,6 @@ router.get('/downloadFile', downloadFile)
  * @description Elimina todos los archivos en una carpeta
  */
 router.delete('/deleteAllFiles', deleteAllFiles)
-
-/**
- * @memberof Rutas.FolderRouter
- * @name get/api/v1/supa/deleteCompany
- * @description Elimina Bucket de compañia
- */
-router.delete('/deleteCompany', deleteCompany)
 
 /**
  * @memberof Rutas.FolderRouter
