@@ -5,15 +5,13 @@
             <p class="text-sm text-text-400">Administra tu cuenta y preferencias</p>
         </div>
         <div class="grid grid-cols-2 gap-4">
-            <UpdateInfoForm />
             <ChangePasswordForm />
+            <DeleteAccountForm />
         </div>
-        <DeleteAccountForm />
     </div>
 </template>
 
 <script setup lang="ts">
-import UpdateInfoForm from "@/modules/dashboard/components/settingsSection/UpdateInfoForm.vue";
 import ChangePasswordForm from "@/modules/dashboard/components/settingsSection/ChangePasswordForm.vue";
 import DeleteAccountForm from "@/modules/dashboard/components/settingsSection/DeleteAccountForm.vue";
 </script>

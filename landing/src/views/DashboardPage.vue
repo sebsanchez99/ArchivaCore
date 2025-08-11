@@ -9,19 +9,16 @@
                     class="btn btn-primary drawer-button lg:hidden m-2 p-1 bg-transparent border-none shadow-2xl">
                     <Bars3Icon class="w-8 h-8" />
                 </label>
-                <NavBarSection />
             </div>
 
             <div
-                class="p-5 bg-white h-[calc(100vh-4rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-primary-400 scrollbar-track-primary-100">
+                class="p-5 bg-gradient-to-b from-accent-50 to-white rounded-lg shadow-inner h-[calc(100vh-4rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-primary-400 scrollbar-track-primary-100">
                 <RouterView v-slot="{ Component }">
                     <KeepAlive :include="['SupportSection', 'ClientsChatSection']">
                         <component :is="Component" />
                     </KeepAlive>
                 </RouterView>
             </div>
-
-
         </div>
 
         <!-- Sidebar -->

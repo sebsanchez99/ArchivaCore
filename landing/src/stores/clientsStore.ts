@@ -92,9 +92,9 @@ export const useClientsStore = defineStore('clients', {
             }
         },
 
-        async deleteCompany(companyId: string) {
+        async deleteCompany(companyId: string, companyName: string) {
             try {
-                const response = await clientService.deleteClient({ companyId })
+                const response = await clientService.deleteClient({ companyId, companyName })
                 this.response = response.data
             } catch (error) {
                 this.error = 'Error interno del servidor'

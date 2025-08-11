@@ -61,7 +61,7 @@ async function authenticateCompanyOrSpecialUser({ identifier, password }, done) 
 
     // 2. Buscar usuario Soporte o Superusuario
     entity = await fetchEntity(QUERIES.USUARIO, identifier);
-    if (entity && ['Soporte', 'Superusuario'].includes(entity._rol_nombre)) {
+    if (entity && ['Asesor', 'Superusuario'].includes(entity._rol_nombre)) {
       const isValid = await verifyPassword(password, entity[HASH_FIELDS.USUARIO]);
       if (!isValid) return done(null, false, { message: 'Contraseña incorrecta' });
 

@@ -1,15 +1,22 @@
 <template>
-    <button class="btn btn-block bg-primary-500 hover:bg-primary-600 text-white font-semibold gap-2 border-none shadow-md">
-      <ArrowDownTrayIcon class="w-5" />
-      {{ label }}
-    </button>
-  </template>
-  
-  <script setup lang="ts">
-  import { ArrowDownTrayIcon } from '@heroicons/vue/24/outline';
-  
-  defineProps<{
-    label: string;
-  }>();
-  </script>
-  
+  <a
+    :href="`/${file}`"
+    :download="fileName"
+    class="btn btn-block border-none bg-primary-500 text-white font-medium rounded-lg shadow hover:bg-primary-600 transition-colors"
+  >
+    {{ label }}
+  </a>
+</template>
+
+<script setup lang="ts">
+interface Props {
+  label: string
+  file: string 
+  fileName?: string 
+}
+
+const props = defineProps<Props>()
+
+// Si no se pasa fileName, usamos el mismo que el archivo
+const fileName = props.fileName ?? props.file.split('/').pop()
+</script>

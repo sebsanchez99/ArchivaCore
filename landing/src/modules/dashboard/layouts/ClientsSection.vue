@@ -5,6 +5,7 @@
     </div>
     <!-- Encabezado -->
     <div v-else>
+      <SuperuserHome />
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
         <h2 class="text-2xl font-semibold text-text-500">Empresas Registradas</h2>
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -91,6 +92,7 @@ import SuccessModal from "@/components/modals/SuccessModal.vue"
 import CompanyRow from '@/modules/dashboard/components/ClientsSection/CompanyRow.vue'
 import ChangePasswordModal from '@/modules/dashboard/components/ClientsSection/ChangePasswordModal.vue'
 import CompanyLogDetails from '@/modules/dashboard/components/ClientsSection/CompanyLogDetails.vue'
+import SuperuserHome from '@/modules/dashboard/components/ClientsSection/SuperuserHome.vue'
 
 import {
   MagnifyingGlassIcon,
@@ -147,7 +149,7 @@ async function handleDeleteCompany() {
   if (!selectedCompany.value) return
 
   clientsStore.loading = true
-  await clientsStore.deleteCompany(selectedCompany.value.id)
+  await clientsStore.deleteCompany(selectedCompany.value.id, selectedCompany.value.name)
   
   if (clientsStore.response?.result) {
     successModal.value?.show(getMessage('Empresa eliminada correctamente.'))

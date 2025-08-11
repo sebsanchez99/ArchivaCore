@@ -45,7 +45,13 @@ class AuthHelper {
         const hashPassword = await bcrypt.hash(password, 10)
         await pool.query('SELECT * FROM agregar_empresa($1, $2, $3, $4)', [companyName, fullname, companyEmail, hashPassword])
         return ResponseUtil.success('Empresa registrada con éxito')
-    }   
+    }  
+    
+    async changeUserPassword(userId, newPassword) {
+        const hashPassword = await bcrypt.hash(newPassword, 10)
+        await pool.query('SELECT * FROM cambiar_contrasena_usuario($1, $2)', [userId, hashPassword])
+        return ResponseUtil.success('Se ha actualizado la contraseña correctamente.')
+    }
 
     /**
      * Verifica la existencia del correo de la empresa en la base de datos

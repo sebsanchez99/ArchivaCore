@@ -4,10 +4,11 @@ const checkRole = require('../middlewares/checkRole')
 const authAppRouter = require('./app/auth.router')
 const adminAppRouter = require('./app/admin.router')
 const folderRouter = require('./app/folder.router')
+const microRouter = require('./app/micro.router')
 const authWebRouter = require('./web/auth.router')
 const supabaseWebRouter = require('./web/supabase.router')
 const adminWebRouter = require('./web/admin.router')
-const microRouter = require('../router/app/micro.router')
+const settingsWebRouter = require('./web/settings.router')
 
 const router = Router()
 
@@ -28,8 +29,7 @@ router.use('/auth', authAppRouter)
  * @middleware {passport.authenticate} JWT Authentication
  * @middleware {checkRole} Verificación de rol del usuario.
  */
-router.use('/admin', passport.authenticate('jwt', { session: false }), checkRole('Administrador', 'Empresa', 'Superusuario'), adminAppRouter)
-
+router.use('/admin', passport.authenticate('jwt', { session: false }), checkRole('Administrador', 'Empresa'), adminAppRouter)
 
 /**
  * @namespace folderRouter
@@ -38,15 +38,16 @@ router.use('/admin', passport.authenticate('jwt', { session: false }), checkRole
 */
 router.use('/supa', passport.authenticate('jwt', { session: false }), checkRole('Usuario', 'Empresa', 'Administrador'), folderRouter)
 
+router.use("/microservice", passport.authenticate('jwt', {session: false}), checkRole('Usuario','Empresa', 'Administrador'), microRouter)
+
 // Rutas de página web
 // Ruta de autenticación
 router.use('/web/auth', authWebRouter)
 
 router.use('/web/admin', passport.authenticate('jwt', { session: false }), checkRole('Superusuario'), adminWebRouter)
 
-router.use('/web/supabase', passport.authenticate('jwt', { session: false }), supabaseWebRouter)
+router.use('/web/supabase', passport.authenticate('jwt', { session: false }), checkRole('Empresa', 'Administrador'), supabaseWebRouter)
 
-// Ruta de microServicio HV 
-router.use("/microservice", passport.authenticate('jwt', {session: false}), checkRole('Administrador','Empresa', 'Superusuario'), microRouter)
+router.use('/web/settings', passport.authenticate('jwt', { session: false }), settingsWebRouter)
 
 module.exports = router;

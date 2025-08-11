@@ -86,25 +86,6 @@ const deleteAllFiles = async (req, res) => {
 
 /**
  * @memberof Controladores.FolderController
- * @function deleteCompany
- * @description Controlador que permite eliminar una  empresa existente en SupaBase Storage, (requiere estar vacia para poder ser eliminado)
- * @param {*} req 
- * @param {*} res 
- */
-const deleteCompany = async (req, res) => {
-    try {
-        const { companyName } = req.body
-        const supaBaseHelper = new SupaBaseHelper()
-        const result = await supaBaseHelper.deleteCompany(companyName)
-        res.json(result)
-    } catch (error) {
-        res.status(500).send(ResponseUtil.fail(error.message))
-    }
-
-}
-
-/**
- * @memberof Controladores.FolderController
  * @function deleteFiles
  * @description Controlador que permite eliminar un archivo en la ruta seleccionada de una empresa existenten en SupaBase Storage
  * @param {*} req 
