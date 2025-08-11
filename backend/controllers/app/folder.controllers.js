@@ -214,7 +214,6 @@ module.exports = {
     createFile,
     downloadFile,
     deleteAllFiles,
-    deleteCompany,
     deleteFiles,
     createFolder,
     moveFileToRecycle,
