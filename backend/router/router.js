@@ -9,6 +9,7 @@ const authWebRouter = require('./web/auth.router')
 const supabaseWebRouter = require('./web/supabase.router')
 const adminWebRouter = require('./web/admin.router')
 const settingsWebRouter = require('./web/settings.router')
+const notificationRouter = require('./app/notification.router')
 
 const router = Router()
 
@@ -40,6 +41,7 @@ router.use('/supa', passport.authenticate('jwt', { session: false }), checkRole(
 
 router.use("/microservice", passport.authenticate('jwt', {session: false}), checkRole('Usuario','Empresa', 'Administrador'), microRouter)
 
+router.use("/notifications", passport.authenticate('jwt', {session: false}), checkRole('Usuario','Empresa', 'Administrador'), notificationRouter )
 // Rutas de página web
 // Ruta de autenticación
 router.use('/web/auth', authWebRouter)

@@ -10,8 +10,7 @@ const {
     restoreFileFromRecycle,
     listRecycleFolder,
     deleteFileFromRecycle,
-    listUserNotifications
-} = require('../../controllers/app/folder.controllers')
+    } = require('../../controllers/app/folder.controllers')
 
 const router = Router()
 
@@ -85,7 +84,7 @@ router.get('/listRecicle', listRecycleFolder)
  */
 router.get('/deleteFileRecycle', deleteFileFromRecycle)
 
-router.get('/notifications', listUserNotifications)
+
 
 
 module.exports = router
