@@ -1,9 +1,8 @@
-const  { StorageClient } = require('@supabase/storage-js') 
-const {configSupaBase} = require('../config/config')
+const  { createClient } = require('@supabase/supabase-js') 
+const { configSupaBase } = require('../config/config')
 
-const poolNewClient = new StorageClient(configSupaBase.supaBaseUrl, {
-    apikey: configSupaBase.supaBaseKey,
-    Authorization: `Bearer ${configSupaBase.supaBaseKey}`,
+const poolNewClient = createClient(configSupaBase.supaBaseUrl, configSupaBase.supaBaseKey, {
+    auth: { persistSession: false },
 })
 
-module.exports = poolNewClient
+module.exports = poolNewClient.storage

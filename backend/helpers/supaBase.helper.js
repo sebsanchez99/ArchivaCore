@@ -35,6 +35,7 @@ class SupaBaseHelper {
     })
   }
 
+  //TODO: Nombres con caracteres y espacios
   async createFile(companyName, folderRoute, fileContent) {
     const bucketName = this.#buildBucketName(companyName)
     const { buffer, originalname, mimetype } = fileContent

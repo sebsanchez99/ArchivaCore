@@ -15,7 +15,7 @@ const {
 } = require('../../controllers/app/folder.controllers')
 
 const router = Router()
-const upload = multer()
+const upload = multer({ storage: multer.memoryStorage() })
 
 /**
  * @memberof Rutas.FolderRouter

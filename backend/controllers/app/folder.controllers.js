@@ -37,7 +37,6 @@ const folderListForUser = async (req, res) => {
  * @param {*} res 
  */
 const createFile = async (req, res) => {
-    //TODO: Limite de 50MB
     try {
         const { companyName } = req.user
         const fileContent = req.file
@@ -60,9 +59,10 @@ const createFile = async (req, res) => {
  */
 const downloadFile = async (req, res) => {
     try {
-        const { companyName, userName, fileName } = req.body
+        const { companyName } = req.user 
+        const { fileRoute } = req.body
         const supaBaseHelper = new SupaBaseHelper()
-        const result = await supaBaseHelper.downloadFile(companyName, userName, fileName)
+        const result = await supaBaseHelper.downloadFile(companyName, fileRoute)
         res.json(result)
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
