@@ -1,4 +1,5 @@
 const { Router } = require('express')
+const multer = require('multer')
 const { 
     folderListForUser, 
     createFile, 
@@ -14,6 +15,7 @@ const {
 } = require('../../controllers/app/folder.controllers')
 
 const router = Router()
+const upload = multer()
 
 /**
  * @memberof Rutas.FolderRouter
@@ -27,7 +29,7 @@ router.get('/ListFoldersForUser', folderListForUser)
  * @name get/api/v1/supa/createFile
  * @description Crea Archivo
  */
-router.post('/createFile', createFile)
+router.post('/createFile', upload.single('fileContent'), createFile)
 
 /**
  * @memberof Rutas.FolderRouter
@@ -86,6 +88,5 @@ router.get('/listRecicle', listRecycleFolder)
 router.get('/deleteFileRecycle', deleteFileFromRecycle)
 
 router.get('/notifications', listUserNotifications)
-
 
 module.exports = router

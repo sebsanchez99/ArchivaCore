@@ -35,11 +35,15 @@ class SupaBaseHelper {
     })
   }
 
-  async createFile(companyName, userName, folderName, fileName) {
-    const prefix = `/${userName}/${folderName}/${fileName}`
-    const { data, error } = await poolNewClient
-      .from(companyName)
-      .upload(prefix)
+  async createFile(companyName, folderRoute, fileContent) {
+    const bucketName = this.#buildBucketName(companyName)
+    const { buffer, originalname, mimetype } = fileContent
+    const fullRoute = `${folderRoute}/${originalname}`
+    
+    const { data, error } = await poolNewClient.from(bucketName).upload(fullRoute, buffer, {
+      contentType: mimetype,
+      upsert: true,
+    })
 
     if (error) {
       return ResponseUtil.fail('Hubo un error al conectar con Supabase', error)

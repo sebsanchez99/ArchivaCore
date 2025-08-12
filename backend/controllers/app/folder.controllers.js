@@ -37,10 +37,13 @@ const folderListForUser = async (req, res) => {
  * @param {*} res 
  */
 const createFile = async (req, res) => {
+    //TODO: Limite de 50MB
     try {
-        const { companyName, userName, folderName, fileName } = req.body
+        const { companyName } = req.user
+        const fileContent = req.file
+        const { folderRoute } = req.body
         const supaBaseHelper = new SupaBaseHelper()
-        const result = await supaBaseHelper.createFile(companyName, userName, folderName, fileName)
+        const result = await supaBaseHelper.createFile(companyName, folderRoute, fileContent)
         res.json(result)
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
@@ -202,6 +205,5 @@ module.exports = {
     listRecycleFolder,
     deleteFileFromRecycle,
     listUserNotifications
-
 }
 
