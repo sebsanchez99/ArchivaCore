@@ -644,22 +644,22 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION insertar_notificacion(
     p_titulo VARCHAR(255),
     p_mensaje TEXT,
-    p_usuarios UUID[]
+    p_usuario UUID
 ) RETURNS UUID AS $$
 DECLARE
     v_id UUID;
-    v_usuario UUID;
 BEGIN
+    -- Insertar la notificación y guardar su ID
     INSERT INTO Notificacion (Not_ID, Not_Titulo, Not_Mensaje, Not_Fecha)
     VALUES (uuid_generate_v4(), p_titulo, p_mensaje, CURRENT_TIMESTAMP)
     RETURNING Not_ID INTO v_id;
 
-    FOREACH v_usuario IN ARRAY p_usuarios LOOP
-        INSERT INTO NotificacionUsuario (NotUsu_Notificacion, NotUsu_Usuario)
-        VALUES (v_id, v_usuario);
-        
-        PERFORM limpiar_notificaciones_usuario(v_usuario);
-    END LOOP;
+    -- Asociar la notificación al usuario
+    INSERT INTO NotificacionUsuario (NotUsu_Notificacion, NotUsu_Usuario)
+    VALUES (v_id, p_usuario);
+
+    -- Limpiar notificaciones antiguas de ese usuario
+    PERFORM limpiar_notificaciones_usuario(p_usuario);
 
     RETURN v_id;
 END;
