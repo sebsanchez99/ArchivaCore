@@ -35,11 +35,16 @@ class SupaBaseHelper {
     })
   }
 
-  async createFile(companyName, userName, folderName, fileName) {
-    const prefix = `/${userName}/${folderName}/${fileName}`
-    const { data, error } = await poolNewClient
-      .from(companyName)
-      .upload(prefix)
+  //TODO: Nombres con caracteres y espacios
+  async createFile(companyName, folderRoute, fileContent) {
+    const bucketName = this.#buildBucketName(companyName)
+    const { buffer, originalname, mimetype } = fileContent
+    const fullRoute = `${folderRoute}/${originalname}`
+    
+    const { data, error } = await poolNewClient.from(bucketName).upload(fullRoute, buffer, {
+      contentType: mimetype,
+      upsert: true,
+    })
 
     if (error) {
       return ResponseUtil.fail('Hubo un error al conectar con Supabase', error)
@@ -47,15 +52,20 @@ class SupaBaseHelper {
     return ResponseUtil.success('La operación se realizó con éxito', data)
   }
 
-  async downloadFile(companyName, userName, fileName) {
-    const prefix = `${companyName}`
-    const prefix2 = `/${userName}/${fileName}`
-    const { data, error } = await poolNewClient.from(prefix).download(prefix2)
-
+  async downloadFile(companyName, fileRoute) {
+    const bucketName = this.#buildBucketName(companyName)
+    const { data, error } = await poolNewClient.from(bucketName).download(fileRoute)
+    
     if (error) {
       return ResponseUtil.fail('Hubo un error al conectar con Supabase', error)
     }
-    return ResponseUtil.success('La operación se realizó con éxito', data)
+    const arrayBuffer = await data.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+    return ResponseUtil.success('La operación se realizó con éxito', {
+      buffer,
+      mimetype: data.type,
+      fileName: fileRoute.split('/').pop(),
+    })
   }
 
   async deleteAllFiles(companyName) {
