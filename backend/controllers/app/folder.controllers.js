@@ -125,6 +125,19 @@ const createFolder = async (req, res) => {
     }
 }
 
+
+const updateFile = async (req, res) => {
+    try {
+        const { companyName } = req.user
+        const { fileName, currentRoute, newRoute } = req.body
+        const supaBaseHelper = new SupaBaseHelper();
+        const result = await supaBaseHelper.updateFile(companyName, fileName, currentRoute, newRoute)
+        res.json(result)
+    } catch (error) {
+        return res.status(500).json(ResponseUtil.fail('Error interno al mover el archivo al reciclaje.', error.message))
+    }   
+}
+
 const moveFileToRecycle = async (req, res) => {
     try {
         const { bucketId, currentPath, fileName } = req.body
@@ -204,6 +217,7 @@ module.exports = {
     restoreFileFromRecycle,
     listRecycleFolder,
     deleteFileFromRecycle,
-    listUserNotifications
+    listUserNotifications,
+    updateFile
 }
 

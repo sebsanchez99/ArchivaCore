@@ -11,7 +11,8 @@ const {
     restoreFileFromRecycle,
     listRecycleFolder,
     deleteFileFromRecycle,
-    listUserNotifications
+    listUserNotifications,
+    updateFile
 } = require('../../controllers/app/folder.controllers')
 
 const router = Router()
@@ -59,6 +60,7 @@ router.delete('/deleteFiles', deleteFiles)
  */
 router.post('/createFolder', createFolder)
 
+router.put('/updateFile', updateFile)
 /**
  * @memberof Rutas.FolderRouter
  * @name get/api/v1/supa/moveToRecycle
