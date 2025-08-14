@@ -11,7 +11,6 @@ const {
     restoreFileFromRecycle,
     listRecycleFolder,
     deleteFileFromRecycle,
-    listUserNotifications,
     updateFile
 } = require('../../controllers/app/folder.controllers')
 
@@ -89,6 +88,6 @@ router.get('/listRecicle', listRecycleFolder)
  */
 router.get('/deleteFileRecycle', deleteFileFromRecycle)
 
-router.get('/notifications', listUserNotifications)
+
 
 module.exports = router

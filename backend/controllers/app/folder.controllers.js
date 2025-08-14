@@ -186,21 +186,7 @@ const deleteFileFromRecycle = async (req, res) => {
   }
 }
 
-const listUserNotifications = async (req, res) => {
-  try {
-    const { userId } = req.user
-    if (!userId) {
-      return res.status(400).json(ResponseUtil.fail('Parámetro obligatorio: userId'))
-    }
-    const supaBaseHelper = new SupaBaseHelper()
-    const result = await supaBaseHelper.listUserNotifications(userId)
-    res.json(result)
-  } catch (error) {
-    return res.status(500).json(
-      ResponseUtil.fail('Error interno al listar las notificaciones.', error.message)
-    )
-  }
-}
+
 
 
 
@@ -217,7 +203,6 @@ module.exports = {
     restoreFileFromRecycle,
     listRecycleFolder,
     deleteFileFromRecycle,
-    listUserNotifications,
     updateFile
 }
 

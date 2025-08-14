@@ -326,18 +326,7 @@ class SupaBaseHelper {
     return ResponseUtil.fail('Error inesperado al eliminar archivo de reciclaje', err.message)
   }
 }
-  async listUserNotifications(userId) {
-  try {
-    const { rows } = await pool.query(
-      'SELECT * FROM listar_notificaciones_usuario($1)',
-      [userId]
-    )
 
-    return ResponseUtil.success('Notificaciones listadas correctamente', rows)
-  } catch (err) {
-    return ResponseUtil.fail('Error inesperado al listar notificaciones', err.message)
-  }
-}
 
 
 }
