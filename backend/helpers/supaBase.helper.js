@@ -1,7 +1,6 @@
 const path = require('path')
 const poolNewClient = require('../libs/supaBase')
 const ResponseUtil = require('../utils/response.util')
-const { log } = require('console')
 
 /**
  * @class Esta clase contiene métodos para la gestión de carpetas de usuarios
@@ -121,6 +120,20 @@ class SupaBaseHelper {
     }
 
     return ResponseUtil.success('Carpeta creada exitosamente')
+  }
+  
+  async updateFile(companyName, fileName, originalRoute, newRoute ) {
+    const bucketName = this.#buildBucketName(companyName)
+    if (newRoute != "") {
+      newRoute = `${newRoute}/${fileName}`
+    }
+    const currentRoute = originalRoute.replace(/\/([^\/]+)(\.[^\/.]+)$/, `/${fileName}`); 
+    const finalRoute = newRoute === "" ? currentRoute : newRoute
+    const { data, error } = await poolNewClient.from(bucketName).move(originalRoute, finalRoute)
+    if (error) {
+      return ResponseUtil.fail('Error al actualizar carpeta', error)
+    }
+    return ResponseUtil.success('Se ha actualizado la carpeta correctamente.')
   }
 
   async calculateTotalStorage(companyName) {

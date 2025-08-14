@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const multer = require('multer')
-const { 
+const {
     folderListForUser, 
     createFile, 
     downloadFile, 
@@ -11,8 +11,12 @@ const {
     restoreFileFromRecycle,
     listRecycleFolder,
     deleteFileFromRecycle,
-    listAllRoutes
-    } = require('../../controllers/app/folder.controllers')
+    listAllRoutes,
+    updateFile,
+
+} = require('../../controllers/app/folder.controllers')
+    
+
 
 const router = Router()
 const upload = multer({ storage: multer.memoryStorage() })
@@ -59,6 +63,7 @@ router.delete('/deleteFiles', deleteFiles)
  */
 router.post('/createFolder', createFolder)
 
+router.put('/updateFile', updateFile)
 /**
  * @memberof Rutas.FolderRouter
  * @name get/api/v1/supa/moveToRecycle
