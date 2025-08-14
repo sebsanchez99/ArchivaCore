@@ -11,6 +11,7 @@ const {
     restoreFileFromRecycle,
     listRecycleFolder,
     deleteFileFromRecycle,
+    listAllRoutes
     } = require('../../controllers/app/folder.controllers')
 
 const router = Router()
@@ -85,6 +86,13 @@ router.get('/listRecicle', listRecycleFolder)
  * @description Borra el archivo de la carpeta reciclaje del bucket 
  */
 router.get('/deleteFileRecycle', deleteFileFromRecycle)
+
+/**
+ * @memberof Rutas.FolderRouter
+ * @name get/api/v1/supa/listAllRoutes
+ * @description Lista las rutas de todas las carpetas del bucket
+ */
+router.get('/listAllRoutes', listAllRoutes)
 
 
 

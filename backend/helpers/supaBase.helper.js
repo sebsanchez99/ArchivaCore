@@ -227,22 +227,22 @@ class SupaBaseHelper {
     return companyName.toLowerCase().replace(/\s+/g, '')
   }
 
-  async moveFileToRecycle({ bucketId, currentPath, fileName }) {
+  async moveFileToRecycle(companyName, filePath ) {
     try {
-      const fullSourcePath = `${currentPath}/${fileName}`
-      const fullRecyclePath = `reciclaje/${fileName}`
+      const bucketName = this.#buildBucketName(companyName)
+      const fullRecyclePath = `reciclaje/${filePath}`
      
       // Copiar archivo al destino "reciclaje"
-      const { data: copyData, error: copyError } = await poolNewClient.from(bucketId)
-        .copy(fullSourcePath, fullRecyclePath)
+      const { data: copyData, error: copyError } = await poolNewClient.from(bucketName)
+        .copy(filePath, fullRecyclePath)
 
       if (copyError) {
         return ResponseUtil.fail('Error al copiar el archivo a reciclaje', copyError.message)
       }
 
       // Eliminar archivo original
-      const { error: deleteError } = await poolNewClient.from(bucketId)
-        .remove([fullSourcePath])
+      const { error: deleteError } = await poolNewClient.from(bucketName)
+        .remove([filePath])
 
       if (deleteError) {
         return ResponseUtil.fail('Archivo copiado pero no eliminado del origen', deleteError.message)
@@ -254,21 +254,21 @@ class SupaBaseHelper {
     }
   }
 
-  async restoreFileFromRecycle({ bucket, originalPath, fileName }) {
+  async restoreFileFromRecycle( companyName, filePath ) {
     try {
-      const recyclePath = `reciclaje/${fileName}`
-      const targetPath = `${originalPath}/${fileName}`
+      const bucketName = this.#buildBucketName(companyName)
+      const recyclePath = `reciclaje/${filePath}`
       
       // Copiar desde reciclaje a ruta original
-      const { data: copyData, error: copyError } = await poolNewClient.from(bucket)
-        .copy(recyclePath, targetPath)
+      const { data: copyData, error: copyError } = await poolNewClient.from(bucketName)
+        .copy(recyclePath, filePath)
 
       if (copyError) {
         return ResponseUtil.fail('Error al restaurar el archivo desde reciclaje', copyError.message)
       }
 
       // Eliminar archivo en carpeta reciclaje
-      const { error: deleteError } = await poolNewClient.from(bucket)
+      const { error: deleteError } = await poolNewClient.from(bucketName)
         .remove([recyclePath])
 
       if (deleteError) {
@@ -281,27 +281,23 @@ class SupaBaseHelper {
     }
   }
 
-  async listRecycleFolder(bucket) {
+  async listRecycleFolder(companyName) {
     try {
-      const { data, error } = await poolNewClient.from(bucket)
-        .list('reciclaje/', { limit: 100 })
-
-      if (error) {
-        return ResponseUtil.fail('Error al listar la carpeta de reciclaje', error.message)
-      }
-
-      return ResponseUtil.success('Carpeta reciclaje listada correctamente', data)
+      const bucketName = this.#buildBucketName(companyName)
+      const structure = await this.#builderStructure(bucketName, 'reciclaje', true)
+      return ResponseUtil.success('Carpeta reciclaje listada correctamente', structure)
     } catch (err) {
       return ResponseUtil.fail('Error inesperado al listar reciclaje', err.message)
     }
   }
 
-  async deleteFileFromRecycle({ bucket, fileName }) {
+  async deleteFileFromRecycle(companyName, fileRoute ) {
   try {
-    const recyclePath = `reciclaje/${fileName}`
+    const bucketName = this.#buildBucketName(companyName)
+    const recyclePath = `reciclaje/${fileRoute}`
 
     // Eliminar archivo de la carpeta reciclaje
-    const { error: deleteError } = await poolNewClient.from(bucket)
+    const { error: deleteError } = await poolNewClient.from(bucketName)
       .remove([recyclePath])
 
     if (deleteError) {
@@ -314,9 +310,41 @@ class SupaBaseHelper {
   }
 }
 
+async listAllRoutes(companyName) {
+  try {
+    const bucketName = this.#buildBucketName(companyName);
+    const { folders } = await this.#builderStructure(bucketName, "", false);
+    
+    const paths = [];
+    this.#collectPathsRecursively(folders, paths);
 
+    console.log(paths);
+    return ResponseUtil.success('Rutas listadas correctamente', paths);
+
+  } catch (error) {
+    return ResponseUtil.fail('Error al listar las carpetas', error);
+  }
+}
+
+/**
+ * Función privada recursiva para recorrer todas las subcarpetas
+ * @param {Array} folders - Lista de carpetas
+ * @param {Array} paths - Acumulador de rutas
+ */
+#collectPathsRecursively(folders, paths) {
+  if (!Array.isArray(folders)) return;
+
+  for (const folder of folders) {
+    paths.push({ rutaCarpeta: folder.rutaCarpeta });
+    if (folder.subCarpeta && folder.subCarpeta.length > 0) {
+      this.#collectPathsRecursively(folder.subCarpeta, paths);
+    }
+  }
+}
 
 }
+
+
 
 module.exports = SupaBaseHelper
 
