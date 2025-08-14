@@ -34,6 +34,7 @@ const deteleNotification = async (req, res) => {
       const { userId } = req.user
       const { notificationId } = req.body
       const notificationHelper = new NotificationHelper()
+      console.log(userId);
       const result = await notificationHelper.deteleNotification(userId, notificationId)
       res.json(result)
     } catch (error) {
@@ -58,16 +59,13 @@ const markNotification = async (req, res) => {
       const { userId } = req.user
       const { notificationId } = req.body
       const notificationHelper = new NotificationHelper()
-      const result = await notificationHelper.deleteAllNotification(userId, notificationId)
+      const result = await notificationHelper.markNotification(notificationId, userId)
       res.json(result)
 
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
     }
 }
-
-
-
 
 module.exports = {
     listUserNotifications,
