@@ -25,4 +25,16 @@ class AuthService {
     );
   }
 
+  HttpFuture<ServerResponseModel> changePassword(String password) {
+    return DioHandler.handleRequest(
+      () => _dio.put(
+        '/auth/changePassword',
+        data: {
+          'newPassword': password,
+        },
+      ),
+      (response) => ServerResponseModel.fromJson(response),
+    );
+  }
+
 }

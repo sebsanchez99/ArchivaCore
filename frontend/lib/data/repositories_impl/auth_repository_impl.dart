@@ -15,4 +15,9 @@ class AuthRepositoryImpl implements AuthRepository {
   HttpFuture<ServerResponseModel> logIn(String username, String password) async {
     return await _authService.authUser(username, password);
   }
+  
+  @override
+  HttpFuture<ServerResponseModel> changePassword(String password) async {
+    return await _authService.changePassword(password);
+  }
 }
