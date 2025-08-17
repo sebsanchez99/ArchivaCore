@@ -38,16 +38,15 @@ const folderListForUser = async (req, res) => {
  */
 const createFile = async (req, res) => {
     try {
-        const { companyName } = req.user
+        const { companyName, fullname } = req.user
         const fileContent = req.file
         const { folderRoute } = req.body
         const supaBaseHelper = new SupaBaseHelper()
-        const result = await supaBaseHelper.createFile(companyName, folderRoute, fileContent)
+        const result = await supaBaseHelper.createFile(companyName, folderRoute, fileContent, fullname)
         res.json(result)
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
     }
-
 }
 
 /**

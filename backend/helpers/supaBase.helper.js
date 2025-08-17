@@ -35,7 +35,7 @@ class SupaBaseHelper {
   }
 
   //TODO: Nombres con caracteres y espacios
-  async createFile(companyName, folderRoute, fileContent) {
+  async createFile(companyName, folderRoute, fileContent, userFullname) {
     const bucketName = this.#buildBucketName(companyName)
     const { buffer, originalname, mimetype } = fileContent
     const fullRoute = `${folderRoute}/${originalname}`
@@ -43,6 +43,9 @@ class SupaBaseHelper {
     const { data, error } = await poolNewClient.from(bucketName).upload(fullRoute, buffer, {
       contentType: mimetype,
       upsert: true,
+      metadata: {
+        author: userFullname,
+      },
     })
 
     if (error) {
@@ -54,6 +57,8 @@ class SupaBaseHelper {
   async downloadFile(companyName, fileRoute) {
     const bucketName = this.#buildBucketName(companyName)
     const { data, error } = await poolNewClient.from(bucketName).download(fileRoute)
+    const info = await poolNewClient.from(bucketName).info(fileRoute)
+    console.log(info.data);
     
     if (error) {
       return ResponseUtil.fail('Hubo un error al conectar con Supabase', error)
@@ -188,11 +193,16 @@ class SupaBaseHelper {
             })
           }
         } else {
+          const info = await poolNewClient.from(bucket).info(pathName)
+          const author = info.data?.metadata?.author ?? 'Desconocido';
+
           files.push({
             nombreArchivo: item.name,
             rutaArchivo: pathName,
             tamanoMB: (item.metadata.size / (1024 * 1024)).toFixed(2),
+            fechaCreacion: item.created_at, 
             fecha: item.updated_at || '',
+            autor: author,
             tipo: path.extname(item.name).substring(1),
           })
         }
