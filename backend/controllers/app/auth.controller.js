@@ -16,10 +16,11 @@ const ResponseUtil = require('../../utils/response.util')
  */
 const login = async (req, res) => {
     try {
-        const { _usu_id, _usu_activo, _rol_nombre, _emp_id, _emp_nombre} = req.user 
+        const { _usu_id, _usu_activo, _rol_nombre, _emp_id, _emp_nombre, _usu_nombre } = req.user 
         const authHelper = new AuthHelper()
         const payload = {
             userId: _usu_id,
+            fullname: _usu_nombre,
             role: _rol_nombre,
             company: _emp_id,
             companyName: _emp_nombre,
@@ -39,7 +40,7 @@ const login = async (req, res) => {
         res.json(ResponseUtil.success('Token generado exitosamente', {
             token,
             userId: _usu_id,
-            username: req.user._usu_nombre,
+            username: _usu_nombre,
             userRole: _rol_nombre,
             companyName: _emp_nombre,
         }))
