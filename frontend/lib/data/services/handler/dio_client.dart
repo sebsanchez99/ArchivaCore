@@ -13,7 +13,7 @@ class DioClient {
     _dio.options = BaseOptions(
       baseUrl: 'http://localhost:3000/api/v1',
       connectTimeout: Duration(seconds: 10),
-      receiveTimeout: Duration(seconds: 10),
+      receiveTimeout: Duration(seconds: 60),
       headers: {'Content-Type': 'application/json'},
     );
     
