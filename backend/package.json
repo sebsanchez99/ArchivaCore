@@ -27,7 +27,8 @@
     "passport-local": "^1.0.0",
     "pdf-parse": "^1.1.1",
     "pg": "^8.13.1",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "supabase": "^2.34.3"
   },
   "devDependencies": {
     "documentation": "^14.0.3",

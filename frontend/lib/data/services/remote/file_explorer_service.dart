@@ -14,5 +14,5 @@ class FileExplorerService {
       (response) => ServerResponseModel.fromJson(response),
     );
   }
-  
+
 }

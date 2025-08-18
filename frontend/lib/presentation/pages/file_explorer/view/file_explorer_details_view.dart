@@ -16,114 +16,62 @@ class FileExplorerDetailsView extends StatelessWidget {
     return BlocBuilder<FileExplorerBloc, FileExplorerState>(
       bloc: bloc,
       builder: (context, state) {
-        return Row(
-          children: [
-            SizedBox(
-              width: width * 0.2,
-              height: height * 0.67,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: ListView(
-                      children: [
-                        CustomFolder2(
-                          leading: Icons.file_copy,
-                          title: 'Documento 1',
-                        ),
-                        CustomFolder2(
-                          leading: Icons.file_copy,
-                          title: 'Documento 1',
-                        ),
-                        CustomFolder2(
-                          leading: Icons.folder,
-                          title: 'Documento 1',
-                        ),
-                        CustomFolder2(
-                          leading: Icons.folder,
-                          title: 'Documento 1',
-                        ),
-                        CustomFolder2(
-                          leading: Icons.file_copy,
-                          title: 'Documento 1',
-                        ),
-                        CustomFolder2(
-                          leading: Icons.folder,
-                          title: 'Documento 1',
-                        ),
-                        CustomFolder2(
-                          leading: Icons.folder,
-                          title: 'Documento 1',
-                        ),
-                        CustomFolder2(
-                          leading: Icons.file_copy,
-                          title: 'Documento 1',
-                        ),
-                        CustomFolder2(
-                          leading: Icons.folder,
-                          title: 'Documento 1',
-                        ),
-                        CustomFolder2(
-                          leading: Icons.file_copy,
-                          title: 'Documento 1',
-                        ),
-                        CustomFolder2(
-                          leading: Icons.folder,
-                          title: 'Documento 1',
-                        ),
-                        CustomFolder2(
-                          leading: Icons.folder,
-                          title: 'Documento 1',
-                        ),
-                        CustomFolder2(
-                          leading: Icons.folder,
-                          title: 'Documento 1',
-                        ),
-                        CustomFolder2(
-                          leading: Icons.folder,
-                          title: 'Documento 1',
-                        ),
-                        CustomFolder2(
-                          leading: Icons.folder,
-                          title: 'Documento 1',
-                        ),
-                        CustomFolder2(
-                          leading: Icons.folder,
-                          title: 'Documento 2',
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: SingleChildScrollView(
-                child: SizedBox(
-                  width: width * 0.7,
+        return state.maybeMap(
+          loaded: (value) {
+            final folders = value.filteredFolders;
+
+            // Construye la lista de widgets para la columna izquierda
+            final List<Widget> items = [];
+            for (final folder in folders) {
+              items.add(
+                CustomFolder2(leading: Icons.folder, title: folder.name),
+              );
+              for (final file in folder.files) {
+                items.add(
+                  CustomFolder2(leading: Icons.file_copy, title: file.name),
+                );
+              }
+            }
+
+            return Row(
+              children: [
+                SizedBox(
+                  width: width * 0.2,
                   height: height * 0.67,
-                  child: Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            ('Contenido del Archivo/Carpeta'),
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [Expanded(child: ListView(children: items))],
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: SingleChildScrollView(
+                    child: SizedBox(
+                      width: width * 0.7,
+                      height: height * 0.67,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Contenido del Archivo/Carpeta',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                        ],
+                            // Pendiente: Mostrar detalles del archivo/carpeta seleccionado
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-          ],
+              ],
+            );
+          },
+          orElse: () => Center(child: CircularProgressIndicator()),
         );
       },
     );
