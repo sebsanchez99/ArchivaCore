@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/presentation/widgets/folder/custom_folder2.dart';
 
 class FolderView extends StatefulWidget {
+  const FolderView({super.key});
+
   @override
   State<FolderView> createState() => _FolderPreviewDialogState();
 }
