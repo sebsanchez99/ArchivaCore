@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_bloc.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_state.dart';
-import 'package:frontend/presentation/widgets/folder/custom_folder2.dart';
+import 'package:frontend/presentation/pages/file_explorer/widgets/file_explorer_tree_view.dart';
 
 class FileExplorerDetailsView extends StatelessWidget {
   final FileExplorerBloc bloc;
@@ -18,31 +18,23 @@ class FileExplorerDetailsView extends StatelessWidget {
       builder: (context, state) {
         return state.maybeMap(
           loaded: (value) {
-            final folders = value.filteredFolders;
-
-            // Construye la lista de widgets para la columna izquierda
-            final List<Widget> items = [];
-            for (final folder in folders) {
-              items.add(
-                CustomFolder2(leading: Icons.folder, title: folder.name),
-              );
-              for (final file in folder.files) {
-                items.add(
-                  CustomFolder2(leading: Icons.file_copy, title: file.name),
-                );
-              }
-            }
-
             return Row(
               children: [
+                // Panel izquierdo (árbol de carpetas y archivos)
                 SizedBox(
                   width: width * 0.2,
                   height: height * 0.67,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [Expanded(child: ListView(children: items))],
+                    children: [
+                      Expanded(
+                        child: FileExplorerTreeView(bloc: bloc),
+                      ),
+                    ],
                   ),
                 ),
+
+                // Panel derecho (detalle de archivo/carpeta)
                 Expanded(
                   flex: 2,
                   child: SingleChildScrollView(
@@ -61,7 +53,8 @@ class FileExplorerDetailsView extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            // Pendiente: Mostrar detalles del archivo/carpeta seleccionado
+                            // 🔹 Aquí puedes renderizar el detalle dinámico
+                            // según el archivo/carpeta seleccionado
                           ],
                         ),
                       ),
@@ -71,7 +64,7 @@ class FileExplorerDetailsView extends StatelessWidget {
               ],
             );
           },
-          orElse: () => Center(child: CircularProgressIndicator()),
+          orElse: () => const Center(child: CircularProgressIndicator()),
         );
       },
     );
