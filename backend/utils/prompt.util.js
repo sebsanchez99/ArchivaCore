@@ -89,7 +89,7 @@ Output JSON (minimizado) — esquema en español (mantén exactamente estas clav
 "skillsFaltantes": [string,...]
 },
 "Motivo del puntaje": string (1–2 frases claras indicando la razón principal del puntaje),
-"Nivel": "alto" | "medio" | "bajo"
+"Nivel": "Alto" | "Medio" | "Bajo"
 }
 
 Reglas finales y formato:
