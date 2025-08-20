@@ -10,4 +10,7 @@ class ResumeAnalizerEvents with _$ResumeAnalizerEvents {
   const factory ResumeAnalizerEvents.uploadFile(PlatformFile? result) = UploadFileEvent;
   const factory ResumeAnalizerEvents.getOfferText(String offerText) = GetOfferTextEvent;
   const factory ResumeAnalizerEvents.loading(bool loading) = LoadingEvent;
+  const factory ResumeAnalizerEvents.scrolling(bool scrolling) = ScrollingEvent;
+  const factory ResumeAnalizerEvents.scroll() = ScrollEvent;
+  const factory ResumeAnalizerEvents.resetResponse() = ResetResponseEvent;
 }

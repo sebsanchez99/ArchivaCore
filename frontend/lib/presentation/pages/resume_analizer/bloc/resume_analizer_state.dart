@@ -11,6 +11,7 @@ class ResumeAnalizerState with _$ResumeAnalizerState {
   const factory ResumeAnalizerState.loaded({
     @Default('') String offerText,
     @Default(false) bool loading,
+    @Default(false) bool scrolled,
     PlatformFile? file,
     CVAnalysisModel? response,
     ServerResponseModel? serverResponse,

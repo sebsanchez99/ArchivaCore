@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/domain/models/cv_analysis_model.dart';
 import 'package:frontend/domain/repositories/ai_repository.dart';
@@ -5,13 +6,20 @@ import 'package:frontend/presentation/pages/resume_analizer/bloc/resume_analizer
 import 'package:frontend/presentation/pages/resume_analizer/bloc/resume_analizer_state.dart';
 
 class ResumeAnalizerBloc extends Bloc<ResumeAnalizerEvents, ResumeAnalizerState> {
+  final ScrollController scrollController = ScrollController();
+  final cardKey = GlobalKey();
+
   ResumeAnalizerBloc(super.initialState, {
     required AIRepository aiRepository
   }) : _aiRepository = aiRepository {
+  
     on<AnalyzeEvent>(_onAnalyze);
     on<UploadFileEvent>(_onUploadFile);
     on<GetOfferTextEvent>(_onGetOfferTextEvent);
     on<LoadingEvent>(_onLoadingEvent);
+    on<ScrollingEvent>(_onMarkAsScrolled);
+    on<ScrollEvent>(_onScrollEvent);
+    on<ResetResponseEvent>(_onResetResponseEvent);
   }
 
   final AIRepository _aiRepository;
@@ -55,5 +63,32 @@ class ResumeAnalizerBloc extends Bloc<ResumeAnalizerEvents, ResumeAnalizerState>
       loaded: (value) => emit(value.copyWith(loading: event.loading))
     );
   }
-  
+
+  Future<void> _onMarkAsScrolled(ScrollingEvent event, Emitter<ResumeAnalizerState> emit) async {
+    state.mapOrNull(
+      loaded: (value) => emit(value.copyWith(scrolled: event.scrolling))
+    );
+  }
+
+  Future<void> _onResetResponseEvent(ResetResponseEvent event, Emitter<ResumeAnalizerState> emit) async {
+    state.mapOrNull(
+      loaded: (value) => emit(value.copyWith(serverResponse: null))
+    );
+  }
+
+  Future<void> _onScrollEvent(ScrollEvent event, Emitter<ResumeAnalizerState> emit) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (cardKey.currentContext != null) {
+        await Scrollable.ensureVisible(
+          cardKey.currentContext!,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+
+        state.mapOrNull(
+          loaded: (_) => add(const ScrollingEvent(true)), 
+        );
+      }
+    });
+  }
 }
