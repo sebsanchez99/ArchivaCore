@@ -35,7 +35,7 @@ class SupaBaseHelper {
   }
 
   //TODO: Nombres con caracteres y espacios
-  async createFile(companyName, folderRoute, fileContent) {
+  async createFile(companyName, folderRoute, fileContent, userFullname) {
     const bucketName = this.#buildBucketName(companyName)
     const { buffer, originalname, mimetype } = fileContent
     const fullRoute = `${folderRoute}/${originalname}`
@@ -43,6 +43,9 @@ class SupaBaseHelper {
     const { data, error } = await poolNewClient.from(bucketName).upload(fullRoute, buffer, {
       contentType: mimetype,
       upsert: true,
+      metadata: {
+        author: userFullname,
+      },
     })
 
     if (error) {
@@ -54,6 +57,8 @@ class SupaBaseHelper {
   async downloadFile(companyName, fileRoute) {
     const bucketName = this.#buildBucketName(companyName)
     const { data, error } = await poolNewClient.from(bucketName).download(fileRoute)
+    const info = await poolNewClient.from(bucketName).info(fileRoute)
+    console.log(info.data);
     
     if (error) {
       return ResponseUtil.fail('Hubo un error al conectar con Supabase', error)
@@ -229,7 +234,6 @@ class SupaBaseHelper {
     return ResponseUtil.fail('Error al listar las carpetas', error);
   }
 }
-
 
 
 /**

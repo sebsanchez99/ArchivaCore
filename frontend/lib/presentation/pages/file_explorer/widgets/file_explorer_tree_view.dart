@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/domain/models/folder_model.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_bloc.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_state.dart';
-import 'package:frontend/presentation/pages/file_explorer/widgets/file_explorer_table.dart';
 import 'package:frontend/presentation/widgets/states/loading_state.dart';
+import 'package:frontend/presentation/pages/file_explorer/widgets/folder_expansion_tile.dart';
 
-class FileExplorerListView extends StatelessWidget {
+class FileExplorerTreeView extends StatelessWidget {
   final FileExplorerBloc bloc;
-  const FileExplorerListView({super.key, required this.bloc});
+  const FileExplorerTreeView({super.key, required this.bloc});
 
   @override
   Widget build(BuildContext context) {
@@ -17,16 +18,15 @@ class FileExplorerListView extends StatelessWidget {
         return state.maybeMap(
           loaded: (value) {
             final folders = value.filteredFolders;
-            return Column(
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height - 250,
-                  child: FolderExpandableTable(folders: folders),
-                ),
-              ],
+
+            return ListView.builder(
+              itemCount: folders.length,
+              itemBuilder: (context, index) {
+                return FolderExpansionTile(folder: folders[index]);
+              },
             );
           },
-          orElse: () => LoadingState(),
+          orElse: () => const LoadingState(),
         );
       },
     );

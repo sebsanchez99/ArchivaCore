@@ -4,10 +4,7 @@ import 'package:frontend/presentation/global/constants/schema_colors.dart';
 
 class FolderExpansionTile extends StatelessWidget {
   final FolderModel folder;
-  const FolderExpansionTile({
-    super.key, 
-    required this.folder}
-  );
+  const FolderExpansionTile({super.key, required this.folder});
 
   @override
   Widget build(BuildContext context) {
@@ -17,24 +14,17 @@ class FolderExpansionTile extends StatelessWidget {
       title: Text(folder.name),
       children: [
         ...folder.subFolders.map((sub) => FolderExpansionTile(folder: sub)),
-        ...folder.files.map((file) => ListTile(
-          leading: Icon(Icons.insert_drive_file, color: SchemaColors.primary),
-          title: Text(file.name),
-          subtitle: Text(file.type),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text("${file.size} MB"),
-              IconButton(
-                icon: Icon(Icons.remove_red_eye),
-                // TODO: Implementar funcionalidad de vista previa
-                onPressed: (){
-
-                },
-              )
-            ],
+        ...folder.files.map(
+          (file) => ListTile(
+            leading: Icon(Icons.insert_drive_file, color: SchemaColors.primary),
+            title: Text(file.name),
+            subtitle: Text(file.type),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [Text("${file.size} MB")],
+            ),
           ),
-        ))
+        ),
       ],
     );
   }

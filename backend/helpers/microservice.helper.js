@@ -2,58 +2,72 @@
  * @namespace Helpers
  * @description Helper para análisis de hoja de vida usando Gemini
  */
-const { GoogleGenerativeAI } = require('@google/generative-ai')
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+const pdfParse = require("pdf-parse")
+const mammoth = require("mammoth")
+const { GoogleGenerativeAI } = require("@google/generative-ai")
+const { configGemini } = require("../config/config")
+const { buildPrompt } = require('../utils/prompt.util')
+const ResponseUtil = require('../utils/response.util')
 
+class AIHelper {
+  constructor() {
+    this.genAI = new GoogleGenerativeAI(configGemini.geminiApiKey)
+  }
 
+  /**
+   * @method extractTextFromBuffer
+   * @description Extrae texto desde un archivo en memoria (PDF, DOCX, TXT)
+   * @param {Buffer} buffer - Contenido del archivo en bytes
+   * @param {string} ext - Extensión del archivo (.pdf, .docx, .txt)
+   * @returns {Promise<string>} Texto extraído
+   */
+  async extractTextFromBuffer(buffer, ext) {
+    const extension = ext.toLowerCase()
 
-/**
- * @memberof Helpers
- * @function analyzeCV
- * @description Envia el texto del CV a Gemini para resumen inteligente
- * @param {string} pdfText Texto extraído del CV
- * @returns {Promise<string>} Resumen generado por Gemini
- */
-const analyzeCV = async (pdfText, ofertaText) => {
-  const prompt = `
-"Considerando la \"Hoja de vida\" proporcionada y la \"Oferta de trabajo\" ingresada, 
-realiza un análisis exhaustivo para generar un objeto JSON con la siguiente estructura 
-y contenido: {\"Resumen del perfil\": \"Un resumen profesional de la hoja de vida, 
-máximo 300 palabras. Debe incluir el rol principal, tecnologías clave, 
-experiencia destacada y fortalezas.\", 
-\"Resumen de compatibilidad\": \"Un breve párrafo que indique la compatibilidad 
-general de la hoja de vida con la oferta de trabajo, basándose en la 
-comparación de habilidades y experiencia. Se debe mencionar si se 
-recomienda destacar alguna experiencia específica.\", \"Compatibilidad\": 
-\"Porcentaje numérico de compatibilidad de la hoja de vida con el perfil 
-buscado (ejemplo: 87).\", \"Experiencia\": \"Porcentaje numérico de la 
-experiencia en años en el sector (ejemplo: 75).\", \"Habilidades\": 
-\"Porcentaje numérico de las habilidades relevantes encontradas (ejemplo: 90).
-\", \"Habilidades destacadas\": [\"Habilidad 1\", \"Habilidad 2\", 
-\"Habilidad 3\", \"Habilidad 4\", \"Habilidad 5\"] 
-(Máximo 5 habilidades clave de la hoja de vida que sean relevantes 
-para la oferta, o habilidades generales si la oferta es muy abierta).
-\", \"Áreas de mejora\": [\"Área de mejora 1\", \"Área de mejora 2\", 
-\"Área de mejora 3\"] (Máximo 3 áreas donde el candidato podría mejorar 
-para ajustarse mejor al perfil o la industria, incluyendo recomendaciones 
-si es posible).\"} Instrucciones adicionales para el cálculo de 
-compatibilidad: * Si la \"Compatibilidad\" es mayor al 70%, 
-el perfil de comparación es \"alto\". * Si la \"Compatibilidad\" 
-es mayor al 40% y menor o igual al 70%, el perfil de comparación es 
-\"medio\". * De lo contrario, el perfil de comparación es \"bajo\". 
-La respuesta debe ser únicamente el objeto JSON."
-Hoja de vida:
-${pdfText},
-oderta de trabajo
-${ofertaText}
-`
+    if (extension === ".pdf") {
+      const data = await pdfParse(buffer)
+      return data.text
+    }
 
-  const model = genAI.getGenerativeModel({ model: 'gemma-3-4b-it' })
-  const result = await model.generateContent(prompt)
-  const response = await result.response
-  return response.text()
+    if (extension === ".docx") {
+      const result = await mammoth.extractRawText({ buffer })
+      return result.value
+    }
+
+    if (extension === ".txt") {
+      return buffer.toString("utf-8")
+    }
+
+    throw new Error(`Formato no soportado: ${extension}`)
+  }
+
+  /**
+   * @method analyzeCV
+   * @description Analiza un CV con Gemini en base a una oferta
+   * @param {Buffer} buffer - Archivo en memoria
+   * @param {string} ext - Extensión del archivo
+   * @param {string} offerText - Texto de la oferta
+   * @returns {Promise<Object>} Objeto JSON generado por Gemini
+   */
+  async analyzeCV(buffer, ext, offerText) {
+    const cvText = await this.extractTextFromBuffer(buffer, ext)
+    const prompt = buildPrompt(cvText, offerText)
+
+    const model = this.genAI.getGenerativeModel({ model: "gemma-3n-e2b-it" })
+    const result = await model.generateContent(prompt)
+    const raw = result.response.text()
+
+    try {
+      const clean = raw
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim()
+      const jsonResponse = JSON.parse(clean)
+      return ResponseUtil.success('Resumen generado exitosamente.', jsonResponse)
+    } catch (err) {
+      return ResponseUtil.fail('Hubo un error al realizar el análisis. Intenta de nuevo.')
+    }
+  }
 }
 
-module.exports = {
-  analyzeCV
-}
+module.exports = AIHelper

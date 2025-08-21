@@ -2,10 +2,8 @@
  * @namespace Controladores
  * @description Controladores de la API
  */
-const CVHelper = require('../../helpers/microservice.helper')
+const AIHelper = require('../../helpers/microservice.helper')
 const ResponseUtil = require('../../utils/response.util')
-const fs = require('fs')
-const path = require('path')
 
 /**
  * @namespace MicroserviceController
@@ -22,20 +20,15 @@ const path = require('path')
  */
 const resumenCV = async (req, res) => {
   try {
-    const { ofertaText, hVText } = req.body
-
-    // const cvText = await CVHelper.extractTextFromPDF(file.path)
-    const resumen = await CVHelper.analyzeCV(hVText,ofertaText )
-
-    res.json(ResponseUtil.success('Resumen generado exitosamente.', { resumen }))
+    const { offerText } = req.body;
+    const buffer = req.file.buffer;
+    const ext = req.file.originalname.substring(req.file.originalname.lastIndexOf("."));
+    const aiHelper = new AIHelper()
+    const result = await aiHelper.analyzeCV(buffer, ext, offerText);
+    res.json(result)
   } catch (error) {
-    console.error('Error en resumenCV:', error)
     res.status(500).send(ResponseUtil.fail('Error interno al generar resumen.'))
-  } finally {
-    if (req.file) {
-      fs.unlinkSync(path.resolve(req.file.path))
-    }
-  }
+  } 
 }
 
 module.exports = {

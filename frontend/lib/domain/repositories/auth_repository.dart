@@ -5,5 +5,7 @@ import 'package:frontend/domain/typedefs.dart';
 abstract class AuthRepository {
   /// Método que autentica un usuario
   HttpFuture<ServerResponseModel> logIn(String username, String password);
+
+  HttpFuture<ServerResponseModel> changePassword(String password);
 }
 

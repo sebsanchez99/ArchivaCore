@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/presentation/pages/file_explorer/widget/attach_file.dart';
-import 'package:frontend/presentation/pages/file_explorer/widget/create_folder.dart';
-import 'package:frontend/presentation/pages/file_explorer/widget/edit_folder.dart';
+import 'package:frontend/presentation/pages/file_explorer/widgets/attach_file.dart';
+import 'package:frontend/presentation/pages/file_explorer/widgets/create_folder.dart';
+import 'package:frontend/presentation/pages/file_explorer/widgets/edit_folder.dart';
 
 Future<void> showCreateFolderDialog(BuildContext context) async {
   return showDialog(
