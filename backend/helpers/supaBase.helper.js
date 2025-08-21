@@ -157,116 +157,7 @@ class SupaBaseHelper {
     })
   }
 
-  async #builderStructure(bucket, currentPath, omitCurrentFolder = false) {
-    const { data, error } = await poolNewClient.from(bucket).list(currentPath, {
-      limit: 1000,
-      offset: 0,
-    })
-    if (error) {
-      return null
-    }
-    const folders = []
-    const files = []
-
-    await Promise.all(
-      data.map(async (item) => {
-        if (item.name === 'placeholder.txt' || item.name === '.emptyFolderPlaceholder' || item.name === 'reciclaje') return 
-        const isFolder = item.metadata === null
-        const pathName = `${currentPath}/${item.name}`
-        if (isFolder) {
-          if (omitCurrentFolder && item.name === path.basename(currentPath)) {
-            return
-          }
-          const newPath = path.posix.join(currentPath, item.name)
-          const structure = await this.#builderStructure(bucket, newPath)
-          if (structure) {
-            folders.push({
-              nombreCarpeta: item.name,
-              rutaCarpeta: pathName,
-              archivos: structure.files,
-              subCarpeta: structure.folders,
-            })
-          }
-        } else {
-          files.push({
-            nombreArchivo: item.name,
-            rutaArchivo: pathName,
-            tamanoMB: (item.metadata.size / (1024 * 1024)).toFixed(2),
-            fecha: item.updated_at || '',
-            tipo: path.extname(item.name).substring(1),
-          })
-        }
-      })
-    )
-    return { folders, files }
-  }
-
-  #sumFileSizesByCategory({ files = [], folders = [] }, categoryTotals = {}) {
-    for (const file of files) {
-      const category = this.#categorizeFile(file.tipo.toLowerCase())
-      const sizeMB = parseFloat(file.tamanoMB || 0)
-      categoryTotals[category] = (categoryTotals[category] || 0) + sizeMB
-    }
-
-    for (const folder of folders) {
-      this.#sumFileSizesByCategory(
-        { files: folder.archivos, folders: folder.subCarpeta },
-        categoryTotals
-      )
-    }
-
-    return categoryTotals
-  }
-
-  #categorizeFile(extension) {
-    const images = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp']
-    const documents = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'rtf']
-    const videos = ['mp4', 'mov', 'avi', 'mkv', 'webm', 'flv']
-
-    if (images.includes(extension)) return 'imágenes'
-    if (documents.includes(extension)) return 'documentos'
-    if (videos.includes(extension)) return 'videos'
-    return 'otros'
-  }
-
-  async #createRecicleFolder(companyName) {
-    const folderPath = 'reciclaje/placeholder.txt'
-    const { _, error } = await poolNewClient.from(companyName).upload(folderPath, Buffer.from(''), { contentType: 'Text/plain' })
-    if(error) return false
-    return true
-  }
-
-  #buildBucketName(companyName) {
-    return companyName.toLowerCase().replace(/\s+/g, '')
-  }
-
-  async moveFileToRecycle(companyName, filePath ) {
-    try {
-      const bucketName = this.#buildBucketName(companyName)
-      const fullRecyclePath = `reciclaje/${filePath}`
-     
-      // Copiar archivo al destino "reciclaje"
-      const { data: copyData, error: copyError } = await poolNewClient.from(bucketName)
-        .copy(filePath, fullRecyclePath)
-
-      if (copyError) {
-        return ResponseUtil.fail('Error al copiar el archivo a reciclaje', copyError.message)
-      }
-
-      // Eliminar archivo original
-      const { error: deleteError } = await poolNewClient.from(bucketName)
-        .remove([filePath])
-
-      if (deleteError) {
-        return ResponseUtil.fail('Archivo copiado pero no eliminado del origen', deleteError.message)
-      }
-
-      return ResponseUtil.success('Archivo movido correctamente a reciclaje', copyData)
-    } catch (err) {
-      return ResponseUtil.fail('Error inesperado al mover archivo a reciclaje', err.message)
-    }
-  }
-
+  
   async restoreFileFromRecycle( companyName, filePath ) {
     try {
       const bucketName = this.#buildBucketName(companyName)
@@ -274,16 +165,16 @@ class SupaBaseHelper {
       
       // Copiar desde reciclaje a ruta original
       const { data: copyData, error: copyError } = await poolNewClient.from(bucketName)
-        .copy(recyclePath, filePath)
-
+      .copy(recyclePath, filePath)
+      
       if (copyError) {
         return ResponseUtil.fail('Error al restaurar el archivo desde reciclaje', copyError.message)
       }
-
+      
       // Eliminar archivo en carpeta reciclaje
       const { error: deleteError } = await poolNewClient.from(bucketName)
-        .remove([recyclePath])
-
+      .remove([recyclePath])
+      
       if (deleteError) {
         return ResponseUtil.fail('Archivo restaurado pero no eliminado de reciclaje', deleteError.message)
       }
@@ -303,50 +194,52 @@ class SupaBaseHelper {
       return ResponseUtil.fail('Error inesperado al listar reciclaje', err.message)
     }
   }
-
+  
   async deleteFileFromRecycle(companyName, fileRoute ) {
-  try {
-    const bucketName = this.#buildBucketName(companyName)
-    const recyclePath = `reciclaje/${fileRoute}`
-
-    // Eliminar archivo de la carpeta reciclaje
-    const { error: deleteError } = await poolNewClient.from(bucketName)
+    try {
+      const bucketName = this.#buildBucketName(companyName)
+      const recyclePath = `reciclaje/${fileRoute}`
+      
+      // Eliminar archivo de la carpeta reciclaje
+      const { error: deleteError } = await poolNewClient.from(bucketName)
       .remove([recyclePath])
-
-    if (deleteError) {
-      return ResponseUtil.fail('Error al eliminar el archivo de reciclaje', deleteError.message)
+      
+      if (deleteError) {
+        return ResponseUtil.fail('Error al eliminar el archivo de reciclaje', deleteError.message)
+      }
+      
+      return ResponseUtil.success('Archivo eliminado definitivamente de reciclaje')
+    } catch (err) {
+      return ResponseUtil.fail('Error inesperado al eliminar archivo de reciclaje', err.message)
     }
-
-    return ResponseUtil.success('Archivo eliminado definitivamente de reciclaje')
-  } catch (err) {
-    return ResponseUtil.fail('Error inesperado al eliminar archivo de reciclaje', err.message)
   }
-}
-
-async listAllRoutes(companyName) {
-  try {
+  
+  async listAllRoutes(companyName) {
+    try {
     const bucketName = this.#buildBucketName(companyName);
     const { folders } = await this.#builderStructure(bucketName, "", false);
     
     const paths = [];
     this.#collectPathsRecursively(folders, paths);
-
+    
     console.log(paths);
     return ResponseUtil.success('Rutas listadas correctamente', paths);
-
+    
   } catch (error) {
     return ResponseUtil.fail('Error al listar las carpetas', error);
   }
 }
 
+
+
 /**
  * Función privada recursiva para recorrer todas las subcarpetas
  * @param {Array} folders - Lista de carpetas
  * @param {Array} paths - Acumulador de rutas
- */
+*/
 #collectPathsRecursively(folders, paths) {
   if (!Array.isArray(folders)) return;
-
+  
   for (const folder of folders) {
     paths.push({ rutaCarpeta: folder.rutaCarpeta });
     if (folder.subCarpeta && folder.subCarpeta.length > 0) {
@@ -355,6 +248,116 @@ async listAllRoutes(companyName) {
   }
 }
 
+async #builderStructure(bucket, currentPath, omitCurrentFolder = false) {
+  const { data, error } = await poolNewClient.from(bucket).list(currentPath, {
+    limit: 1000,
+    offset: 0,
+  })
+  if (error) {
+    return null
+  }
+  const folders = []
+  const files = []
+
+  await Promise.all(
+    data.map(async (item) => {
+      if (item.name === 'placeholder.txt' || item.name === '.emptyFolderPlaceholder' || item.name === 'reciclaje') return 
+      const isFolder = item.metadata === null
+      const pathName = `${currentPath}/${item.name}`
+      if (isFolder) {
+        if (omitCurrentFolder && item.name === path.basename(currentPath)) {
+          return
+        }
+        const newPath = path.posix.join(currentPath, item.name)
+        const structure = await this.#builderStructure(bucket, newPath)
+        if (structure) {
+          folders.push({
+            nombreCarpeta: item.name,
+            rutaCarpeta: pathName,
+            archivos: structure.files,
+            subCarpeta: structure.folders,
+          })
+        }
+      } else {
+        files.push({
+          nombreArchivo: item.name,
+          rutaArchivo: pathName,
+          tamanoMB: (item.metadata.size / (1024 * 1024)).toFixed(2),
+          fecha: item.updated_at || '',
+          tipo: path.extname(item.name).substring(1),
+        })
+      }
+    })
+  )
+  return { folders, files }
+}
+
+#sumFileSizesByCategory({ files = [], folders = [] }, categoryTotals = {}) {
+  for (const file of files) {
+    const category = this.#categorizeFile(file.tipo.toLowerCase())
+    const sizeMB = parseFloat(file.tamanoMB || 0)
+    categoryTotals[category] = (categoryTotals[category] || 0) + sizeMB
+  }
+
+  for (const folder of folders) {
+    this.#sumFileSizesByCategory(
+      { files: folder.archivos, folders: folder.subCarpeta },
+      categoryTotals
+    )
+  }
+
+  return categoryTotals
+}
+
+#categorizeFile(extension) {
+  const images = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp']
+  const documents = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'rtf']
+  const videos = ['mp4', 'mov', 'avi', 'mkv', 'webm', 'flv']
+
+  if (images.includes(extension)) return 'imágenes'
+  if (documents.includes(extension)) return 'documentos'
+  if (videos.includes(extension)) return 'videos'
+  return 'otros'
+}
+
+async #createRecicleFolder(companyName) {
+  const folderPath = 'reciclaje/placeholder.txt'
+  const { _, error } = await poolNewClient.from(companyName).upload(folderPath, Buffer.from(''), { contentType: 'Text/plain' })
+  if(error) return false
+  return true
+}
+
+
+#buildBucketName(companyName) {
+  return companyName.toLowerCase().replace(/\s+/g, '')
+}
+
+async moveFileToRecycle(companyName, filePath ) {
+  try {
+    const bucketName = this.#buildBucketName(companyName)
+    const fullRecyclePath = `reciclaje/${filePath}`
+   
+    // Copiar archivo al destino "reciclaje"
+    const { data: copyData, error: copyError } = await poolNewClient.from(bucketName)
+      .copy(filePath, fullRecyclePath)
+
+    if (copyError) {
+      return ResponseUtil.fail('Error al copiar el archivo a reciclaje', copyError.message)
+    }
+
+    // Eliminar archivo original
+    const { error: deleteError } = await poolNewClient.from(bucketName)
+      .remove([filePath])
+
+    if (deleteError) {
+      return ResponseUtil.fail('Archivo copiado pero no eliminado del origen', deleteError.message)
+    }
+
+    return ResponseUtil.success('Archivo movido correctamente a reciclaje', copyData)
+  } catch (err) {
+    return ResponseUtil.fail('Error inesperado al mover archivo a reciclaje', err.message)
+  }
+}
 }
 
 
