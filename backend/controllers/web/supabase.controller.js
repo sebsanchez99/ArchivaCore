@@ -1,5 +1,5 @@
 const ResponseUtil = require('../../utils/response.util')
-const SupabaseHelper = require('../../helpers/supaBase.helper')
+const SupabaseHelper = require('../../helpers/supabase.helper')
 
 const getTotalStorage = async (req, res) => {
     try {

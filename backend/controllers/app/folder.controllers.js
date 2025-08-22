@@ -2,7 +2,7 @@
  * @namespace Controladores
  * @description Controladores de la API
  */
-const SupaBaseHelper = require('../../helpers/supaBase.helper')
+const SupaBaseHelper = require('../../helpers/supabase.helper ')
 const ResponseUtil = require('../../utils/response.util')
 
 /**
