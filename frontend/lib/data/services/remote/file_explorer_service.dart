@@ -64,7 +64,7 @@ class FileExplorerService {
     );
   }
 
-  HttpFuture<ServerResponseModel> listRecicle(){
+  HttpFuture<ServerResponseModel> listRecycle(){
     return DioHandler.handleRequest(
       () => _dio.get('/supa/listRecicle'),
       (response) => ServerResponseModel.fromJson(response),
