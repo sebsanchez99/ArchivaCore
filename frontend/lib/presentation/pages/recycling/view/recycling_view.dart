@@ -1,126 +1,161 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/domain/models/file_model.dart';
+import 'package:frontend/domain/models/folder_model.dart';
+import 'package:frontend/domain/models/server_response_model.dart';
+import 'package:frontend/domain/repositories/recycle_repository.dart';
+import 'package:frontend/presentation/global/constants/schema_colors.dart';
+import 'package:frontend/presentation/pages/recycling/bloc/recycle_bloc.dart';
+import 'package:frontend/presentation/pages/recycling/bloc/recycle_events.dart';
+import 'package:frontend/presentation/pages/recycling/bloc/recycle_state.dart';
+import 'package:frontend/presentation/pages/recycling/widgets/file_tile.dart';
+import 'package:frontend/presentation/pages/recycling/widgets/folder_details_window.dart';
+import 'package:frontend/presentation/pages/recycling/widgets/folder_tile.dart';
+import 'package:frontend/presentation/widgets/buttons/custom_icon_button.dart';
+import 'package:frontend/presentation/widgets/dialogs/error_dialog.dart';
+import 'package:frontend/presentation/widgets/dialogs/info_dialog.dart';
+import 'package:frontend/presentation/widgets/dialogs/success_dialog.dart';
+import 'package:frontend/presentation/widgets/states/failure_state.dart';
+import 'package:frontend/presentation/widgets/states/loading_state.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
-class RecyclingView extends StatefulWidget {
+part '../utils/utils.dart';
+
+class RecyclingView extends StatelessWidget {
   const RecyclingView({super.key});
 
   @override
-  State<RecyclingView> createState() => _RecyclingViewState();
-}
-
-class _RecyclingViewState extends State<RecyclingView> {
-  final TextEditingController _searchController = TextEditingController();
-
-  // Lista original de archivos y carpetas eliminados
-  final List<Map<String, dynamic>> _reciclados = [
-    {
-      'nombre': 'Documento.pdf',
-      'tipo': 'archivo',
-      'icono': Icons.insert_drive_file,
-    },
-    {'nombre': 'Empresa_2', 'tipo': 'carpeta', 'icono': Icons.folder},
-    {
-      'nombre': 'Notas.txt',
-      'tipo': 'archivo',
-      'icono': Icons.insert_drive_file,
-    },
-    {'nombre': 'Empresa_1', 'tipo': 'carpeta', 'icono': Icons.folder},
-  ];
-
-  String _search = '';
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    // Filtra la lista según el texto de búsqueda
-    final List<Map<String, dynamic>> recicladosFiltrados =
-        _reciclados
-            .where(
-              (item) =>
-                  item['nombre'].toLowerCase().contains(_search.toLowerCase()),
-            )
-            .toList();
+    return BlocProvider<RecycleBloc>(
+      create: (_) => RecycleBloc(RecycleState.loading(),
+        recycleRepository: context.read<RecycleRepository>(),
+      )..add(InitializeEvent()),
+      child: BlocConsumer<RecycleBloc, RecycleState>(
+        listener: (context, state) {
+          state.mapOrNull(
+            loaded: (value) {
+              final response = value.response;
+              if (response != null) {
+                _showResult(context, response);
+              }
+            },
+          );
+        },
+        builder: (context, state) {
+          final bloc = context.read<RecycleBloc>();
+          return state.map(
+            loading: (_) => const LoadingState(),
+            loaded: (value) {
+              final folderList = value.filteredContent.folders;
+              final filesList = value.filteredContent.files;
 
-    return Scaffold(
-      appBar: AppBar(title: Text('Papelera de reciclaje')),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Buscar archivos o carpetas...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                isDense: true,
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _search = value;
-                });
-              },
-            ),
-          ),
-          Expanded(
-            child:
-                recicladosFiltrados.isEmpty
-                    ? Center(
-                      child: Text('No hay archivos o carpetas en la papelera.'),
-                    )
-                    : ListView.separated(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: recicladosFiltrados.length,
-                      separatorBuilder: (_, __) => Divider(),
-                      itemBuilder: (context, index) {
-                        final item = recicladosFiltrados[index];
-                        return ListTile(
-                          leading: Icon(
-                            item['icono'],
-                            color:
-                                item['tipo'] == 'carpeta'
-                                    ? Colors.amber
-                                    : Colors.blue,
-                          ),
-                          title: Text(item['nombre']),
-                          subtitle: Text(
-                            item['tipo'] == 'carpeta'
-                                ? 'Carpeta eliminada'
-                                : 'Archivo eliminado',
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                tooltip: 'Restaurar',
-                                icon: Icon(Icons.restore, color: Colors.green),
-                                onPressed: () {
-                                  // Acción para restaurar el archivo o carpeta
-                                },
-                              ),
-                              IconButton(
-                                tooltip: 'Eliminar definitivamente',
-                                icon: Icon(
-                                  Icons.delete_forever,
-                                  color: Colors.red,
+              final combinedList = [...folderList, ...filesList];
+
+              if (combinedList.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(
+                        Icons.delete_sweep_outlined,
+                        color: Colors.grey,
+                        size: 80,
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'Tu papelera está vacía.',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Los archivos y carpetas que elimines aparecerán aquí.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: bloc.searchController,
+                              decoration: InputDecoration(
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: BorderSide(
+                                    color: SchemaColors.secondary500
+                                  )
                                 ),
-                                onPressed: () {
-                                  // Acción para eliminar definitivamente
-                                },
+                                hintStyle: TextStyle(fontSize: 14),
+                                isDense: true,
+                                hintText: "Buscar contenido...",
+                                prefixIcon: const Icon(Icons.search),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
                               ),
-                            ],
+                            ),
                           ),
-                        );
+                          SizedBox(width: 20),
+                          CustomIconButton(
+                            message: 'Refrescar', 
+                            icon: LucideIcons.refreshCcw, 
+                            onPressed: () => bloc.add(InitializeEvent())
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.separated(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: combinedList.length,
+                      separatorBuilder: (_, __) => const Divider(),
+                      itemBuilder: (context, index) {
+                        final item = combinedList[index];
+                        if (item is FolderModel) {
+                          return FolderTile(
+                            folder: item,
+                            viewDetailsAction: () => _showFolderDetailsDialog(context, item),
+                            deleteAction: () => _showDeleteFolderInfoDialog(context, item),
+                            restoreAction: () => _showRestoreFolderInfoDialog(context, item),
+                          );
+                        } else if (item is FileModel) {
+                          return FileTile(
+                            file: item,
+                            deleteAction: () => _showDeleteFileInfoDialog(context, item),
+                            restoreAction: () => _showRestoreFileInfoDialog(context, item),
+                          );
+                        }
+                        return const SizedBox.shrink();
                       },
                     ),
-          ),
-        ],
+                  ),
+                ],
+              );
+            },
+            failed: (value) => FailureState(
+              failure: value.failure,
+              onRetry: () => bloc.add(InitializeEvent()),
+            ),
+          );
+        },
       ),
     );
   }
