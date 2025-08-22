@@ -5,7 +5,7 @@ import 'package:frontend/presentation/pages/notification/notification_view.dart'
 import 'package:frontend/presentation/pages/resume_analizer/view/resume_analizer_view.dart';
 import 'package:frontend/presentation/pages/settings/view/settings_view.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:frontend/presentation/pages/administration/view/adminitration_view.dart';
+import 'package:frontend/presentation/pages/administration/view/administration_view.dart';
 import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_view.dart';
 
 /// [Map] que contiene elementos que definen las vistas de la aplicación

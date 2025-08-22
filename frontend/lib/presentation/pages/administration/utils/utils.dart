@@ -1,4 +1,4 @@
-part of '../view/adminitration_view.dart';
+part of '../view/administration_view.dart';
 
 //Muestra el dialogo para editar un usuario
 Future<void> _showEditDialog(BuildContext context, UserModel user) async {
