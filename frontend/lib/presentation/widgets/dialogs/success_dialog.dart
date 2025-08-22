@@ -17,7 +17,10 @@ class SuccessDialog extends StatelessWidget {
           style: TextStyle(fontSize: 30, color: SchemaColors.success),
         ),
       ),
-      content: Text(message, textAlign: TextAlign.center),
+      content: SizedBox(
+        width: 300,
+        child: Text(message, textAlign: TextAlign.center)
+      ),
       icon: Icon(Icons.check_circle_outline, color: SchemaColors.success, size: 50),
       actions: [
         Center(

@@ -18,20 +18,28 @@ class InfoDialog extends StatelessWidget {
           style: TextStyle(fontSize: 30, color: SchemaColors.info),
         ),
       ),
-      content: Text(message, textAlign: TextAlign.center),
+      content: SizedBox(
+        width: 300,
+        child: Text(message, textAlign: TextAlign.center)
+      ),
       icon: Icon(Icons.info_outline, color: SchemaColors.info, size: 50),
       actions: [
-        CustomButton(
-          message: 'Aceptar',
-          onPressed: () {
-            Navigator.of(context).pop();
-            onPressed();
-          },
-        ),
-        CustomButton(
-          message: 'Cancelar',
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            CustomButton(
+              message: 'Aceptar',
+              onPressed: () {
+                Navigator.of(context).pop();
+                onPressed();
+              },
+            ),
+            CustomButton(
+              message: 'Cancelar',
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        )
       ],
     );
   }
