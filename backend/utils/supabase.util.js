@@ -5,7 +5,7 @@ const buildBucketName = (companyName) => {
   return companyName.toLowerCase().replace(/\s+/g, '');
 };
 
-const builderStructure = async (bucket, currentPath) => {
+const builderStructure = async (bucket, currentPath, basePathToOmit = '') => {
   const { data, error } = await poolNewClient.from(bucket).list(currentPath, {
     limit: 1000,
     offset: 0,
@@ -17,30 +17,42 @@ const builderStructure = async (bucket, currentPath) => {
 
   const folders = [];
   const files = [];
+  const basePrefix = basePathToOmit ? `${basePathToOmit}/` : '';
 
   await Promise.all(
     data.map(async (item) => {
-      if (item.name === 'placeholder.txt' || item.name === '.emptyFolderPlaceholder' || item.name === 'reciclaje') return;
+      if (item.name === 'placeholder.txt' || item.name === '.emptyFolderPlaceholder') {
+        return;
+      }
+      
       const isFolder = item.metadata === null;
-      const pathName = `${currentPath}/${item.name}`;
+      const pathName = currentPath ? `${currentPath}/${item.name}` : item.name;
+
       if (isFolder) {
-        const newPath = path.posix.join(currentPath, item.name);
-        const structure = await builderStructure(bucket, newPath); 
+        const structure = await builderStructure(bucket, path.posix.join(currentPath, item.name), basePathToOmit);
         if (structure) {
           folders.push({
             nombreCarpeta: item.name,
-            rutaCarpeta: pathName,
+            rutaCarpeta: pathName.replace(new RegExp(`^${basePrefix}`), ''),
             archivos: structure.files,
             subCarpeta: structure.folders,
           });
         }
       } else {
+        const { data: fileInfo, error: fileError } = await poolNewClient.from(bucket).info(pathName);
+      
+        const author = fileInfo?.metadata?.author || 'Desconocido';
+        const fileExtension = path.extname(item.name).substring(1);
+
         files.push({
           nombreArchivo: item.name,
-          rutaArchivo: pathName,
-          tamanoMB: (item.metadata.size / (1024 * 1024)).toFixed(2),
+          // Aquí se omite la ruta base
+          rutaArchivo: pathName.replace(new RegExp(`^${basePrefix}`), ''),
+          tamanoMB: (item.metadata?.size / (1024 * 1024)).toFixed(2),
+          fechaCreacion: item.created_at, 
           fecha: item.updated_at || '',
-          tipo: path.extname(item.name).substring(1),
+          autor: author, 
+          tipo: fileExtension,
         });
       }
     })
