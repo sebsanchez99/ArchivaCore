@@ -90,7 +90,7 @@ router.get('/listRecicle', listRecycleFolder)
  * @name get/api/v1/supa/listRecicle
  * @description Borra el archivo de la carpeta reciclaje del bucket 
  */
-router.get('/deleteFileRecycle', deleteFileFromRecycle)
+router.delete('/deleteFileRecycle', deleteFileFromRecycle)
 
 /**
  * @memberof Rutas.FolderRouter
