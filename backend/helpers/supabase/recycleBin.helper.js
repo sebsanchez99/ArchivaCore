@@ -70,7 +70,8 @@ class RecycleBinHelper {
   async listRecycleFolder(companyName) {
     try {
       const bucketName = buildBucketName(companyName);
-      const structure = await builderStructure(bucketName, 'reciclaje');
+      // Llama a builderStructure y le dice que omita el prefijo 'reciclaje'
+      const structure = await builderStructure(bucketName, 'reciclaje', 'reciclaje');
 
       if (!structure) {
         return ResponseUtil.success('No hay elementos en reciclaje', { archivos: [], carpetas: [] });
