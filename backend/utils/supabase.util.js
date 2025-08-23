@@ -12,53 +12,63 @@ const builderStructure = async (bucket, currentPath, basePathToOmit = '') => {
   });
 
   if (error) {
+    console.error('List error:', error);
     return null;
+  }
+
+  if (!data || data.length === 0) {
+    return { folders: [], files: [] };
   }
 
   const folders = [];
   const files = [];
   const basePrefix = basePathToOmit ? `${basePathToOmit}/` : '';
 
-  await Promise.all(
-    data.map(async (item) => {
-      if (item.name === 'placeholder.txt' || item.name === '.emptyFolderPlaceholder') {
-        return;
-      }
-      
-      const isFolder = item.metadata === null;
-      const pathName = currentPath ? `${currentPath}/${item.name}` : item.name;
+  const promises = data.map(async (item) => {
+    if (item.name === 'placeholder.txt' || item.name === '.emptyFolderPlaceholder') {
+      return;
+    }
 
-      if (isFolder) {
-        const structure = await builderStructure(bucket, path.posix.join(currentPath, item.name), basePathToOmit);
-        if (structure) {
-          folders.push({
-            nombreCarpeta: item.name,
-            rutaCarpeta: pathName.replace(new RegExp(`^${basePrefix}`), ''),
-            archivos: structure.files,
-            subCarpeta: structure.folders,
-          });
-        }
-      } else {
-        const { data: fileInfo, error: fileError } = await poolNewClient.from(bucket).info(pathName);
-      
-        const author = fileInfo?.metadata?.author || 'Desconocido';
-        const fileExtension = path.extname(item.name).substring(1);
+    const isFolder = item.metadata === null;
+    const pathName = currentPath ? `${currentPath}/${item.name}` : item.name;
 
-        files.push({
-          nombreArchivo: item.name,
-          // Aquí se omite la ruta base
-          rutaArchivo: pathName.replace(new RegExp(`^${basePrefix}`), ''),
-          tamanoMB: (item.metadata?.size / (1024 * 1024)).toFixed(2),
-          fechaCreacion: item.created_at, 
-          fecha: item.updated_at || '',
-          autor: author, 
-          tipo: fileExtension,
+    if (isFolder) {
+      const structure = await builderStructure(bucket, pathName, basePathToOmit);
+      if (structure) {
+        folders.push({
+          nombreCarpeta: item.name,
+          rutaCarpeta: pathName.replace(new RegExp(`^${basePrefix}`), ''),
+          archivos: structure.files,
+          subCarpeta: structure.folders,
         });
       }
-    })
-  );
+    } else {
+      const { data: fileInfo, error: fileError } = await poolNewClient.from(bucket).info(pathName);
+
+      if (fileError) {
+        console.error(`Error getting file info for ${pathName}:`, fileError);
+        return;
+      }
+
+      const author = fileInfo?.metadata?.author || 'Desconocido';
+      const fileExtension = path.extname(item.name).substring(1);
+
+      files.push({
+        nombreArchivo: item.name,
+        rutaArchivo: pathName.replace(new RegExp(`^${basePrefix}`), ''),
+        tamanoMB: (item.metadata?.size / (1024 * 1024)).toFixed(2),
+        fechaCreacion: item.created_at,
+        fecha: item.updated_at || '',
+        autor: author,
+        tipo: fileExtension,
+      });
+    }
+  });
+
+  await Promise.all(promises);
+
   return { folders, files };
-};
+}
 
 const sumFileSizesByCategory = ({ files = [], folders = [] }, categoryTotals = {}) => {
   for (const file of files) {
