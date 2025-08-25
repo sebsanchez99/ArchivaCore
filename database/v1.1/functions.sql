@@ -488,18 +488,17 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION insertar_documento(
     p_nombre VARCHAR(255),
     p_url TEXT,
-    p_tipo VARCHAR(50),
-    p_tamanio BIGINT,
-    p_subido_por UUID,
+    p_accion VARCHAR(50),
+    p_usuario UUID,
     p_empresa UUID
 ) RETURNS UUID AS $$
 DECLARE
     v_doc_id UUID;
 BEGIN
-    INSERT INTO Documento (
-        Doc_Nombre, Doc_Url, Doc_Tipo, Doc_Tamanio, Doc_SubidoPor, Doc_Empresa
+    INSERT INTO DocumentoLog (
+        Doc_Nombre, Doc_Url, Doc_Accion, Doc_Usuario, Doc_Empresa
     ) VALUES (
-        p_nombre, p_url, p_tipo, p_tamanio, p_subido_por, p_empresa
+        p_nombre, p_url, p_accion, p_usuario, p_empresa
     )
     RETURNING Doc_ID INTO v_doc_id;
 
@@ -511,9 +510,8 @@ CREATE OR REPLACE FUNCTION actualizar_documento(
     p_doc_id UUID,
     p_nombre VARCHAR(255) DEFAULT NULL,
     p_url TEXT DEFAULT NULL,
-    p_tipo VARCHAR(50) DEFAULT NULL,
-    p_tamanio BIGINT DEFAULT NULL,
-    p_subido_por UUID DEFAULT NULL,
+    p_accion VARCHAR(50) DEFAULT NULL,
+    p_usuario UUID DEFAULT NULL,
     p_empresa UUID DEFAULT NULL
 ) RETURNS VOID AS $$
 BEGIN
@@ -521,9 +519,8 @@ BEGIN
     SET
         Doc_Nombre = COALESCE(p_nombre, Doc_Nombre),
         Doc_Url = COALESCE(p_url, Doc_Url),
-        Doc_Tipo = COALESCE(p_tipo, Doc_Tipo),
-        Doc_Tamanio = COALESCE(p_tamanio, Doc_Tamanio),
-        Doc_SubidoPor = COALESCE(p_subido_por, Doc_SubidoPor),
+        Doc_Accion = COALESCE(p_accion, Doc_Accion),
+        Doc_Usuario = COALESCE(p_usuario, Doc_Usuario),
         Doc_Empresa = COALESCE(p_empresa, Doc_Empresa)
     WHERE Doc_ID = p_doc_id;
 END;
@@ -534,9 +531,8 @@ RETURNS TABLE (
     _doc_id UUID,
     _doc_nombre VARCHAR(255),
     _doc_url TEXT,
-    _doc_tipo VARCHAR(50),
-    _doc_tamanio BIGINT,
-    _doc_subido_por UUID,
+    _doc_accion VARCHAR(50),
+    _doc_usuario UUID,
     _usuario_nombre_completo VARCHAR(150),
     _doc_fecha TIMESTAMP,
     _emp_nombre VARCHAR(150),
@@ -548,16 +544,15 @@ BEGIN
         d.Doc_ID,
         d.Doc_Nombre,
         d.Doc_Url,
-        d.Doc_Tipo,
-        d.Doc_Tamanio,
-        d.Doc_SubidoPor,
+        d.Doc_Accion,
+        d.Doc_Usuario,
         u.Usu_NombreCompleto,
         d.Doc_Fecha,
         e.Emp_Nombre,
         e.Emp_NombreCompleto
     FROM Documento d
     JOIN Empresa e ON d.Doc_Empresa = e.Emp_ID
-    LEFT JOIN Usuario u ON d.Doc_SubidoPor = u.Usu_ID
+    LEFT JOIN Usuario u ON d.Doc_Usuario = u.Usu_ID
     WHERE d.Doc_Empresa = p_empresa;
 END;
 $$ LANGUAGE plpgsql;
@@ -567,73 +562,6 @@ RETURNS BOOLEAN AS $$
 BEGIN
     DELETE FROM Documento WHERE Doc_ID = p_doc_id;
     RETURN TRUE;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE FUNCTION obtener_documento_por_id(p_doc_id UUID)
-RETURNS TABLE (
-    _doc_id UUID,
-    _doc_nombre VARCHAR(255),
-    _doc_url TEXT,
-    _doc_tipo VARCHAR(50),
-    _doc_tamanio BIGINT,
-    _doc_subido_por UUID,
-    _usuario_nombre_completo VARCHAR(150),
-    _doc_fecha TIMESTAMP,
-    _emp_nombre VARCHAR(150),
-    _emp_nombre_completo VARCHAR(150)
-) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT 
-        d.Doc_ID,
-        d.Doc_Nombre,
-        d.Doc_Url,
-        d.Doc_Tipo,
-        d.Doc_Tamanio,
-        d.Doc_SubidoPor,
-        u.Usu_NombreCompleto,
-        d.Doc_Fecha,
-        e.Emp_Nombre,
-        e.Emp_NombreCompleto
-    FROM Documento d
-    JOIN Empresa e ON d.Doc_Empresa = e.Emp_ID
-    LEFT JOIN Usuario u ON d.Doc_SubidoPor = u.Usu_ID
-    WHERE d.Doc_ID = p_doc_id;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE FUNCTION buscar_documento_por_ruta_y_empresa(
-    p_ruta TEXT,
-    p_empresa UUID
-)
-RETURNS TABLE (
-    doc_id UUID,
-    doc_nombre VARCHAR(255),
-    doc_url TEXT,
-    doc_tipo VARCHAR(50),
-    doc_tamanio BIGINT,
-    doc_subido_por UUID,
-    doc_fecha TIMESTAMP,
-    emp_nombre VARCHAR(150),
-    emp_nombre_completo VARCHAR(150)
-) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT 
-        d.Doc_ID,
-        d.Doc_Nombre,
-        d.Doc_Url,
-        d.Doc_Tipo,
-        d.Doc_Tamanio,
-        d.Doc_SubidoPor,
-        d.Doc_Fecha,
-        e.Emp_Nombre,
-        e.Emp_NombreCompleto
-    FROM Documento d
-    JOIN Empresa e ON d.Doc_Empresa = e.Emp_ID
-    WHERE d.Doc_Url = p_ruta
-      AND d.Doc_Empresa = p_empresa;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -1017,74 +945,5 @@ BEGIN
     WHERE Chat_Remitente = p_usuario OR Chat_Destinatario = p_usuario
     GROUP BY Chat_Room
     ORDER BY ultimo_mensaje DESC;
-END;
-$$ LANGUAGE plpgsql;
-
--- ===============================================
--- ========== FUNCIONES DE RECICLAJE =============
--- ===============================================
-
--- Crear archivo en reciclaje
-CREATE OR REPLACE FUNCTION crear_reciclaje_archivo(
-    p_nombre VARCHAR(255),
-    p_ruta TEXT,
-    p_usuario UUID DEFAULT NULL,
-    p_empresa UUID DEFAULT NULL
-) RETURNS UUID AS $$
-DECLARE
-    v_id UUID;
-BEGIN
-    INSERT INTO ReciclajeArchivo (
-        Reciclaje_ID, Reciclaje_Nombre, Reciclaje_Ruta, Reciclaje_Usuario, Reciclaje_Empresa
-    ) VALUES (
-        uuid_generate_v4(), p_nombre, p_ruta, p_usuario, p_empresa
-    )
-    RETURNING Reciclaje_ID INTO v_id;
-    RETURN v_id;
-END;
-$$ LANGUAGE plpgsql;
-
--- Eliminar archivo de reciclaje por ID
-CREATE OR REPLACE FUNCTION eliminar_reciclaje_archivo(
-    p_id UUID
-) RETURNS BOOLEAN AS $$
-BEGIN
-    DELETE FROM ReciclajeArchivo WHERE Reciclaje_ID = p_id;
-    RETURN TRUE;
-END;
-$$ LANGUAGE plpgsql;
-
--- Obtener archivos de reciclaje por empresa
-CREATE OR REPLACE FUNCTION obtener_reciclaje_archivos_por_empresa(
-    p_empresa UUID
-) RETURNS TABLE (
-    reciclaje_id UUID,
-    nombre VARCHAR,
-    ruta TEXT,
-    fecha_eliminacion TIMESTAMP,
-    usuario UUID
-) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT Reciclaje_ID, Reciclaje_Nombre, Reciclaje_Ruta, Reciclaje_FechaEliminacion, Reciclaje_Usuario
-    FROM ReciclajeArchivo
-    WHERE Reciclaje_Empresa = p_empresa;
-END;
-$$ LANGUAGE plpgsql;
-
--- Eliminar todos los archivos de reciclaje (opcional: por empresa)
-CREATE OR REPLACE FUNCTION eliminar_todos_reciclaje_archivos(
-    p_empresa UUID DEFAULT NULL
-) RETURNS INTEGER AS $$
-DECLARE
-    v_count INTEGER;
-BEGIN
-    IF p_empresa IS NULL THEN
-        DELETE FROM ReciclajeArchivo;
-    ELSE
-        DELETE FROM ReciclajeArchivo WHERE Reciclaje_Empresa = p_empresa;
-    END IF;
-    GET DIAGNOSTICS v_count = ROW_COUNT;
-    RETURN COALESCE(v_count, 0);
 END;
 $$ LANGUAGE plpgsql;
