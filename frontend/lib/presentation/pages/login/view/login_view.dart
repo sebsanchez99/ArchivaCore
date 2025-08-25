@@ -7,6 +7,7 @@ import 'package:frontend/presentation/global/cubit/globalcubit.dart';
 import 'package:frontend/presentation/pages/login/bloc/login_bloc.dart';
 import 'package:frontend/presentation/pages/login/bloc/login_events.dart';
 import 'package:frontend/presentation/pages/login/bloc/login_state.dart';
+import 'package:frontend/presentation/pages/notification/bloc/notification_bloc.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
 import 'package:frontend/presentation/widgets/custom_input.dart';
 import 'package:frontend/presentation/widgets/dialogs/error_dialog.dart';
@@ -25,6 +26,7 @@ class LoginView extends StatelessWidget {
       create:
           (_) => LoginBloc(
             LoginState(),
+            context.read<NotificationBloc>(),
             authRepository: context.read<AuthRepository>(),
           ),
       child: Scaffold(
