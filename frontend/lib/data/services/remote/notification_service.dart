@@ -20,9 +20,17 @@ class NotificationService {
   /// Marca una notificación como leída o procesada
   HttpFuture<ServerResponseModel> markNotifications(String notificationId) {
     return DioHandler.handleRequest(
-      () => _dio.post('/notifications/markNotification', data: {
+      () => _dio.put('/notifications/markNotification', data: {
         'notificationId': notificationId
       }),
+      (response) => ServerResponseModel.fromJson(response),
+    );
+  }
+
+  /// Marca todas las notificaciones como leídas o procesadas
+  HttpFuture<ServerResponseModel> markAllNotifications() {
+    return DioHandler.handleRequest(
+      () => _dio.put('/notifications/markAllNotifications'),
       (response) => ServerResponseModel.fromJson(response),
     );
   }
@@ -40,7 +48,7 @@ class NotificationService {
   /// Elimina una notificación específica por su ID
   HttpFuture<ServerResponseModel> deleteNotifications(String notificationId) {
     return DioHandler.handleRequest(
-      () => _dio.delete('/notifications/deleteNotification',
+      () => _dio.delete('/notifications//deteleNotification',
           data: {'notificationId': notificationId}),
       (response) => ServerResponseModel.fromJson(response),
     );
