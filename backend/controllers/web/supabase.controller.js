@@ -1,10 +1,10 @@
 const ResponseUtil = require('../../utils/response.util')
-const SupabaseHelper = require('../../helpers/supabase.helper')
+const SupaBaseHelper = require('../../helpers/supabase.helper ')
 
 const getTotalStorage = async (req, res) => {
     try {
         const { companyName } = req.user
-        const supabaseHelper = new SupabaseHelper()
+        const supabaseHelper = new SupaBaseHelper()
         const result = await supabaseHelper.calculateTotalStorage(companyName)
         res.json(result)
     } catch (error) {
