@@ -699,6 +699,16 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION marcar_notificaciones_recibidas(
+    p_usuario UUID
+) RETURNS VOID AS $$
+BEGIN
+    UPDATE NotificacionUsuario
+    SET NotUsu_Recibida = TRUE
+    WHERE NotUsu_Usuario = p_usuario;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION eliminar_notificacion_usuario(
     p_notificacion UUID,
     p_usuario UUID
