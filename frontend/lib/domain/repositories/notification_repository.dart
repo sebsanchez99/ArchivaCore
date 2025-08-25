@@ -6,5 +6,6 @@ abstract class NotificationRepository {
   HttpFuture<ServerResponseModel> deleteNotification(String notificationId);
   HttpFuture<ServerResponseModel> deleteAllNotification();
   HttpFuture<ServerResponseModel> markNotification(String notificationId);
+  HttpFuture<ServerResponseModel> markAllNotification();
   HttpFuture<ServerResponseModel> createNotification(String title, String message);
 }
