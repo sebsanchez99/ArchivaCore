@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/presentation/global/constants/menu_items.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
+import 'package:frontend/presentation/pages/notification/view/notifications_icon.dart';
 import 'package:frontend/presentation/widgets/menu/side_menu_cubit.dart';
 import 'package:frontend/presentation/widgets/menu/side_menu_state.dart';
 import 'package:frontend/presentation/widgets/menu/side_menu_widget.dart';
@@ -30,58 +31,7 @@ class HomeView extends StatelessWidget {
                 icon: Icon(Icons.menu, color: SchemaColors.neutral),
               ),
               actions: [
-                // Botón de notificaciones con menú emergente
-                Builder(
-                  builder:
-                      (context) => IconButton(
-                        onPressed: () async {
-                          final RenderBox button =
-                              context.findRenderObject() as RenderBox;
-                          final RenderBox overlay =
-                              Overlay.of(context).context.findRenderObject()
-                                  as RenderBox;
-                          final Offset position = button.localToGlobal(
-                            Offset.zero,
-                            ancestor: overlay,
-                          );
-
-                          await showMenu(
-                            context: context,
-                            position: RelativeRect.fromLTRB(
-                              position.dx,
-                              position.dy + button.size.height,
-                              overlay.size.width -
-                                  position.dx -
-                                  button.size.width,
-                              overlay.size.height -
-                                  position.dy -
-                                  button.size.height,
-                            ),
-                            items: [
-                              PopupMenuItem(
-                                child: ListTile(
-                                  leading: Icon(Icons.mail),
-                                  title: Text('Notificación 1'),
-                                  subtitle: Text('Detalle de la notificación'),
-                                ),
-                              ),
-                              PopupMenuItem(
-                                child: ListTile(
-                                  leading: Icon(Icons.warning),
-                                  title: Text('Notificación 2'),
-                                  subtitle: Text('Otra notificación'),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                        icon: Icon(
-                          Icons.notifications,
-                          color: SchemaColors.neutral,
-                        ),
-                        tooltip: 'Ver notificaciones',
-                      ),
-                ),
+                NotificationIcon()
               ],
             ),
             // Cuerpo principal de la vista
