@@ -15,62 +15,72 @@ const listUserNotifications = async (req, res) => {
   }
 }
 
-//CREAR
-const createNotification = async (req, res) => {
-    try {
-      const { userId } = req.user
-      const { title, message  } = req.body
-      const notificationHelper = new NotificationHelper()
-      const result = await notificationHelper.createNotification(userId, title, message)
-      res.json(result)
-    } catch (error) {
-        res.status(500).send(ResponseUtil.fail(error.message))
-        
-    }
-}
-// ELIMINAR
-const deteleNotification = async (req, res) => {
-    try {
-      const { userId } = req.user
-      const { notificationId } = req.body
-      const notificationHelper = new NotificationHelper()
-      console.log(userId);
-      const result = await notificationHelper.deteleNotification(userId, notificationId)
-      res.json(result)
-    } catch (error) {
-        res.status(500).send(ResponseUtil.fail(error.message))
-        
-    }
-}
-//  ELIMINAR TODAS
-const deleteAllNotification = async (req, res) => {
-    try {
-      const { userId } = req.user
-      const notificationHelper = new NotificationHelper()
-      const result = await notificationHelper.deleteAllNotification(userId)
-      res.json(result)
-    } catch (error) {
-        res.status(500).send(ResponseUtil.fail(error.message))
-    }
-}
-// MARCAR LEIDA
-const markNotification = async (req, res) => {
-    try {
-      const { userId } = req.user
-      const { notificationId } = req.body
-      const notificationHelper = new NotificationHelper()
-      const result = await notificationHelper.markNotification(notificationId, userId)
-      res.json(result)
 
-    } catch (error) {
-        res.status(500).send(ResponseUtil.fail(error.message))
-    }
+const createNotification = async (req, res) => {
+  try {
+    const { userId } = req.user
+    const { title, message  } = req.body
+    const notificationHelper = new NotificationHelper()
+    const result = await notificationHelper.createNotification(userId, title, message)
+    res.json(result)
+  } catch (error) {
+      res.status(500).send(ResponseUtil.fail(error.message))
+      
+  }
+}
+
+const deteleNotification = async (req, res) => {
+  try {
+    const { userId } = req.user
+    const { notificationId } = req.body
+    const notificationHelper = new NotificationHelper()
+    const result = await notificationHelper.deteleNotification(userId, notificationId)
+    res.json(result)
+  } catch (error) {
+      res.status(500).send(ResponseUtil.fail(error.message))
+      
+  }
+}
+
+const deleteAllNotification = async (req, res) => {
+  try {
+    const { userId } = req.user
+    const notificationHelper = new NotificationHelper()
+    const result = await notificationHelper.deleteAllNotification(userId)
+    res.json(result)
+  } catch (error) {
+      res.status(500).send(ResponseUtil.fail(error.message))
+  }
+}
+
+const markNotification = async (req, res) => {
+  try {
+    const { userId } = req.user
+    const { notificationId } = req.body
+    const notificationHelper = new NotificationHelper()
+    const result = await notificationHelper.markNotification(notificationId, userId)
+    res.json(result)
+  } catch (error) {
+      res.status(500).send(ResponseUtil.fail(error.message))
+  }
+}
+
+const markAllNotifications = async (req, res) => {
+  try {
+    const { userId } = req.user
+    const notificationHelper = new NotificationHelper()
+    const result = await notificationHelper.markAllNotifications(userId)
+    res.json(result)
+  } catch (error) {
+      res.status(500).send(ResponseUtil.fail(error.message))
+  }
 }
 
 module.exports = {
-    listUserNotifications,
-    createNotification,
-    deteleNotification,
-    deleteAllNotification,
-    markNotification
+  listUserNotifications,
+  createNotification,
+  deteleNotification,
+  deleteAllNotification,
+  markNotification,
+  markAllNotifications
 }

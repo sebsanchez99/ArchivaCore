@@ -1,12 +1,11 @@
 const { Router } = require('express')
 const { 
-    
     listUserNotifications,
     createNotification,
     deteleNotification,
     deleteAllNotification,
-    markNotification
-
+    markNotification,
+    markAllNotifications
 } = require('../../controllers/app/notification.controller')
 
 const router = Router()
@@ -45,5 +44,14 @@ router.delete('/deleteAllNotification', deleteAllNotification)
  * @description marcar las notificaciones de usuario como leídas
  */
 router.put('/markNotification', markNotification)
+
+/**
+ * @memberof Rutas.NotificationsUser
+ * @name get/api/v1/notifications/markNotification
+ * @description marcar las notificaciones de usuario como leídas
+ */
+router.put('/markAllNotifications', markAllNotifications)
+
+
 
 module.exports = router
