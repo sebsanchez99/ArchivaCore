@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:frontend/data/services/handler/websocket_handler.dart';
-import 'package:frontend/domain/enums/connection_status_type.dart';
+import 'package:frontend/presentation/enums/connection_status_type.dart';
 // ignore: library_prefixes
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
