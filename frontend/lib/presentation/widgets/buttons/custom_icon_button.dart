@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
 
 class CustomIconButton extends StatelessWidget {
+  final double width;
+  final double height;
   final bool disabled;
   final Color backgroundColor;
   final VoidCallback onPressed;
@@ -18,6 +20,8 @@ class CustomIconButton extends StatelessWidget {
     required this.onPressed,
     this.iconColor,
     this.iconSize,
+    this.height = 18,
+    this.width = 25,
     this.iconAtEnd = false,
     this.backgroundColor = SchemaColors.primary, 
     this.disabled = false,
@@ -35,7 +39,7 @@ class CustomIconButton extends StatelessWidget {
 
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
-        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 18),
+        padding: EdgeInsets.symmetric(horizontal: width, vertical: height),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       ),
       onPressed: disabled ? null : onPressed,
