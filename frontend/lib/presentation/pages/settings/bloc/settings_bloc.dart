@@ -28,9 +28,9 @@ class SettingsBloc extends Bloc<SettingsEvents, SettingsState> {
   }
 
   Future<void> _onChangePasswordEvent(ChangePasswordEvent event, Emitter<SettingsState> emit) async {
-    emit(SettingsState.loaded(loading: true));
     await state.mapOrNull(
       loaded: (value) async {
+        add(LoadingEvent(loading: true));
         final result = await _authRepository.changePassword(value.password);
         emit(
           result.when(
