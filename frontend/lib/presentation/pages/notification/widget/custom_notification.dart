@@ -8,7 +8,7 @@ class CustomNotification extends StatelessWidget {
   final String date;
   final bool readed;
   final VoidCallback onDelete;
-  
+
   const CustomNotification({
     super.key,
     required this.title,
@@ -20,8 +20,11 @@ class CustomNotification extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formatedDate = DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(date));
+    final formatedDate = DateFormat(
+      'dd/MM/yyyy HH:mm',
+    ).format(DateTime.parse(date));
     return Card(
+      color: SchemaColors.neutral500,
       margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 0.5,
@@ -29,9 +32,13 @@ class CustomNotification extends StatelessWidget {
         dense: true,
         leading: CircleAvatar(
           backgroundColor: SchemaColors.neutral700,
-          child: readed 
-            ? Icon(Icons.mail, color: SchemaColors.highlight)
-            : Icon(Icons.mark_email_unread, color: SchemaColors.secondary)
+          child:
+              readed
+                  ? Icon(Icons.mail, color: SchemaColors.highlight)
+                  : Icon(
+                    Icons.mark_email_unread,
+                    color: SchemaColors.secondary,
+                  ),
         ),
         title: Row(
           children: [
@@ -59,7 +66,7 @@ class CustomNotification extends StatelessWidget {
         ),
         trailing: IconButton(
           icon: Icon(Icons.delete, color: SchemaColors.error),
-          onPressed: onDelete, 
+          onPressed: onDelete,
         ),
       ),
     );
