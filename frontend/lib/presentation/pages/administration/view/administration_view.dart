@@ -23,9 +23,11 @@ class AdministrationView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AdministrationBloc>(
-      create: (_) => AdministrationBloc(AdministrationState.loading(),
-        administrationRepository: context.read<AdministrationRepository>(),
-      )..add(InitializeEvent()),
+      create:
+          (_) => AdministrationBloc(
+            AdministrationState.loading(),
+            administrationRepository: context.read<AdministrationRepository>(),
+          )..add(InitializeEvent()),
       child: BlocConsumer<AdministrationBloc, AdministrationState>(
         listener: (context, state) {
           state.mapOrNull(
@@ -59,7 +61,9 @@ class AdministrationView extends StatelessWidget {
                       ),
                       dataTableTheme: DataTableThemeData(
                         headingRowAlignment: MainAxisAlignment.center,
-                        headingRowColor: WidgetStatePropertyAll(SchemaColors.primary400),
+                        headingRowColor: WidgetStatePropertyAll(
+                          SchemaColors.primary400,
+                        ),
                         headingTextStyle: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: SchemaColors.neutral,
@@ -68,7 +72,7 @@ class AdministrationView extends StatelessWidget {
                           color: SchemaColors.primary800,
                         ),
                         dividerThickness: 1.2,
-                      )
+                      ),
                     ),
                     child: PaginatedDataTable(
                       showFirstLastButtons: true,
@@ -83,11 +87,22 @@ class AdministrationView extends StatelessWidget {
                           icon: Icon(Icons.add, color: SchemaColors.neutral),
                           iconAlignment: IconAlignment.start,
                           style: ButtonStyle(
-                            backgroundColor: WidgetStatePropertyAll(SchemaColors.primary400),
+                            backgroundColor: WidgetStatePropertyAll(
+                              SchemaColors.primary400,
+                            ),
                             elevation: WidgetStatePropertyAll(3),
                             iconSize: WidgetStatePropertyAll(30),
-                            padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 20, vertical: 15)),
-                            shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)))
+                            padding: WidgetStatePropertyAll(
+                              EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 15,
+                              ),
+                            ),
+                            shape: WidgetStatePropertyAll(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -97,13 +112,19 @@ class AdministrationView extends StatelessWidget {
                           width: 500,
                           height: 40,
                           child: SearchAnchor.bar(
-                            barBackgroundColor: WidgetStatePropertyAll(SchemaColors.neutral),
+                            barBackgroundColor: WidgetStatePropertyAll(
+                              SchemaColors.neutral,
+                            ),
                             dividerColor: SchemaColors.primary500,
                             viewConstraints: BoxConstraints(
                               minHeight: kToolbarHeight,
                               maxHeight: kToolbarHeight * 4,
                             ),
-                            barShape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
+                            barShape: WidgetStatePropertyAll(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
                             isFullScreen: false,
                             searchController: bloc.searchController,
                             suggestionsBuilder: (context, controller) {
@@ -120,7 +141,9 @@ class AdministrationView extends StatelessWidget {
                                     dense: true,
                                     title: Text(
                                       user.name,
-                                      style: TextStyle(color: SchemaColors.textPrimary)
+                                      style: TextStyle(
+                                        color: SchemaColors.textPrimary,
+                                      ),
                                     ),
                                     onTap: () {
                                       controller.closeView(user.name);
@@ -136,21 +159,11 @@ class AdministrationView extends StatelessWidget {
 
                       rowsPerPage: 8,
                       columns: [
-                        DataColumn(
-                          label: Text('Nombre'),
-                        ),
-                        DataColumn(
-                          label: Text('Nombre de usuario'),
-                        ),
-                        DataColumn(
-                          label: Text('Rol'),
-                        ),
-                        DataColumn(
-                          label: Text('Estado'),
-                        ),
-                        DataColumn(
-                          label: Text('Acciones'),
-                        ),
+                        DataColumn(label: Text('Nombre')),
+                        DataColumn(label: Text('Nombre de usuario')),
+                        DataColumn(label: Text('Rol')),
+                        DataColumn(label: Text('Estado')),
+                        DataColumn(label: Text('Acciones')),
                       ],
                       source: tableRow,
                     ),
@@ -186,16 +199,16 @@ class TableRow extends DataTableSource {
         DataCell(Center(child: Text(user.name))),
         DataCell(Center(child: Text(user.role))),
         DataCell(
-        Center(
-          child: Text(
-            user.active ? 'Activo' : 'Inactivo',
-            style: TextStyle(
-              color: user.active ? Colors.green : Colors.red,
-              fontWeight: FontWeight.bold,
+          Center(
+            child: Text(
+              user.active ? 'Activo' : 'Inactivo',
+              style: TextStyle(
+                color: user.active ? Colors.green : Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
-      ),
         DataCell(
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -207,10 +220,18 @@ class TableRow extends DataTableSource {
                   size: 30,
                 ),
                 tooltip: user.active ? 'Desactivar' : 'Activar',
-                onPressed: () => _showInfoChangeStateDialog(context, user.id, !user.active),
+                onPressed:
+                    () => _showInfoChangeStateDialog(
+                      context,
+                      user.id,
+                      !user.active,
+                    ),
               ),
               IconButton(
-                icon: Icon(Icons.edit, color: SchemaColors.primary800),
+                icon: Icon(
+                  Icons.edit,
+                  color: const Color.fromARGB(255, 241, 163, 61),
+                ),
                 tooltip: 'Editar usuario',
                 onPressed: () => _showEditDialog(context, user),
               ),
