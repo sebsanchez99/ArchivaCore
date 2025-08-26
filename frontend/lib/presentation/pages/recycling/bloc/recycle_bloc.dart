@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/domain/failures/http_request_failure.dart';
 import 'package:frontend/domain/models/folder_response.dart';
 import 'package:frontend/domain/repositories/recycle_repository.dart';
 import 'package:frontend/presentation/pages/recycling/bloc/recycle_events.dart';
@@ -59,8 +60,12 @@ class RecycleBloc extends Bloc<RecycleEvents, RecycleState> {
     emit(
       result.when(
         right: (response) {
-          add(RecycleEvents.initialize());
-          return RecycleState.loaded(response: response);
+          if(response.result) {
+            add(RecycleEvents.initialize());
+            return RecycleState.loaded(response: response);
+          } else {
+            return RecycleState.failed(HttpRequestFailure.server());
+          } 
         }, 
         left: (failure) => RecycleState.failed(failure),
       ),
@@ -73,8 +78,12 @@ class RecycleBloc extends Bloc<RecycleEvents, RecycleState> {
     emit(
       result.when(
         right: (response) {
-          add(RecycleEvents.initialize());
-          return RecycleState.loaded(response: response);
+          if(response.result) {
+            add(RecycleEvents.initialize());
+            return RecycleState.loaded(response: response);
+          } else {
+            return RecycleState.failed(HttpRequestFailure.server());
+          }
         }, 
         left: (failure) => RecycleState.failed(failure),
       ),
@@ -87,8 +96,12 @@ class RecycleBloc extends Bloc<RecycleEvents, RecycleState> {
     emit(
       result.when(
         right: (response) {
-          add(RecycleEvents.initialize());
-          return RecycleState.loaded(response: response);
+          if (response.result) {
+            add(RecycleEvents.initialize());
+            return RecycleState.loaded(response: response);
+          } else {
+            return RecycleState.failed(HttpRequestFailure.server());
+          }
         }, 
         left: (failure) => RecycleState.failed(failure),
       ),
@@ -101,8 +114,12 @@ class RecycleBloc extends Bloc<RecycleEvents, RecycleState> {
     emit(
       result.when(
         right: (response) {
-          add(RecycleEvents.initialize());
-          return RecycleState.loaded(response: response);
+          if (response.result) {
+            add(RecycleEvents.initialize());
+            return RecycleState.loaded(response: response);
+          } else {
+            return RecycleState.failed(HttpRequestFailure.server());
+          }
         }, 
         left: (failure) => RecycleState.failed(failure),
       ),
