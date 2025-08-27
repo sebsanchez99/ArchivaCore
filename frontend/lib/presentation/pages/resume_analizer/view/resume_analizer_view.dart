@@ -26,7 +26,11 @@ class ResumeAnalizerView extends StatelessWidget {
     final formKey = GlobalKey<FormState>();
 
     return BlocProvider<ResumeAnalizerBloc>(
-      create: (context) => ResumeAnalizerBloc(ResumeAnalizerState.loaded(), aiRepository: context.read<AIRepository>()),
+      create:
+          (context) => ResumeAnalizerBloc(
+            ResumeAnalizerState.loaded(),
+            aiRepository: context.read<AIRepository>(),
+          ),
       child: BlocConsumer<ResumeAnalizerBloc, ResumeAnalizerState>(
         listener: (context, state) {
           final bloc = context.read<ResumeAnalizerBloc>();
@@ -38,7 +42,7 @@ class ResumeAnalizerView extends StatelessWidget {
                 _showErrorDialog(context, response.message);
                 bloc.add(ResetResponseEvent());
               }
-              if (value.response != null  && !value.scrolled) {
+              if (value.response != null && !value.scrolled) {
                 bloc.add(ScrollEvent());
               }
             },
@@ -58,25 +62,30 @@ class ResumeAnalizerView extends StatelessWidget {
                     children: [
                       Text(
                         'Analizador de Hojas de Vida',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'Sube tu hoja de vida y la oferta de trabajo para obtener un análisis detallado del perfil profesional',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 13),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.copyWith(fontSize: 13),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 18),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                  
                           Expanded(
                             child: Card(
                               color: Colors.white,
                               shape: RoundedRectangleBorder(
-                                side: BorderSide(color: Colors.grey.shade300, width: 1.2),
+                                side: BorderSide(
+                                  color: Colors.grey.shade300,
+                                  width: 1.2,
+                                ),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               elevation: 0,
@@ -87,44 +96,66 @@ class ResumeAnalizerView extends StatelessWidget {
                                   children: [
                                     Row(
                                       children: [
-                                        Icon(LucideIcons.briefcase, color: SchemaColors.secondary500),
+                                        Icon(
+                                          LucideIcons.briefcase,
+                                          color: SchemaColors.secondary500,
+                                        ),
                                         SizedBox(width: 12),
                                         Text(
                                           'Oferta de Trabajo',
-                                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.titleMedium?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ],
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Ingresa la descripción de la oferta de trabajo para comparar',
-                                      style: Theme.of(context).textTheme.bodySmall,
+                                      'Ingresa la descripción de la oferta de trabajo para comparar.',
+                                      style:
+                                          Theme.of(
+                                            context,
+                                          ).textTheme.bodyMedium,
                                     ),
                                     const SizedBox(height: 16),
                                     Text(
                                       'Descripción del puesto',
-                                      style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.labelMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                     const SizedBox(height: 8),
                                     CustomInput(
                                       maxLines: 12,
                                       isPassword: false,
-                                      validator: (text) => text.validateWith([FormValidator.notEmpty()]),
-                                      onChanged: (text) => bloc.add(GetOfferTextEvent(text)),
+                                      validator:
+                                          (text) => text.validateWith([
+                                            FormValidator.notEmpty(),
+                                          ]),
+                                      onChanged:
+                                          (text) =>
+                                              bloc.add(GetOfferTextEvent(text)),
                                     ),
                                   ],
                                 ),
                               ),
                             ),
                           ),
-                  
+
                           const SizedBox(width: 20),
-                  
+
                           Expanded(
                             child: Card(
                               color: Colors.white,
                               shape: RoundedRectangleBorder(
-                                side: BorderSide(color: Colors.grey.shade300, width: 1.2),
+                                side: BorderSide(
+                                  color: Colors.grey.shade300,
+                                  width: 1.2,
+                                ),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               // shape: ,
@@ -136,49 +167,76 @@ class ResumeAnalizerView extends StatelessWidget {
                                   children: [
                                     Row(
                                       children: [
-                                        Icon(LucideIcons.fileText, color: SchemaColors.secondary500),
+                                        Icon(
+                                          LucideIcons.fileText,
+                                          color: SchemaColors.secondary500,
+                                        ),
                                         SizedBox(width: 12),
                                         Text(
                                           'Subir Hoja de Vida',
-                                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.titleMedium?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ],
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Sube tu hoja de vida en formato PDF, DOCX o TXT para analizarla',
-                                      style: Theme.of(context).textTheme.bodySmall,
+                                      'Sube tu hoja de vida en formato PDF, DOCX o TXT para analizarla.',
+                                      style:
+                                          Theme.of(
+                                            context,
+                                          ).textTheme.bodyMedium,
                                     ),
                                     const SizedBox(height: 16),
-                                    value.file == null 
-                                    ? DottedBorderbox(
-                                      onFilePicked: (file) => bloc.add(ResumeAnalizerEvents.uploadFile(file)),
-                                    )
-                                    :  Card(
-                                      color: Colors.grey.shade50,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                        side: BorderSide(color: Colors.grey.shade300, width: 1),
-                                      ),
-                                      child: ListTile(
-                                        leading: Icon(
-                                          LucideIcons.file,
-                                          color: SchemaColors.primary,
-                                          size: 28,
+                                    value.file == null
+                                        ? DottedBorderbox(
+                                          onFilePicked:
+                                              (file) => bloc.add(
+                                                ResumeAnalizerEvents.uploadFile(
+                                                  file,
+                                                ),
+                                              ),
+                                        )
+                                        : Card(
+                                          color: Colors.grey.shade50,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            side: BorderSide(
+                                              color: Colors.grey.shade300,
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: ListTile(
+                                            leading: Icon(
+                                              LucideIcons.file,
+                                              color: SchemaColors.primary,
+                                              size: 28,
+                                            ),
+                                            title: Text(value.file!.name),
+                                            subtitle: Text(
+                                              "${(value.file!.size / 1024).toStringAsFixed(2)} KB",
+                                            ),
+                                            trailing: IconButton(
+                                              icon: const Icon(
+                                                Icons.close,
+                                                color: Colors.red,
+                                              ),
+                                              onPressed: () {
+                                                // Limpiar archivo
+                                                bloc.add(
+                                                  const ResumeAnalizerEvents.uploadFile(
+                                                    null,
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
                                         ),
-                                        title: Text(value.file!.name),
-                                        subtitle: Text(
-                                          "${(value.file!.size / 1024).toStringAsFixed(2)} KB",
-                                        ),
-                                        trailing: IconButton(
-                                          icon: const Icon(Icons.close, color: Colors.red),
-                                          onPressed: () {
-                                            // Limpiar archivo
-                                            bloc.add(const ResumeAnalizerEvents.uploadFile(null));
-                                          },
-                                        ),
-                                      ),
-                                    ),
                                   ],
                                 ),
                               ),
@@ -187,43 +245,43 @@ class ResumeAnalizerView extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 24),
-                  
+
                       SizedBox(
                         width: double.infinity,
-                        child: value.loading 
-                        ? LoadingState()
-                        :CustomIconButton(
-                          disabled: value.file == null,
-                          message: 'Analizar Hoja de Vida', 
-                          icon: LucideIcons.fileBarChart, 
-                          onPressed: () {
-                            if (formKey.currentState!.validate() && value.file != null) {
-                              bloc.add(LoadingEvent(true));
-                              bloc.add(AnalyzeEvent());
-                            } else {
-                              return;
-                            }
-                          }
-                        ),
+                        child:
+                            value.loading
+                                ? LoadingState()
+                                : CustomIconButton(
+                                  disabled: value.file == null,
+                                  message: 'Analizar Hoja de Vida',
+                                  icon: LucideIcons.fileBarChart,
+                                  onPressed: () {
+                                    if (formKey.currentState!.validate() &&
+                                        value.file != null) {
+                                      bloc.add(LoadingEvent(true));
+                                      bloc.add(AnalyzeEvent());
+                                    } else {
+                                      return;
+                                    }
+                                  },
+                                ),
                       ),
                       SizedBox(height: 32),
-                      value.response == null 
-                      ? Container()
-                      : CVAnalysisCard(
-                        key: bloc.cardKey,
-                        analysis: value.response!
-                      )
+                      value.response == null
+                          ? Container()
+                          : CVAnalysisCard(
+                            key: bloc.cardKey,
+                            analysis: value.response!,
+                          ),
                     ],
                   ),
                 ),
               );
             },
-            failed: (value) => FailureState(
-              failure: value.failure, 
-              onRetry: (){}
-            ),
+            failed:
+                (value) => FailureState(failure: value.failure, onRetry: () {}),
           );
-        }
+        },
       ),
     );
   }

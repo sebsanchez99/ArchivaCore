@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:frontend/domain/enums/file_explorer_view_type.dart';
+import 'package:frontend/presentation/enums/file_explorer_view_type.dart';
 
 part 'file_explorer_events.freezed.dart';
 

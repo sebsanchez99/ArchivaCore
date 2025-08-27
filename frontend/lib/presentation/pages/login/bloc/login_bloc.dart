@@ -4,11 +4,14 @@ import 'package:frontend/domain/repositories/auth_repository.dart';
 import 'package:frontend/domain/typedefs.dart';
 import 'package:frontend/presentation/pages/login/bloc/login_events.dart';
 import 'package:frontend/presentation/pages/login/bloc/login_state.dart';
+import 'package:frontend/presentation/pages/notification/bloc/notification_bloc.dart';
+import 'package:frontend/presentation/pages/notification/bloc/notification_events.dart';
 import 'package:frontend/utils/secure_storage.dart';
 
 class LoginBloc extends Bloc<LoginEvents, LoginState> {
+  final NotificationBloc notificationBloc;
   // Se recibe un estado inicial y un repositorio de autenticación
-  LoginBloc(super.initialState, {required AuthRepository authRepository})
+  LoginBloc(super.initialState, this.notificationBloc, {required AuthRepository authRepository})
     : _authRepository = authRepository {
     //Maneja el evento cuando el usuario cambia el nombre de usuario
     on<UsernameChangedEvent>(
@@ -35,6 +38,7 @@ class LoginBloc extends Bloc<LoginEvents, LoginState> {
       right: (response) async{
         if (response.result) {
          await  _secureStorage.setToken(response.data['token']);
+         notificationBloc.add(InititalizeEvent());
         }
       }
     );

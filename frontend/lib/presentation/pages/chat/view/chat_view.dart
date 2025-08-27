@@ -6,6 +6,7 @@ import 'package:frontend/presentation/pages/chat/bloc/chat_state.dart';
 import 'package:frontend/presentation/pages/chat/widgets/chat_connected_view.dart';
 import 'package:frontend/presentation/pages/chat/widgets/chat_initial_view.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
+import 'package:frontend/presentation/pages/notification/bloc/notification_bloc.dart';
 import 'package:frontend/presentation/widgets/states/websocket_failure_state.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
@@ -26,7 +27,8 @@ class _ChatViewState extends State<ChatView> with AutomaticKeepAliveClientMixin 
 
     return BlocProvider(
       create: (context) => ChatBloc(
-        ChatState.loaded(), // puedes ajustar para manejar "cargando"
+        ChatState.loaded(), 
+        context.read<NotificationBloc>(),
         chatRepository: context.read<ChatRepository>(),
       ),
       child: Column(

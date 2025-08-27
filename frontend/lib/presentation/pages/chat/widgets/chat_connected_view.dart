@@ -29,7 +29,7 @@ class ChatConnectedView extends StatelessWidget {
             final isAgentOnline = loadedState.agentOnline;
             final isChatFinalized = loadedState.isChatFinalized;
             final room = loadedState.currentRoom;
-            final userId = context.watch<Globalcubit>().state.user!.id;
+            final userId = context.watch<Globalcubit>().state.user?.id;
 
             return Stack(
               children: [
@@ -139,7 +139,7 @@ class ChatConnectedView extends StatelessWidget {
                                 isPassword: false,
                                 onSubmitted: (_) {
                                   if (room != null) {
-                                    sendMessage(context, room, userId, messageController);
+                                    sendMessage(context, room, userId!, messageController);
                                   }
                                 },
                               ),
@@ -152,7 +152,7 @@ class ChatConnectedView extends StatelessWidget {
                                 color: SchemaColors.primary300,
                               ),
                               child: IconButton(
-                                onPressed: isAgentOnline && room != null ? () => sendMessage(context, room, userId, messageController) : null,
+                                onPressed: isAgentOnline && room != null ? () => sendMessage(context, room, userId!, messageController) : null,
                                 icon: const Icon(LucideIcons.send, size: 20,),
                                 color: SchemaColors.neutral,
                               ),

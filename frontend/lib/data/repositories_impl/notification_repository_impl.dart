@@ -21,19 +21,21 @@ class NotificationRepositoryImpl extends NotificationRepository {
   @override
   HttpFuture<ServerResponseModel> deleteNotification(String notificationId) async {
     return await _notificationService.deleteNotifications(notificationId);
-
   }
 
   @override
   HttpFuture<ServerResponseModel> getNotifications() async {
     return await _notificationService.getNotifications();
-
   }
 
   @override
   HttpFuture<ServerResponseModel> markNotification(String notificationId) async {
     return await _notificationService.markNotifications(notificationId);
-
+  }
+  
+  @override
+  HttpFuture<ServerResponseModel> markAllNotification() async {
+       return await _notificationService.markAllNotifications();
   }
   
 }

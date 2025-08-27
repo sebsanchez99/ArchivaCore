@@ -106,16 +106,15 @@ CREATE TABLE ChatMensaje(
     FOREIGN KEY (Chat_Empresa) REFERENCES Empresa(Emp_ID) ON DELETE CASCADE
 );
 
-CREATE TABLE Documento (
+CREATE TABLE DocumentoLog (
     Doc_ID UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     Doc_Nombre VARCHAR(255) NOT NULL,
     Doc_Url TEXT NOT NULL, -- URL de Supabase
-    Doc_Tipo VARCHAR(50),      
-    Doc_Tamanio BIGINT,        
-    Doc_SubidoPor UUID,
+    Doc_Accion VARCHAR(50),      
+    Doc_Usuario UUID,
     Doc_Empresa UUID NOT NULL,
     Doc_Fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (Doc_SubidoPor) REFERENCES Usuario(Usu_ID) ON DELETE CASCADE,
+    FOREIGN KEY (Doc_Usuario) REFERENCES Usuario(Usu_ID) ON DELETE CASCADE,
     FOREIGN KEY (Doc_Empresa) REFERENCES Empresa(Emp_ID) ON DELETE CASCADE
 );
 
@@ -127,16 +126,4 @@ CREATE TABLE UsuarioBackup (
     Estado BOOLEAN NOT NULL,
     CONSTRAINT fk_backup_empresa FOREIGN KEY (Empresa) REFERENCES Empresa(Emp_ID) ON DELETE CASCADE,
     CONSTRAINT fk_backup_usuario FOREIGN KEY (Usuario) REFERENCES Usuario(Usu_ID) ON DELETE CASCADE
-);
-
-
-CREATE TABLE ReciclajeArchivo (
-    Reciclaje_ID UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    Reciclaje_Nombre VARCHAR(255) NOT NULL,
-    Reciclaje_Ruta TEXT NOT NULL UNIQUE, -- la ruta en Supabase, única
-    Reciclaje_FechaEliminacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Reciclaje_Usuario UUID, -- opcional: quién lo eliminó
-    Reciclaje_Empresa UUID, -- opcional: empresa relacionada
-    FOREIGN KEY (Reciclaje_Usuario) REFERENCES Usuario(Usu_ID) ON DELETE SET NULL,
-    FOREIGN KEY (Reciclaje_Empresa) REFERENCES Empresa(Emp_ID) ON DELETE SET NULL
 );

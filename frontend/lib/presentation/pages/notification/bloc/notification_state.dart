@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/domain/failures/http_request_failure.dart';
 import 'package:frontend/domain/models/notification_model.dart';
 import 'package:frontend/domain/models/server_response_model.dart';
+import 'package:frontend/presentation/enums/notification_filter.dart';
 
 part 'notification_state.freezed.dart';
 
@@ -10,8 +11,9 @@ class NotificationState with _$NotificationState {
   factory NotificationState.loading() = _LoadingState;
   factory NotificationState.loaded({
     @Default([]) List<NotificationModel> notifications,
+    @Default([]) List<NotificationModel> filteredNotifications,
+    @Default(NotificationFilter.all()) NotificationFilter currentFilter,
     ServerResponseModel? response,
   }) = _LoadedState;
   factory NotificationState.failed(HttpRequestFailure failure) = _FailedState;
-
 }

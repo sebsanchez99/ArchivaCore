@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/presentation/pages/chat/view/chat_view.dart';
 import 'package:frontend/presentation/pages/recycling/view/recycling_view.dart';
-import 'package:frontend/presentation/pages/notification/notification_view.dart';
+import 'package:frontend/presentation/pages/notification/view/notification_view.dart';
 import 'package:frontend/presentation/pages/resume_analizer/view/resume_analizer_view.dart';
 import 'package:frontend/presentation/pages/settings/view/settings_view.dart';
 import 'package:lucide_icons/lucide_icons.dart';

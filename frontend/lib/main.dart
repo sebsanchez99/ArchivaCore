@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/domain/repositories/notification_repository.dart';
 import 'package:frontend/presentation/global/cubit/globalcubit.dart';
 import 'package:frontend/presentation/pages/home_view.dart';
 import 'package:frontend/presentation/pages/login/view/login_view.dart';
 import 'package:frontend/presentation/global/providers/providers.dart';
+import 'package:frontend/presentation/pages/notification/bloc/notification_bloc.dart';
+import 'package:frontend/presentation/pages/notification/bloc/notification_state.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -17,6 +20,12 @@ void main() {
         ...appProviders,
         BlocProvider<Globalcubit>(
           create: (_) => Globalcubit(navigatorKey),
+        ),
+        BlocProvider<NotificationBloc>(
+          create: (context) => NotificationBloc(
+            NotificationState.loading(), 
+            notificationRepository: context.read<NotificationRepository>()
+          ),
         ),
       ],
       child: MyApp(navigatorKey: navigatorKey),

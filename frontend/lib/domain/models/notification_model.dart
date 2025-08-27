@@ -8,11 +8,11 @@ part 'notification_model.g.dart';
 @freezed
 class NotificationModel with _$NotificationModel {
   factory NotificationModel({
-    @JsonKey(name: 'Not_ID') required String id,
-    @JsonKey(name: 'Not_Titulo') required String title,
-    @JsonKey(name: 'Not_Mensaje') required String message,
-    @JsonKey(name: 'Not_Fecha') required String date,
-    @JsonKey(name: 'NotUsu_Recibida') required bool readed,
+    @JsonKey(name: 'not_id') required String id,
+    @JsonKey(name: 'titulo') required String title,
+    @JsonKey(name: 'mensaje') required String message,
+    @JsonKey(name: 'fecha') required String date,
+    @JsonKey(name: 'recibida') required bool readed,
 
   }) = _NotificationModel;
 

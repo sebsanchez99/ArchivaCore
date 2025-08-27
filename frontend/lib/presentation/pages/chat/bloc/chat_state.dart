@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:frontend/domain/enums/connection_status_type.dart';
+import 'package:frontend/presentation/enums/connection_status_type.dart';
 import 'package:frontend/domain/models/chat_event_model.dart';
 
 part 'chat_state.freezed.dart';

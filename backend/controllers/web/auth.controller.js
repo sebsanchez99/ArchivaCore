@@ -1,6 +1,6 @@
 const AuthHelper = require('../../helpers/auth.helper')
-const SupaBaseHelper = require('../../helpers/supaBase.helper')
 const ResponseUtil = require('../../utils/response.util')
+const SupaBaseHelper = require('../../helpers/supabase.helper ')
 
 const login = async (req, res) => {
     try {
