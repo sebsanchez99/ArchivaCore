@@ -2,6 +2,7 @@
 const BucketHelper = require('./supabase/bucket.helper');
 const FileHelper = require('./supabase/file.helper');
 const FolderHelper = require('./supabase/folder.helper');
+const recycleBinHelper = require('./supabase/recycleBin.helper');
 const RecycleBinHelper = require('./supabase/recycleBin.helper');
 const StorageHelper = require('./supabase/storage.helper');
 
@@ -60,6 +61,14 @@ class SupaBaseHelper {
     return RecycleBinHelper.moveFileToRecycle(companyName, filePath);
   }
 
+  async moveFolderToRecycle(companyName, folderPath) {
+    return recycleBinHelper.moveFolderToRecycle(companyName, folderPath)
+  }
+
+  async restoreFolderFromRecycle(companyName, folderPath) {
+    return recycleBinHelper.restoreFolderFromRecycle(companyName, folderPath)
+  }
+
   async restoreFileFromRecycle(companyName, filePath) {
     return RecycleBinHelper.restoreFileFromRecycle(companyName, filePath);
   }
@@ -70,6 +79,10 @@ class SupaBaseHelper {
 
   async deleteFileFromRecycle(companyName, fileRoute) {
     return RecycleBinHelper.deleteFileFromRecycle(companyName, fileRoute);
+  }
+
+  async deleteFolderFromRecycle(companyName, folderPath) {
+    return RecycleBinHelper.deleteFolderFromRecycle(companyName, folderPath);
   }
 
   // Métodos de Cálculo de Almacenamiento

@@ -1,6 +1,12 @@
 const SupabaseClient = require('../../clients/supabase.client');
 const ResponseUtil = require('../../utils/response.util');
-const { buildBucketName, builderStructure, countFilesAndFolders, getOnlyFile } = require('../../utils/supabase.util');
+const { buildBucketName,
+  builderStructure,
+  countFilesAndFolders,
+  getOnlyFile,
+  copyFilesFoldersRecursively,
+  deleteAllFilesFromFolder 
+} = require('../../utils/supabase.util');
 
 /**
  * @class Helper para la gestión de la papelera de reciclaje en Supabase.
@@ -127,6 +133,91 @@ class RecycleBinHelper {
       return ResponseUtil.fail('Error inesperado al eliminar archivo de reciclaje', err.message);
     }
   }
+
+  async deleteFolderFromRecycle(companyName, folderPath) {
+    try {
+      const bucketName = buildBucketName(companyName)
+      const recyclePath = `reciclaje/${folderPath}`
+      const { folders, files } = await builderStructure(bucketName, recyclePath) 
+      await this.#deleteFolders(bucketName, folders, files, recyclePath)
+
+    } catch (error) {
+      return ResponseUtil.fail('Error inesperado al eliminar carpetas de reciclaje');
+    }
+
+  }
+
+  async moveFolderToRecycle(companyName, folderPath) {
+    try {
+   
+      const bucketName = buildBucketName(companyName)
+      const { folders, files } = await builderStructure(bucketName, folderPath) 
+      
+      const folderRecyclePath = `reciclaje/${folderPath}`
+      await copyFilesFoldersRecursively(bucketName, folders, files, folderRecyclePath)
+    } catch (error) {
+      console.error(error);
+      return ResponseUtil.fail('Error al mover carpeta a reciclaje.')
+    }
+  }
+
+  //Método para restaurar carpetas desde reciclaje
+  async restoreFolderFromRecycle(companyName, folderPath) {
+  try {
+    const bucketName = buildBucketName(companyName);
+
+    // la carpeta en reciclaje está en "reciclaje/folderPath"
+    const recycleFolderPath = `reciclaje/${folderPath}`;
+
+    // reconstruimos estructura desde reciclaje
+    const { folders, files } = await builderStructure(bucketName, recycleFolderPath);
+
+    // ruta original a restaurar
+    const originPath = folderPath;
+
+    await copyFilesFoldersRecursively(bucketName, folders, files, originPath);
+
+    return ResponseUtil.success("Carpeta restaurada correctamente desde reciclaje.");
+  } catch (error) {
+    console.error(error);
+    return ResponseUtil.fail("Error al restaurar carpeta desde reciclaje.");
+  }
 }
+
+async #deleteFolders(bucketName, folders, files, recyclePath, currentPath= '') {
+  // --- Mover archivos ---
+  for (const file of files) {
+    const fullRecyclePath =
+      currentPath === ''
+        ? `${recyclePath}/${file.nombreArchivo}`
+        : `${recyclePath}/${currentPath}/${file.nombreArchivo}`;
+    await SupabaseClient.remove(bucketName, [fullRecyclePath]);
+  }
+
+  // --- Procesar carpetas ---
+  for (const folder of folders) {
+    const newPath =
+      currentPath === ''
+        ? folder.nombreCarpeta
+        : `${currentPath}/${folder.nombreCarpeta}`;
+
+    const subFolders = folder.subCarpeta || [];
+    const filesInFolder = folder.archivos || [];
+
+    await this.#deleteFolders(
+      bucketName,
+      subFolders,
+      filesInFolder,
+      recyclePath,
+      newPath
+    );
+  }
+} 
+
+}
+
+
+
+
 
 module.exports = new RecycleBinHelper();

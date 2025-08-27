@@ -8,9 +8,12 @@ const {
     deleteFiles, 
     createFolder,
     moveFileToRecycle,
+    moveFolderToRecycle,
     restoreFileFromRecycle,
+    restoreFolderFromRecycle,
     listRecycleFolder,
     deleteFileFromRecycle,
+    deleteFolderFromRecycle,
     listAllRoutes,
     updateFile,
 
@@ -73,10 +76,25 @@ router.put('/moveToRecycle', moveFileToRecycle)
 
 /**
  * @memberof Rutas.FolderRouter
+ * @name get/api/v1/supa/moveFolderToRecycle
+ * @description Mueve el archivo para a la carpeta reciclaje del bucket
+ */
+router.put('/moveFolderToRecycle', moveFolderToRecycle)
+
+/**
+ * @memberof Rutas.FolderRouter
  * @name get/api/v1/supa/restoreFromRecycle
  * @description Recupera el archivo de la carpeta reciclaje al path original
  */
 router.put('/restoreFromRecycle', restoreFileFromRecycle)
+
+/**
+ * @memberof Rutas.FolderRouter
+ * @name get/api/v1/supa/restoreFromRecycle
+ * @description Recupera el archivo de la carpeta reciclaje al path original
+ */
+router.put('/restoreFolderFromRecycle', restoreFolderFromRecycle)
+
 
 /**
  * @memberof Rutas.FolderRouter
@@ -91,6 +109,13 @@ router.get('/listRecicle', listRecycleFolder)
  * @description Borra el archivo de la carpeta reciclaje del bucket 
  */
 router.delete('/deleteFileRecycle', deleteFileFromRecycle)
+
+/**
+ * @memberof Rutas.FolderRouter
+ * @name get/api/v1/supa/deleteFolderFromRecycle
+ * @description Borra el archivo de la carpeta reciclaje del bucket 
+ */
+router.delete('/deleteFolderFromRecycle', deleteFolderFromRecycle)
 
 /**
  * @memberof Rutas.FolderRouter

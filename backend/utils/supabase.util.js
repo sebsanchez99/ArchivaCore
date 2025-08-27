@@ -1,5 +1,72 @@
 const path = require('path');
 const poolNewClient = require('../libs/supaBase'); // Se necesita para #builderStructure
+const ResponseUtil = require('./response.util');
+const SupabaseClient = require('../clients/supabase.client');
+
+
+// Crear función para eliminar todo lo que está adentro de una carpeta
+// Va a servir para moverla a reciclaje, para devolverla a la ruta original y eliminar la carpeta definitivamente
+
+const deleteAllFilesFromFolder = async (bucketName) => {
+  try {
+    const structure = await builderStructure(bucketName, "", true)
+    const carpetas = structure.folders
+    const archivos = structure.files
+
+    const pathToDelete = archivos.map(async (archivo) => {
+      const { error: deleteError } = await poolNewClient.from(bucketName).remove(archivo.rutaArchivo)
+    })
+
+    const deleteHide = carpetas.map(async (carpeta) => {
+      const path = `${rutaCarpeta}/placeholder.txt`
+      const { error: deleteError } = await poolNewClient.from(bucketName).remove(path)
+    })
+
+  } catch (err) {
+    return ResponseUtil.fail('Error inesperado al eliminar archivo', deleteError.message)
+  }
+
+}
+
+// Mueve de forma recursiva todos los archivos y subcarpetas
+const copyFilesFoldersRecursively = async (
+  bucketName,
+  folders,
+  files,
+  recyclePath,
+  currentPath = ''
+) => {
+  // --- Mover archivos ---
+  for (const file of files) {
+    const filePath = file.rutaArchivo;
+    const fullRecyclePath =
+      currentPath === ''
+        ? `${recyclePath}/${file.nombreArchivo}`
+        : `${recyclePath}/${currentPath}/${file.nombreArchivo}`;
+    
+    await SupabaseClient.move(bucketName, filePath, fullRecyclePath);
+  }
+
+  // --- Procesar carpetas ---
+  for (const folder of folders) {
+    const newPath =
+      currentPath === ''
+        ? folder.nombreCarpeta
+        : `${currentPath}/${folder.nombreCarpeta}`;
+
+    const subFolders = folder.subCarpeta || [];
+    const filesInFolder = folder.archivos || [];
+
+    await copyFilesFoldersRecursively(
+      bucketName,
+      subFolders,
+      filesInFolder,
+      recyclePath,
+      newPath
+    );
+  }
+};
+
 
 const buildBucketName = (companyName) => {
   return companyName.toLowerCase().replace(/\s+/g, '');
@@ -9,7 +76,7 @@ const builderStructure = async (bucket, currentPath, basePathToOmit = '') => {
   const { data, error } = await poolNewClient.from(bucket).list(currentPath, {
     limit: 1000,
     offset: 0,
-  });
+  });  
 
   if (error) {
     console.error('List error:', error);
@@ -129,4 +196,6 @@ module.exports = {
   categorizeFile,
   countFilesAndFolders,
   getOnlyFile,
+  deleteAllFilesFromFolder,
+  copyFilesFoldersRecursively,
 };
