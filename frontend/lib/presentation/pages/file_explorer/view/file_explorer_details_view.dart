@@ -47,7 +47,7 @@ class FileExplorerDetailsView extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'Contenido del Archivo/Carpeta',
+                              '',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
