@@ -35,7 +35,7 @@ const buildBucketName = (companyName) => {
   return companyName.toLowerCase().replace(/\s+/g, '');
 };
 
-const builderStructure = async (bucket, currentPath, basePathToOmit = '', omitHiddenFile = true) => {
+const builderStructure = async (bucket, currentPath, basePathToOmit = '', omitHiddenFile = true, folderToOmit = '') => {
   const { data, error } = await poolNewClient.from(bucket).list(currentPath, {
     limit: 1000,
     offset: 0,
@@ -55,7 +55,7 @@ const builderStructure = async (bucket, currentPath, basePathToOmit = '', omitHi
   const basePrefix = basePathToOmit ? `${basePathToOmit}/` : '';
 
   const promises = data.map(async (item) => {
-    if ((item.name === 'placeholder.txt' || item.name === '.emptyFolderPlaceholder') && omitHiddenFile) {
+    if ((item.name === 'placeholder.txt' || item.name === '.emptyFolderPlaceholder' || item.name === folderToOmit) && omitHiddenFile) {
       return;
     }
 

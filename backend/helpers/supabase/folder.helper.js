@@ -14,7 +14,7 @@ class FolderHelper {
    */
   async folderListForUser(companyName) {
     const bucketName = buildBucketName(companyName);
-    const structure = await builderStructure(bucketName, '');
+    const structure = await builderStructure(bucketName, '', 'reciclaje', true, 'reciclaje');
 
     if (!structure) {
       return ResponseUtil.fail(
