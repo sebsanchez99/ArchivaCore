@@ -17,9 +17,9 @@ class FileHelper {
    */
   async createFile(companyName, folderRoute, fileContent, userFullname) {
     const bucketName = buildBucketName(companyName);
+    if (folderRoute === '/') folderRoute = ''
     const { buffer, originalname, mimetype } = fileContent;
     const fullRoute = path.posix.join(folderRoute, originalname);
-
     const { data, error } = await SupabaseClient.upload(bucketName, fullRoute, buffer, {
       contentType: mimetype,
       upsert: true,
@@ -29,7 +29,7 @@ class FileHelper {
     if (error) {
       return ResponseUtil.fail('Hubo un error al conectar con Supabase', error);
     }
-    return ResponseUtil.success('La operación se realizó con éxito', data);
+    return ResponseUtil.success('Archivo subido exitosamente');
   }
 
   /**
@@ -63,9 +63,9 @@ class FileHelper {
   async deleteFiles(companyName, userName, fileName) {
     const bucketName = buildBucketName(companyName);
     const filePath = path.posix.join(userName, fileName);
-    
+
     const { data, error } = await SupabaseClient.remove(bucketName, [filePath]);
-    
+
     if (error) {
       return ResponseUtil.fail('Hubo un error al conectar con Supabase', error);
     }
@@ -81,15 +81,18 @@ class FileHelper {
    */
   async updateFile(companyName, fileName, originalRoute, newRoute) {
     const bucketName = buildBucketName(companyName);
-    
-    const finalRoute = (newRoute !== "") ? path.posix.join(newRoute, fileName) : originalRoute;
-    
-    const { data, error } = await SupabaseClient.move(bucketName, originalRoute, finalRoute);
+    const normalizedRoute = newRoute === "/" ? "" : newRoute;
 
+    const finalRoute = newRoute === ""
+      ? path.posix.join(path.posix.dirname(originalRoute), fileName)
+      : path.posix.join(normalizedRoute, fileName);
+
+    const { data, error } = await SupabaseClient.move(bucketName, originalRoute, finalRoute);
     if (error) {
-      return ResponseUtil.fail('Error al actualizar el archivo', error);
+      return ResponseUtil.fail("Error al actualizar el archivo", error);
     }
-    return ResponseUtil.success('Se ha actualizado el archivo correctamente.', data);
+
+    return ResponseUtil.success("Se ha actualizado el archivo correctamente.");
   }
 }
 

@@ -58,10 +58,7 @@ class AIHelper {
     const raw = result.response.text()
 
     try {
-      const clean = raw
-        .replace(/```json/g, "")
-        .replace(/```/g, "")
-        .trim()
+      const clean = raw.replace(/```json/g, "").replace(/```/g, "").trim()
       const jsonResponse = JSON.parse(clean)
       return ResponseUtil.success('Resumen generado exitosamente.', jsonResponse)
     } catch (err) {

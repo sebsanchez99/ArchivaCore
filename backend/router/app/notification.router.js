@@ -52,6 +52,4 @@ router.put('/markNotification', markNotification)
  */
 router.put('/markAllNotifications', markAllNotifications)
 
-
-
 module.exports = router
