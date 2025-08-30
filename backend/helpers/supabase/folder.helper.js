@@ -1,7 +1,7 @@
 const path = require('path');
 const SupabaseClient = require('../../clients/supabase.client');
 const ResponseUtil = require('../../utils/response.util');
-const { buildBucketName, builderStructure } = require('../../utils/supabase.util');
+const { buildBucketName, builderStructure, copyFilesFoldersRecursively } = require('../../utils/supabase.util');
 
 /**
  * @class Helper para la gestión de carpetas en Supabase.
@@ -34,10 +34,11 @@ class FolderHelper {
    * @param {string} folderName Nombre de la nueva carpeta.
    */
   async createFolder(companyName, routeFolder, folderName) {
+    if (routeFolder === '/') routeFolder = ''
     const folderNameToLower = folderName.toLowerCase();
     const bucketName = buildBucketName(companyName);
     const folderPath = path.posix.join(routeFolder, folderNameToLower, 'placeholder.txt');
-
+    
     const { data, error } = await SupabaseClient.upload(bucketName, folderPath, Buffer.from(''), {
       contentType: 'text/plain',
     });
@@ -62,11 +63,27 @@ class FolderHelper {
       const { folders } = await builderStructure(bucketName, "");
 
       const paths = [];
+      paths.push({ rutaCarpeta: '/' })
       this.#collectPathsRecursively(folders, paths);
 
       return ResponseUtil.success('Rutas listadas correctamente', paths);
     } catch (error) {
       return ResponseUtil.fail('Error al listar las carpetas', error);
+    }
+  }
+
+  async updateFolder(companyName, folderName, currentRoute, newRoute) {
+    try {
+      const bucketName = buildBucketName(companyName)
+      const normalizedRoute = newRoute === "/" ? "" : newRoute
+      const finalRoute = newRoute === ""
+        ? path.posix.join(path.posix.dirname(currentRoute), folderName)
+        : path.posix.join(normalizedRoute, folderName)
+      const { folders, files } = await builderStructure(bucketName, currentRoute, '', false)
+      await copyFilesFoldersRecursively(bucketName, folders, files, finalRoute)
+      return ResponseUtil.success('Carpeta actualizada exitosamente')
+    } catch (error) {
+      return ResponseUtil.fail('Error al actualizar la carpeta', error);
     }
   }
 

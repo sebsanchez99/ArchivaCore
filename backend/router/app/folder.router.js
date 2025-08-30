@@ -16,10 +16,8 @@ const {
     deleteFolderFromRecycle,
     listAllRoutes,
     updateFile,
-
+    updateFolder,
 } = require('../../controllers/app/folder.controllers')
-    
-
 
 const router = Router()
 const upload = multer({ storage: multer.memoryStorage() })
@@ -67,6 +65,8 @@ router.delete('/deleteFiles', deleteFiles)
 router.post('/createFolder', createFolder)
 
 router.put('/updateFile', updateFile)
+
+router.put('/updateFolder', updateFolder)
 /**
  * @memberof Rutas.FolderRouter
  * @name get/api/v1/supa/moveToRecycle
@@ -123,7 +123,5 @@ router.delete('/deleteFolderFromRecycle', deleteFolderFromRecycle)
  * @description Lista las rutas de todas las carpetas del bucket
  */
 router.get('/listAllRoutes', listAllRoutes)
-
-
 
 module.exports = router

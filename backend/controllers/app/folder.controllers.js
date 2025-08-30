@@ -58,7 +58,7 @@ const createFile = async (req, res) => {
  */
 const downloadFile = async (req, res) => {
     try {
-        const { companyName } = req.user 
+        const { companyName } = req.user
         const { fileRoute } = req.body
         const supaBaseHelper = new SupaBaseHelper()
         const result = await supaBaseHelper.downloadFile(companyName, fileRoute)
@@ -99,7 +99,6 @@ const deleteFiles = async (req, res) => {
         const supaBaseHelper = new SupaBaseHelper()
         const result = await supaBaseHelper.deleteFiles(companyName, userName, fileName)
         res.json(result)
-
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
     }
@@ -134,13 +133,25 @@ const updateFile = async (req, res) => {
         res.json(result)
     } catch (error) {
         return res.status(500).json(ResponseUtil.fail('Error interno al mover el archivo al reciclaje.', error.message))
-    }   
+    }
+}
+
+const updateFolder = async (req, res) => {
+    try {
+        const { companyName } = req.user
+        const { folderName, currentRoute, newRoute } = req.body
+        const supaBaseHelper = new SupaBaseHelper();
+        const result = await supaBaseHelper.updateFolder(companyName, folderName, currentRoute, newRoute)
+        res.json(result)
+    } catch (error) {
+        return res.status(500).json(ResponseUtil.fail('Error interno al mover el archivo al reciclaje.', error.message))
+    }
 }
 
 const moveFileToRecycle = async (req, res) => {
     try {
         const { companyName } = req.user
-        const { filePath } = req.body       
+        const { filePath } = req.body
         const supaBaseHelper = new SupaBaseHelper()
         const result = await supaBaseHelper.moveFileToRecycle(companyName, filePath)
         res.json(result)
@@ -156,9 +167,8 @@ const moveFolderToRecycle = async (req, res) => {
         const supaBaseHelper = new SupaBaseHelper()
         const result = await supaBaseHelper.moveFolderToRecycle(companyName, folderPath)
         res.json(result)
-
     } catch (error) {
-        return res.status(500).json(ResponseUtil.fail('Error interno al mover el archivo al reciclaje.', error.message))
+        return res.status(500).json(ResponseUtil.fail('Error interno al mover la carpeta al reciclaje.', error.message))
     }
 }
 
@@ -168,7 +178,7 @@ const restoreFileFromRecycle = async (req, res) => {
         const { companyName } = req.user
         const { filePath } = req.body
         const supaBaseHelper = new SupaBaseHelper()
-        const result = await supaBaseHelper.restoreFileFromRecycle(companyName,filePath)
+        const result = await supaBaseHelper.restoreFileFromRecycle(companyName, filePath)
         res.json(result)
     } catch (error) {
         return res.status(500).json(ResponseUtil.fail('Error interno al restaurar el archivo.', error.message))
@@ -182,9 +192,8 @@ const restoreFolderFromRecycle = async (req, res) => {
         const supaBaseHelper = new SupaBaseHelper()
         const result = await supaBaseHelper.restoreFolderFromRecycle(companyName, folderPath)
         res.json(result)
-
     } catch (error) {
-        return res.status(500).json(ResponseUtil.fail('Error interno al mover el archivo de reciclaje.', error.message))
+        return res.status(500).json(ResponseUtil.fail('Error interno al mover la carpeta de reciclaje.', error.message))
     }
 }
 
@@ -200,27 +209,27 @@ const listRecycleFolder = async (req, res) => {
 }
 
 const deleteFileFromRecycle = async (req, res) => {
-  try {
-    const { companyName} = req.user
-    const { fileRoute } = req.body
-    const supaBaseHelper = new SupaBaseHelper()
-    const result = await supaBaseHelper.deleteFileFromRecycle( companyName, fileRoute )
-    res.json(result)
-  } catch (error) {
-    return res.status(500).json(ResponseUtil.fail('Error interno al eliminar el archivo de reciclaje.', error.message))
-  }
+    try {
+        const { companyName } = req.user
+        const { fileRoute } = req.body
+        const supaBaseHelper = new SupaBaseHelper()
+        const result = await supaBaseHelper.deleteFileFromRecycle(companyName, fileRoute)
+        res.json(result)
+    } catch (error) {
+        return res.status(500).json(ResponseUtil.fail('Error interno al eliminar el archivo de reciclaje.', error.message))
+    }
 }
 
 const deleteFolderFromRecycle = async (req, res) => {
-  try {
-    const { companyName} = req.user
-    const { folderPath } = req.body
-    const supaBaseHelper = new SupaBaseHelper()
-    const result = await supaBaseHelper.deleteFolderFromRecycle( companyName, folderPath )
-    res.json(result)
-  } catch (error) {
-    return res.status(500).json(ResponseUtil.fail('Error interno al eliminar el archivo de reciclaje.', error.message))
-  }
+    try {
+        const { companyName } = req.user
+        const { folderPath } = req.body
+        const supaBaseHelper = new SupaBaseHelper()
+        const result = await supaBaseHelper.deleteFolderFromRecycle(companyName, folderPath)
+        res.json(result)
+    } catch (error) {
+        return res.status(500).json(ResponseUtil.fail('Error interno al eliminar el archivo de reciclaje.', error.message))
+    }
 }
 
 
@@ -228,18 +237,12 @@ const listAllRoutes = async (req, res) => {
     try {
         const { companyName } = req.user
         const supaBaseHelper = new SupaBaseHelper()
-        const result = await supaBaseHelper.listAllRoutes( companyName )
+        const result = await supaBaseHelper.listAllRoutes(companyName)
         res.json(result)
     } catch (error) {
         return res.status(500).json(ResponseUtil.fail('Error interno al listar los archivos.', error.message))
-
     }
 }
-
-
-
-
-
 
 module.exports = {
     folderListForUser,
@@ -256,6 +259,7 @@ module.exports = {
     deleteFileFromRecycle,
     deleteFolderFromRecycle,
     listAllRoutes,
-    updateFile
+    updateFile,
+    updateFolder,
 }
 

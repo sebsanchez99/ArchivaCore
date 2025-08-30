@@ -43,6 +43,10 @@ class SupaBaseHelper {
     return FileHelper.updateFile(companyName, fileName, originalRoute, newRoute);
   }
 
+  async updateFolder(companyName, folderName, originalRoute, newRoute) {
+    return FolderHelper.updateFolder(companyName, folderName, originalRoute, newRoute);
+  }
+
   // Métodos de gestión de Carpetas
   async folderListForUser(companyName) {
     return FolderHelper.folderListForUser(companyName);
