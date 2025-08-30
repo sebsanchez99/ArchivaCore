@@ -43,6 +43,13 @@ class FileExplorerService {
     );
   }
 
+  HttpFuture<ServerResponseModel> deleteFolder(String folderPath) {
+    return DioHandler.handleRequest(
+      () => _dio.delete('/supa/deleteFolderFromRecycle', data: {'folderPath': folderPath}),
+      (response) => ServerResponseModel.fromJson(response),
+    );
+  }
+
   HttpFuture<ServerResponseModel> createFolder(String folderName, String routeFolder) {
     return DioHandler.handleRequest(
       () => _dio.post('/supa/createFolder', data: {'folderName': folderName, 'routeFolder': routeFolder}),
@@ -57,9 +64,23 @@ class FileExplorerService {
     );
   }
 
+  HttpFuture<ServerResponseModel> moveFolderToRecycle(String folderPath) {
+    return DioHandler.handleRequest(
+      () => _dio.put('/supa/moveFolderToRecycle', data: {'folderPath': folderPath}),
+      (response) => ServerResponseModel.fromJson(response),
+    );
+  }
+
   HttpFuture<ServerResponseModel> restoreFromRecycle(String filePath) {
     return DioHandler.handleRequest(
       () => _dio.put('/supa/restoreFromRecycle', data: {'filePath': filePath}),
+      (response) => ServerResponseModel.fromJson(response),
+    );
+  }
+
+  HttpFuture<ServerResponseModel> restoreFolderFromRecycle(String folderPath) {
+    return DioHandler.handleRequest(
+      () => _dio.put('/supa/restoreFolderFromRecycle', data: {'folderPath': folderPath}),
       (response) => ServerResponseModel.fromJson(response),
     );
   }

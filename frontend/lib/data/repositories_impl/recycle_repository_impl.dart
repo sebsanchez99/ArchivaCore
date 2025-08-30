@@ -16,8 +16,7 @@ class RecycleRepositoryImpl extends RecycleRepository {
 
   @override
   HttpFuture<ServerResponseModel> deleteFolder(String folderPath) {
-    // TODO: implement deleteFolder
-    throw UnimplementedError();
+    return _fileExplorerService.deleteFolder(folderPath);
   }
 
   @override
@@ -32,8 +31,7 @@ class RecycleRepositoryImpl extends RecycleRepository {
 
   @override
   HttpFuture<ServerResponseModel> restoreFolder(String folderPath) {
-    // TODO: implement restoreFolder
-    throw UnimplementedError();
+    return _fileExplorerService.restoreFolderFromRecycle(folderPath);
   }
   
 }
