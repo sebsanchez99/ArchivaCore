@@ -166,19 +166,26 @@ class RecycleBinHelper {
   } 
 
   #processFolderContent(folder, files, folders) {
-    const hasPlaceholder = folder.archivos.some(file => file.nombreArchivo === 'placeholder.txt')
+    const filesWithoutPlaceholder = (folder.archivos || []).filter(f => f.nombreArchivo !== 'placeholder.txt');
+    const cleanFolder = {
+      ...folder,
+      archivos: filesWithoutPlaceholder,
+      subCarpeta: []
+    };
+    if (folder.subCarpeta && folder.subCarpeta.length > 0) {
+      for (const sub of folder.subCarpeta) {
+        this.#processFolderContent(sub, files, cleanFolder.subCarpeta);
+      }
+    }
+    const hasPlaceholder = folder.archivos.some(f => f.nombreArchivo === 'placeholder.txt');
     if (hasPlaceholder) {
-      const cleanFolder = { 
-        ...folder, 
-        archivos: folder.archivos.filter(file => file.nombreArchivo !== 'placeholder.txt')
+      folders.push(cleanFolder);
+    } else {
+      if (filesWithoutPlaceholder.length > 0) {
+        files.push(...filesWithoutPlaceholder);
       }
-      folders.push(cleanFolder)
-    } else{
-      if (folder.archivos && folder.archivos.length > 0) {
-        files.push(...folder.archivos)
-      }
-      if (folder.subCarpeta && folder.subCarpeta.length > 0) {
-        folder.subCarpeta.forEach(sub => this.#processFolderContent(sub, files, folders))
+      if (cleanFolder.subCarpeta.length > 0) {
+        folders.push(...cleanFolder.subCarpeta);
       }
     }
   }
