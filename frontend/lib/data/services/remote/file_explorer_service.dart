@@ -29,9 +29,9 @@ class FileExplorerService {
     );
   }
 
-  HttpFuture<ServerResponseModel> deleteAllFiles(String companyName) {
+  HttpFuture<ServerResponseModel> emptyRecycleFolder() {
     return DioHandler.handleRequest(
-      () => _dio.delete('/supa/deleteAllFiles', data: {'companyName': companyName}),
+      () => _dio.delete('/supa/emptyRecycleFolder'),
       (response) => ServerResponseModel.fromJson(response),
     );
   }

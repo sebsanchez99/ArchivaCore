@@ -34,4 +34,9 @@ class RecycleRepositoryImpl extends RecycleRepository {
     return _fileExplorerService.restoreFolderFromRecycle(folderPath);
   }
   
+  @override
+  HttpFuture<ServerResponseModel> emptyRecycleFolder() {
+    return _fileExplorerService.emptyRecycleFolder();
+  }
+  
 }

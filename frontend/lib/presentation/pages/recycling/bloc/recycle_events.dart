@@ -10,4 +10,5 @@ class RecycleEvents with _$RecycleEvents {
   factory RecycleEvents.restoreFolder({ required String folderPath }) = RestoreFolderEvent;
   factory RecycleEvents.deleteFile({ required String filePath }) = DeleteFileEvent;
   factory RecycleEvents.deleteFolder({ required String folderPath }) = DeleteFolderEvent;
+  factory RecycleEvents.emptyRecycleFolder() = EmptyRecycleFolder;
 }

@@ -15,6 +15,17 @@ Future<void> _showFolderDetailsDialog(BuildContext context, FolderModel folder) 
   );
 }
 
+Future<void> _showEmptyRecyclingFolderInfoDialog(BuildContext context) async {
+  final bloc =  context.read<RecycleBloc>();
+  return showDialog(
+    context: context, 
+    builder: (context) => InfoDialog(
+      message: '¿Desea vaciar la papelera de reciclaje?.', 
+      onPressed: () => bloc.add(EmptyRecycleFolder()),
+    ),
+  );
+}
+
 Future<void> _showDeleteFileInfoDialog(BuildContext context, FileModel file) async {
   final bloc =  context.read<RecycleBloc>();
   return showDialog(

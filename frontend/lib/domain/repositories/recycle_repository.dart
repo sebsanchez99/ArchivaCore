@@ -7,4 +7,5 @@ abstract class RecycleRepository {
   HttpFuture<ServerResponseModel> deleteFile(String filePath);
   HttpFuture<ServerResponseModel> restoreFile(String filePath);
   HttpFuture<ServerResponseModel> restoreFolder(String folderPath);
+  HttpFuture<ServerResponseModel> emptyRecycleFolder();
 }

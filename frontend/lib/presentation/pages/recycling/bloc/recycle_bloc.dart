@@ -21,6 +21,7 @@ class RecycleBloc extends Bloc<RecycleEvents, RecycleState> {
     on<RestoreFolderEvent>(_onRestoreFolder);
     on<DeleteFileEvent>(_onDeleteFile);
     on<DeleteFolderEvent>(_onDeleteFolder);
+    on<EmptyRecycleFolder>(_onEmptyRecycleFolder);
   }
 
   final RecycleRepository _recycleRepository;
@@ -111,6 +112,23 @@ class RecycleBloc extends Bloc<RecycleEvents, RecycleState> {
   Future<void> _onDeleteFolder(DeleteFolderEvent event, Emitter<RecycleState> emit) async {
     emit(RecycleState.loading());
     final result = await _recycleRepository.deleteFolder(event.folderPath);
+    emit(
+      result.when(
+        right: (response) {
+          if (response.result) {
+            add(RecycleEvents.initialize());
+            return RecycleState.loaded(response: response);
+          } else {
+            return RecycleState.failed(HttpRequestFailure.server());
+          }
+        }, 
+        left: (failure) => RecycleState.failed(failure),
+      ),
+    );
+  }
+  Future<void> _onEmptyRecycleFolder(EmptyRecycleFolder event, Emitter<RecycleState> emit) async {
+    emit(RecycleState.loading());
+    final result = await _recycleRepository.emptyRecycleFolder();
     emit(
       result.when(
         right: (response) {
