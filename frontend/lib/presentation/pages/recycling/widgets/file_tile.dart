@@ -6,8 +6,11 @@ class FileTile extends StatelessWidget {
   final VoidCallback deleteAction;
   final VoidCallback restoreAction;
   final FileModel file;
+  final String? userRol;
+
   const FileTile({
-    super.key, 
+    super.key,
+    required this.userRol, 
     required this.file, 
     required this.deleteAction, 
     required this.restoreAction
@@ -27,11 +30,12 @@ class FileTile extends StatelessWidget {
             icon: const Icon(Icons.restore, color: SchemaColors.success),
             onPressed: restoreAction,
           ),
-          IconButton(
-            tooltip: 'Eliminar definitivamente',
-            icon: const Icon(Icons.delete, color: SchemaColors.error),
-            onPressed: deleteAction,
-          ),
+          if(userRol == 'Empresa' || userRol == 'Administrador')
+            IconButton(
+              tooltip: 'Eliminar definitivamente',
+              icon: const Icon(Icons.delete, color: SchemaColors.error),
+              onPressed: deleteAction,
+            ),
         ],
       ),
     );

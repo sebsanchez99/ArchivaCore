@@ -7,10 +7,12 @@ class FolderTile extends StatelessWidget {
   final VoidCallback restoreAction;
   final VoidCallback viewDetailsAction;
   final FolderModel folder;
+  final String? userRol;
 
   const FolderTile({
     super.key, 
     required this.folder, 
+    required this.userRol, 
     required this.deleteAction, 
     required this.restoreAction, 
     required this.viewDetailsAction
@@ -38,11 +40,12 @@ class FolderTile extends StatelessWidget {
             icon: const Icon(Icons.restore, color: SchemaColors.success),
             onPressed: restoreAction,
           ),
-          IconButton(
-            tooltip: 'Eliminar definitivamente',
-            icon: const Icon(Icons.delete, color: SchemaColors.error),
-            onPressed: deleteAction,
-          ),
+          if(userRol == 'Empresa' || userRol == 'Administrador')
+            IconButton(
+              tooltip: 'Eliminar definitivamente',
+              icon: const Icon(Icons.delete, color: SchemaColors.error),
+              onPressed: deleteAction,
+            ),
         ],
       ),
     );
