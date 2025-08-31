@@ -26,7 +26,7 @@ class FolderTile extends StatelessWidget {
     return ListTile(
       leading: const Icon(Icons.folder, color: Colors.amber),
       title: Text(folder.name, style: TextStyle(fontWeight: FontWeight.w500)),
-      subtitle: Text('Tamaño total: ${totalSize.toString()} MB.'),
+      subtitle: Text('Tamaño total: ${totalSize.toStringAsFixed(2)} MB.'),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
