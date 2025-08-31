@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/presentation/global/constants/menu_items.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
 import 'package:frontend/presentation/global/cubit/globalcubit.dart';
+import 'package:frontend/presentation/widgets/dialogs/info_dialog.dart';
 import 'package:frontend/presentation/widgets/menu/side_menu_cubit.dart';
 import 'package:frontend/presentation/widgets/menu/side_menu_state.dart';
 
@@ -65,7 +66,15 @@ class SideMenuWidget extends StatelessWidget {
             SideMenuItem(             
               title: 'Cerrar sesión',
               icon: Icon(Icons.logout),
-              onTap: (index, sideMenuController) => context.read<Globalcubit>().logout(),
+              onTap: (index, sideMenuController) async{
+                return showDialog(
+                  context: context, 
+                  builder: (context) => InfoDialog(
+                    message: '¿Estás seguro de que deseas cerrar sesión?', 
+                    onPressed: () => context.read<Globalcubit>().logout(),
+                  )
+                );
+              }
             ),
           ],
 
