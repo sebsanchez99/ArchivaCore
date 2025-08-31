@@ -25,8 +25,7 @@ class WebSocketHandler {
     try {
       final result = await completer.future;
       return Either.right(result);
-    } catch (e, st) {
-      print('[WebSocketHandler] Error capturado: $e\n$st');
+    } catch (e, _) {
       return Either.left(_mapExceptionToFailure(e));
     }
   }
