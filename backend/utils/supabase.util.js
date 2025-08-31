@@ -63,7 +63,7 @@ const builderStructure = async (bucket, currentPath, basePathToOmit = '', omitHi
     const pathName = currentPath ? `${currentPath}/${item.name}` : item.name;
 
     if (isFolder) {
-      const structure = await builderStructure(bucket, pathName, basePathToOmit);
+      const structure = await builderStructure(bucket, pathName, basePathToOmit, omitHiddenFile);
       if (structure) {
         folders.push({
           nombreCarpeta: item.name,
@@ -82,7 +82,7 @@ const builderStructure = async (bucket, currentPath, basePathToOmit = '', omitHi
 
       const author = fileInfo?.metadata?.author || 'Desconocido';
       const fileExtension = path.extname(item.name).substring(1);
-
+      
       files.push({
         nombreArchivo: item.name,
         rutaArchivo: pathName.replace(new RegExp(`^${basePrefix}`), ''),
