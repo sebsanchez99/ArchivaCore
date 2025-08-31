@@ -5,6 +5,7 @@ import 'package:frontend/domain/models/folder_model.dart';
 import 'package:frontend/domain/models/server_response_model.dart';
 import 'package:frontend/domain/repositories/recycle_repository.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
+import 'package:frontend/presentation/global/cubit/globalcubit.dart';
 import 'package:frontend/presentation/pages/recycling/bloc/recycle_bloc.dart';
 import 'package:frontend/presentation/pages/recycling/bloc/recycle_events.dart';
 import 'package:frontend/presentation/pages/recycling/bloc/recycle_state.dart';
@@ -43,6 +44,7 @@ class RecyclingView extends StatelessWidget {
         },
         builder: (context, state) {
           final bloc = context.read<RecycleBloc>();
+          final userRol = context.read<Globalcubit>().state.user?.role;
           return state.map(
             loading: (_) => const LoadingState(),
             loaded: (value) {
@@ -118,6 +120,14 @@ class RecyclingView extends StatelessWidget {
                             icon: LucideIcons.refreshCcw, 
                             onPressed: () => bloc.add(InitializeEvent())
                           ),
+                            SizedBox(width: 20),
+                          if(userRol == 'Administrador' || userRol == 'Empresa')
+                            CustomIconButton(
+                              message: 'Vaciar papelera', 
+                              backgroundColor: SchemaColors.error,
+                              icon: LucideIcons.trash2, 
+                              onPressed: () => _showEmptyRecyclingFolderInfoDialog(context)
+                            ),
                         ],
                       ),
                     ),
@@ -132,6 +142,7 @@ class RecyclingView extends StatelessWidget {
                         if (item is FolderModel) {
                           return FolderTile(
                             folder: item,
+                            userRol: userRol,
                             viewDetailsAction: () => _showFolderDetailsDialog(context, item),
                             deleteAction: () => _showDeleteFolderInfoDialog(context, item),
                             restoreAction: () => _showRestoreFolderInfoDialog(context, item),
@@ -139,6 +150,7 @@ class RecyclingView extends StatelessWidget {
                         } else if (item is FileModel) {
                           return FileTile(
                             file: item,
+                            userRol: userRol,
                             deleteAction: () => _showDeleteFileInfoDialog(context, item),
                             restoreAction: () => _showRestoreFileInfoDialog(context, item),
                           );
