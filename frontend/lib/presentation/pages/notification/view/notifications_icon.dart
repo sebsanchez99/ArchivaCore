@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/domain/models/notification_model.dart';
-import 'package:frontend/presentation/global/constants/menu_items.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
 import 'package:frontend/presentation/pages/notification/bloc/notification_bloc.dart';
 import 'package:frontend/presentation/pages/notification/bloc/notification_events.dart';

@@ -14,6 +14,12 @@ class SideMenuWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sideMenuCubit = context.read<SideMenuCubit>();
+    final userRol = context.watch<Globalcubit>().state.user?.role;
+
+    final filteredMenuItems = menuItems.entries.where((item){
+      final roles = item.value['roles'] as List<String>;
+      return roles.contains(userRol);
+    }).toList();
 
     return BlocBuilder<SideMenuCubit, SideMenuState>(
       builder: (context, state) {
@@ -53,11 +59,11 @@ class SideMenuWidget extends StatelessWidget {
           ),
 
           items: [
-            ...menuItems.entries.map((item) {
+            ...filteredMenuItems.map((item) {
             return SideMenuItem(
               title: item.value["title"],
               icon: item.value["icon"],
-              onTap: (index, sideMenuController) => sideMenuCubit.selectIndex(index),
+              onTap: (index, sideMenuController) => sideMenuController.changePage(index),
             );
             }),
             SideMenuItem(             

@@ -1,13 +1,8 @@
 part of '../view/notifications_icon.dart';
 
-Future<void> _showNotificationMenu(
-  BuildContext context,
-  List<NotificationModel> notifications,
-  bool hasUnread,
-) async {
+Future<void> _showNotificationMenu(  BuildContext context, List<NotificationModel> notifications, bool hasUnread) async {
   final RenderBox button = context.findRenderObject() as RenderBox;
-  final RenderBox overlay =
-      Overlay.of(context).context.findRenderObject() as RenderBox;
+  final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
   final Offset position = button.localToGlobal(Offset.zero, ancestor: overlay);
   const double menuOffset = 150.0;
 
@@ -32,8 +27,6 @@ Future<void> _showNotificationMenu(
       ...unreadNotifications.map((notification) {
         return PopupMenuItem(
           mouseCursor: SystemMouseCursors.click,
-          // Quitamos el valor 'value' y la lógica de navegación
-          // El menú ya no necesita saber qué notificación fue seleccionada
           child: Row(
             children: [
               Icon(Icons.mark_email_unread, color: SchemaColors.secondary),
@@ -74,16 +67,11 @@ Future<void> _showNotificationMenu(
   ).then((selected) {
     if (context.mounted) {
       if (hasUnread) {
-        context.read<NotificationBloc>().add(
-          NotificationEvents.markAllNotifications(),
-        );
+        context.read<NotificationBloc>().add(NotificationEvents.markAllNotifications());
       }
       if (selected == 'view_all') {
         final sideMenuCubit = context.read<SideMenuCubit>();
-        final notificationIndex = menuItems.keys.firstWhere(
-          (k) => menuItems[k]!['title'] == 'Notificaciones',
-        );
-        sideMenuCubit.selectIndex(notificationIndex);
+        sideMenuCubit.navigateTo('Notificaciones');
       }
     }
   });

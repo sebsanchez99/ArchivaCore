@@ -14,35 +14,43 @@ final Map<int, Map<String, dynamic>> menuItems = {
     "title": "Administrar",
     "icon": Icon(Icons.admin_panel_settings),
     "widget": AdministrationView(),
+    "roles": ["Administrador", "Empresa"]
   },
   1: {
     "title": "Archivos",
     "icon": Icon(Icons.folder),
     "widget": FileExplorerView(),
+    "roles": ["Administrador", "Empresa", "Usuario"]
   },
   2: {
     "title": "Notificaciones",
     "icon": Icon(Icons.notifications),
     "widget": NotificationView(),
+    "roles": ["Administrador", "Empresa", "Usuario"]
   },
   3: {
     "title": "Analizador HV",
     "icon": Icon(LucideIcons.bot),
     "widget": ResumeAnalizerView(),
+    "roles": ["Administrador", "Empresa", "Usuario"]
   },
   4: {
     "title": "Reciclaje",
     "icon": Icon(Icons.delete),
     "widget": RecyclingView(),
+    "roles": ["Administrador", "Empresa", "Usuario"]
   },
   5: {
     "title": "Soporte",
     "icon": Icon(Icons.support_agent),
     "widget": ChatView(),
+    "roles": ["Administrador", "Empresa"]
+
   },
   6: {
     "title": "Configuración",
     "icon": Icon(Icons.settings),
     "widget": SettingsView(),
+    "roles": ["Administrador", "Empresa", "Usuario"]
   },
 };

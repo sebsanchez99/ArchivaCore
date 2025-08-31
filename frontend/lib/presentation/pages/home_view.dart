@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/presentation/global/constants/menu_items.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
+import 'package:frontend/presentation/global/cubit/globalcubit.dart';
 import 'package:frontend/presentation/pages/notification/view/notifications_icon.dart';
 import 'package:frontend/presentation/widgets/menu/side_menu_cubit.dart';
 import 'package:frontend/presentation/widgets/menu/side_menu_state.dart';
@@ -13,9 +13,10 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userRol = context.watch<Globalcubit>().state.user?.role;
     // Provee el SideMenuCubit a los widgets hijos
     return BlocProvider(
-      create: (_) => SideMenuCubit(),
+      create: (_) => SideMenuCubit(userRol),
       child: BlocBuilder<SideMenuCubit, SideMenuState>(
         builder: (context, state) {
           // Obtiene el cubit para controlar el menú lateral y el PageView
@@ -48,16 +49,9 @@ class HomeView extends StatelessWidget {
                     ),
                     // PageView para mostrar las diferentes páginas del menú
                     child: PageView(
-                      physics:
-                          NeverScrollableScrollPhysics(), // No permite swipe manual
-                      controller:
-                          sideMenuCubit
-                              .pageController, // Controlador para cambiar de página desde el menú
-                      // Genera una lista de widgets a partir de menuItems
-                      children:
-                          menuItems.values
-                              .map((item) => item['widget'] as Widget)
-                              .toList(),
+                      physics: NeverScrollableScrollPhysics(), // No permite swipe manual
+                      controller: sideMenuCubit.pageController, // Controlador para cambiar de página desde el menú
+                      children: sideMenuCubit.filteredViews
                     ),
                   ),
                 ),
