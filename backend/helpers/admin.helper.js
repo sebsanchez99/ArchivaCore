@@ -18,7 +18,7 @@ class AdminHelper{
      * @returns {ResponseUtil} Resultado de la operación en formato JSON
      */
     async listUsers(companyId){
-        const result = await pool.query('SELECT * FROM listar_usuarios_por_empresa($1)', [companyId] )
+        const result = await pool.query('SELECT * FROM listar_usuarios_por_empresa($1) WHERE _rol_nombre != \'Empresa\'', [companyId] )
         const usersList = result.rows
         return ResponseUtil.success('La operación se realizó con éxito.', usersList)
     }
