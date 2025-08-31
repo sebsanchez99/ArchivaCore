@@ -70,16 +70,16 @@ const downloadFile = async (req, res) => {
 
 /**
  * @memberof Controladores.FolderController
- * @function deleteAllFiles
+ * @function emptyRecycleFolder
  * @description Controlador que permite eliminar todos los archivos de una  empresa existente en SupaBase Storage
  * @param {*} req 
  * @param {*} res 
  */
-const deleteAllFiles = async (req, res) => {
+const emptyRecycleFolder = async (req, res) => {
     try {
-        const { companyName } = req.body
+        const { companyName } = req.user
         const supaBaseHelper = new SupaBaseHelper()
-        const result = await supaBaseHelper.deleteAllFiles(companyName)
+        const result = await supaBaseHelper.emptyRecycleFolder(companyName)
         res.json(result)
     } catch (error) {
         res.status(500).send(ResponseUtil.fail(error.message))
@@ -248,7 +248,7 @@ module.exports = {
     folderListForUser,
     createFile,
     downloadFile,
-    deleteAllFiles,
+    emptyRecycleFolder,
     deleteFiles,
     createFolder,
     moveFileToRecycle,

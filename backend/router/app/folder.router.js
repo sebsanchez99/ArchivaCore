@@ -4,7 +4,7 @@ const {
     folderListForUser, 
     createFile, 
     downloadFile, 
-    deleteAllFiles, 
+    emptyRecycleFolder, 
     deleteFiles, 
     createFolder,
     moveFileToRecycle,
@@ -45,10 +45,10 @@ router.get('/downloadFile', downloadFile)
 
 /**
  * @memberof Rutas.FolderRouter
- * @name get/api/v1/supa/deleteAllFiles
+ * @name get/api/v1/supa/emptyRecycleFolder
  * @description Elimina todos los archivos en una carpeta
  */
-router.delete('/deleteAllFiles', deleteAllFiles)
+router.delete('/emptyRecycleFolder', emptyRecycleFolder)
 
 /**
  * @memberof Rutas.FolderRouter

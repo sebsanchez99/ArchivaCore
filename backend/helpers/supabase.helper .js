@@ -89,6 +89,10 @@ class SupaBaseHelper {
     return RecycleBinHelper.deleteFolderFromRecycle(companyName, folderPath);
   }
 
+  async emptyRecycleFolder(companyName) {
+    return RecycleBinHelper.emptyRecycleFolder(companyName);
+  }
+
   // Métodos de Cálculo de Almacenamiento
   async calculateTotalStorage(companyName) {
     return StorageHelper.calculateTotalStorage(companyName);

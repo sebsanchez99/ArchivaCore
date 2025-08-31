@@ -2,8 +2,6 @@ const SupabaseClient = require('../../clients/supabase.client');
 const ResponseUtil = require('../../utils/response.util');
 const { buildBucketName,
   builderStructure,
-  countFilesAndFolders,
-  getOnlyFile,
   copyFilesFoldersRecursively,
 } = require('../../utils/supabase.util');
 
@@ -65,30 +63,17 @@ class RecycleBinHelper {
   async listRecycleFolder(companyName) {
     try {
       const bucketName = buildBucketName(companyName);
-      const structure = await builderStructure(bucketName, 'reciclaje', 'reciclaje');
+      const structure = await builderStructure(bucketName, 'reciclaje', 'reciclaje', false);
       if (!structure) {
         return ResponseUtil.success('No hay elementos en reciclaje', { archivos: [], carpetas: [] });
       }
       const archivos = [];
       const carpetas = [];
-
-      if (structure.files.length > 0) {
-        archivos.push(...structure.files);
+      if (structure.files && structure.files.length > 0) {
+        const rootFiles = structure.files.filter(file => file.nombreArchivo !== 'placeholder.txt');
+        archivos.push(...rootFiles);
       }
-
-      for (const folder of structure.folders) {
-        const { fileCount, subFolderCount } = countFilesAndFolders(folder);
-
-        if (fileCount + subFolderCount > 1) {
-          carpetas.push(folder);
-        } else if (fileCount === 1 && subFolderCount === 0) {
-          const onlyFile = getOnlyFile(folder);
-          if (onlyFile) archivos.push(onlyFile);
-        } else if (fileCount === 0 && subFolderCount === 1) {
-          carpetas.push(folder);
-        }
-      }
-
+      structure.folders.forEach(folder => this.#processFolderContent(folder, archivos, carpetas));
       return ResponseUtil.success('Carpeta reciclaje listada correctamente', {
         archivos,
         carpetas,
@@ -122,7 +107,7 @@ class RecycleBinHelper {
       const bucketName = buildBucketName(companyName)
       const recyclePath = `reciclaje/${folderPath}`
       const { folders, files } = await builderStructure(bucketName, recyclePath, '', false) 
-      await this.#deleteFolders(bucketName, folders, files, recyclePath)
+      await this.#deleteFolders(bucketName, folders, files, recyclePath, false)
       return ResponseUtil.success('Carpeta eliminada definitivamente de reciclaje');
     } catch (error) {
       return ResponseUtil.fail('Error inesperado al eliminar carpetas de reciclaje', error.message);
@@ -138,7 +123,6 @@ class RecycleBinHelper {
       await copyFilesFoldersRecursively(bucketName, folders, files, folderRecyclePath)
       return ResponseUtil.success("Carpeta movida correctamente a reciclaje.");
     } catch (error) {
-      console.error(error);
       return ResponseUtil.fail('Error al mover carpeta a reciclaje.')
     }
   }
@@ -152,31 +136,52 @@ class RecycleBinHelper {
       await copyFilesFoldersRecursively(bucketName, folders, files, originPath);
       return ResponseUtil.success("Carpeta restaurada correctamente desde reciclaje.");
     } catch (error) {
-      console.error(error);
       return ResponseUtil.fail("Error al restaurar carpeta desde reciclaje.");
     }
   }
 
-  async #deleteFolders(bucketName, folders, files, recyclePath, currentPath= '') {
-    for (const file of files) {
+  async emptyRecycleFolder(companyName) {
+    const bucketName = buildBucketName(companyName);
+    const recyclePath = 'reciclaje'
+    const { folders, files } = await builderStructure(bucketName, recyclePath, '', false) 
+    await this.#deleteFolders(bucketName, folders, files, recyclePath, true)
+    return ResponseUtil.success('Se vacío la papelera de reciclaje correctamente.');
+  }
+
+  async #deleteFolders(bucketName, folders, files, recyclePath, ignoreRootPlaceholderFile, currentPath= '') {
+    let filesToDelete = files;
+    if (ignoreRootPlaceholderFile && currentPath === '') {
+      filesToDelete = files.filter(file => file.nombreArchivo !== 'placeholder.txt');
+    }
+    for (const file of filesToDelete) {
       const fullRecyclePath = currentPath === '' ? `${recyclePath}/${file.nombreArchivo}` : `${recyclePath}/${currentPath}/${file.nombreArchivo}`;
       await SupabaseClient.remove(bucketName, [fullRecyclePath]);
     }
-
     for (const folder of folders) {
       const newPath = currentPath === '' ? folder.nombreCarpeta : `${currentPath}/${folder.nombreCarpeta}`;
       const subFolders = folder.subCarpeta || [];
       const filesInFolder = folder.archivos || [];
-      await this.#deleteFolders(
-        bucketName,
-        subFolders,
-        filesInFolder,
-        recyclePath,
-        newPath
-      );
+      await this.#deleteFolders(bucketName, subFolders, filesInFolder, recyclePath, false, newPath);
     }
   } 
 
+  #processFolderContent(folder, files, folders) {
+    const hasPlaceholder = folder.archivos.some(file => file.nombreArchivo === 'placeholder.txt')
+    if (hasPlaceholder) {
+      const cleanFolder = { 
+        ...folder, 
+        archivos: folder.archivos.filter(file => file.nombreArchivo !== 'placeholder.txt')
+      }
+      folders.push(cleanFolder)
+    } else{
+      if (folder.archivos && folder.archivos.length > 0) {
+        files.push(...folder.archivos)
+      }
+      if (folder.subCarpeta && folder.subCarpeta.length > 0) {
+        folder.subCarpeta.forEach(sub => this.#processFolderContent(sub, files, folders))
+      }
+    }
+  }
 }
 
 module.exports = new RecycleBinHelper();
