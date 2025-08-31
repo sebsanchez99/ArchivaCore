@@ -1,3 +1,4 @@
+// Tu código principal se mantiene sin cambios, pero ahora se apoya en una clase auxiliar.
 import 'package:flutter/material.dart';
 import 'package:frontend/domain/models/file_model.dart';
 import 'package:frontend/domain/models/folder_model.dart';
@@ -46,23 +47,7 @@ class FolderDetailsWindow extends StatelessWidget {
       content: SizedBox(
         width: 600,
         child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Sección de Subcarpetas
-              if (folder.subFolders.isNotEmpty) ...[
-                _buildSectionHeader(
-                    'Subcarpetas', folder.subFolders.length, Icons.folder),
-                ...folder.subFolders.map((subfolder) => _buildFolderCard(subfolder)),
-                SizedBox(height: 20),
-              ],
-              // Sección de Archivos
-              if (folder.files.isNotEmpty) ...[
-                _buildSectionHeader('Archivos', folder.files.length, Icons.insert_drive_file),
-                ...folder.files.map((file) => _buildFileCard(file)),
-              ],
-            ],
-          ),
+          child: _FolderContentDisplay(folder: folder), // Uso de la clase auxiliar
         ),
       ),
       actions: [
@@ -73,47 +58,60 @@ class FolderDetailsWindow extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _buildSectionHeader(String title, int count, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Icon(icon, color: SchemaColors.primary700, size: 20),
-          SizedBox(width: 8),
-          Text(
-            '$title ($count)',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              color: SchemaColors.textPrimary,
+// Clase auxiliar que maneja la lógica recursiva
+class _FolderContentDisplay extends StatelessWidget {
+  final FolderModel folder;
+
+  const _FolderContentDisplay({required this.folder});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ...folder.files.map((file) => _buildFileCard(file)),
+        ...folder.subFolders.map((subfolder) {
+          return Theme(
+            data: ThemeData().copyWith(dividerColor: Colors.transparent),
+            child: ExpansionTile(
+              dense: true,
+              title: _buildFolderCardTitle(subfolder),
+              leading: Icon(Icons.folder, color: Colors.amber, size: 36),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: _FolderContentDisplay(folder: subfolder), 
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
+          );
+        }),
+      ],
     );
   }
 
-  Widget _buildFolderCard(FolderModel subfolder) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: ListTile(
-        dense: true,
-        leading: Icon(Icons.folder, color: Colors.amber, size: 36),
-        title: Text(
+  // Widget para el título de la tarjeta de subcarpeta
+  Widget _buildFolderCardTitle(FolderModel subfolder) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
           subfolder.name,
           style: TextStyle(fontWeight: FontWeight.w500),
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: Text(
+        Text(
           '${subfolder.subFolders.length} subcarpetas, ${subfolder.files.length} archivos',
           style: TextStyle(fontSize: 12, color: SchemaColors.textSecondary),
         ),
-      ),
+      ],
     );
   }
 
+  // Widget para la tarjeta de archivo (la misma lógica de antes)
   Widget _buildFileCard(FileModel file) {
     IconData fileIcon;
     Color iconColor;
