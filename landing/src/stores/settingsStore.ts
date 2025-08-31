@@ -30,8 +30,6 @@ export const useSettingsStore = defineStore('settings',{
         async updateUserInfo(username: string | null, fullname: string | null) {
             try {
                 const response = await settingsService.updateUserInfo({ username, fullname })
-                console.log(response);
-                
                 this.response = response.data
             } catch (error) {
                 this.error = 'No se pudo actualizar la información. Intente más tarde.'
