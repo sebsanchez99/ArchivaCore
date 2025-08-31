@@ -35,9 +35,8 @@ class FolderHelper {
    */
   async createFolder(companyName, routeFolder, folderName) {
     if (routeFolder === '/') routeFolder = ''
-    const folderNameToLower = folderName.toLowerCase();
     const bucketName = buildBucketName(companyName);
-    const folderPath = path.posix.join(routeFolder, folderNameToLower, 'placeholder.txt');
+    const folderPath = path.posix.join(routeFolder, folderName, 'placeholder.txt');
     
     const { data, error } = await SupabaseClient.upload(bucketName, folderPath, Buffer.from(''), {
       contentType: 'text/plain',
