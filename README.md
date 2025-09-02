@@ -1,3 +1,5 @@
+
+
 # 📂 ArchivaCore
 
 ![Node.js](https://img.shields.io/badge/Node.js-18+-green?logo=node.js)
@@ -105,6 +107,19 @@ landing/    -> Web app (Vue 3 + TypeScript + Pinia + Vite)
 Crea un archivo `.env` en `backend/` y `landing/` a partir de los `.env.example`.  
 Variables más importantes:  
 
+|Nombre de variable  | Descripción |
+|--|--|
+| PORT | Puerto en el que se ejecutará el servidor backend. |
+| DB_USER | Usuario de base de datos. |
+| DB_PASSWORD| Contraseña del usuario de base de datos. |
+| DB_HOST | Dirección o IP del servidor de la base de datos.
+| DB_NAME | Nombre de la base de datos |
+| DB_PORT | Puerto de conexión de la base de datos. |
+| SECRET_KEY | Clave secreta para firmar y verificar los tokens JWT de autenticación |
+| EXPIRE_TOKEN | Tiempo de expiración del token |
+| SUPABASE_URL | URL base de Supabase |
+| SUPABASE_API_KEY | Clave de API de Supabase para autenticar operaciones de almacenamiento |
+| GTP_API_KEY | Clave de API para acceder al modelo de inteligencia artificial GPT.|
 ```ini
 PORT=3000
 DB_USER=usuario
@@ -118,7 +133,6 @@ SUPABASE_URL=https://xxxx.supabase.co
 SUPABASE_API_KEY=xxxx
 GPT_API_KEY=xxxx
 ```
-
 ---
 
 ## 🚀 Instalación
