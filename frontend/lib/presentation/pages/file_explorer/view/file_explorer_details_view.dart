@@ -24,13 +24,14 @@ class FileExplorerDetailsView extends StatelessWidget {
                 SizedBox(
                   width: width * 0.2,
                   height: height * 0.67,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: FileExplorerTreeView(bloc: bloc),
-                      ),
-                    ],
+                  child: Container(
+                    color: Colors.transparent, // Forzamos transparencia
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: FileExplorerTreeView(bloc: bloc)),
+                      ],
+                    ),
                   ),
                 ),
 
