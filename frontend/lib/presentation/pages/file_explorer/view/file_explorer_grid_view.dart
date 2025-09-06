@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/domain/models/folder_model.dart';
-import 'package:frontend/domain/models/file_model.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_bloc.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/grid_explorer_bloc.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/grid_explorer_events.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/grid_explorer_state.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/explorer_item_tile.dart';
-import 'package:frontend/presentation/global/constants/schema_colors.dart';
 
 class FileExplorerGridView extends StatelessWidget {
-  final FileExplorerBloc bloc;     
-  final GridExplorerBloc gridBloc; 
+  final FileExplorerBloc bloc;
+  final GridExplorerBloc gridBloc;
 
   const FileExplorerGridView({
     super.key,
@@ -28,16 +26,15 @@ class FileExplorerGridView extends StatelessWidget {
     );
 
     // Inicializamos el GridBloc con las carpetas raíz
-    gridBloc.add(UpdateFromExplorer(
-      folders: folders,
-      files: [],
-    ));
+    gridBloc.add(UpdateFromExplorer(folders: folders, files: []));
 
     return BlocBuilder<GridExplorerBloc, GridExplorerState>(
       bloc: gridBloc,
       builder: (context, state) {
         final currentFolders = state.folders;
         final currentFiles = state.files;
+
+        final isEmpty = currentFolders.isEmpty && currentFiles.isEmpty;
 
         return Column(
           children: [
@@ -46,56 +43,123 @@ class FileExplorerGridView extends StatelessWidget {
               children: [
                 IconButton(
                   icon: Icon(
-                    state.currentFolder == null
-                        ? Icons.home
-                        : Icons.arrow_back,
+                    state.currentFolder == null ? Icons.home : Icons.arrow_back,
+                    color:
+                        state.currentFolder == null
+                            ? Colors
+                                .grey // home gris decorativo
+                            : Colors.black, // back normal
                   ),
-                  onPressed: () => gridBloc.add(GoBack()),
+                  onPressed:
+                      state.currentFolder == null
+                          ? null // desactivado en home
+                          : () => gridBloc.add(GoBack()),
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  disabledColor:
+                      Colors.grey, // color fijo cuando está deshabilitado
                 ),
                 const SizedBox(width: 10),
+
+                // Breadcrumb
                 Expanded(
-                  child: Text(
-                    state.currentFolder?.name ?? 'Raíz',
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        const Text(
+                          "Inicio",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        ...[
+                          ...state.navigationStack,
+                          if (state.currentFolder != null) state.currentFolder!,
+                        ].map((folder) {
+                          return Row(
+                            children: [
+                              const Icon(
+                                Icons.chevron_right,
+                                size: 18,
+                                color: Colors.grey,
+                              ),
+                              Text(
+                                folder.name,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      ],
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
 
-            // Grid de carpetas y archivos
+            // Grid o mensaje vacío
             Expanded(
-              child: GridView.count(
-                crossAxisCount: 7,
-                crossAxisSpacing: 5,
-                mainAxisSpacing: 5,
-                children: [
-                  // Carpetas
-                  ...currentFolders.map((folder) {
-                    final totalSize = folder.files.fold<double>(
-                      0.0,
-                      (sum, f) => sum + (double.tryParse(f.size) ?? 0.0),
-                    );
-
-                    return ExplorerItemTile(
-                      folder: folder,
-                      onTap: () => gridBloc.add(OpenFolder(folder)),
-                    );
-                  }),
-                  // Archivos
-                  ...currentFiles.map((file) => ExplorerItemTile(
-                        file: file,
-                        onTap: () {
-                          print("Abrir archivo: ${file.name}");
-                          // Aquí puedes agregar acción de abrir archivo
+              child:
+                  isEmpty
+                      ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.folder_open,
+                              size: 80,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              state.currentFolder == null
+                                  ? "No hay elementos en la raíz"
+                                  : "Carpeta vacía",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                      : GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent:
+                                  180, // ancho máximo de cada ítem
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                              childAspectRatio: 1,
+                            ),
+                        itemCount: currentFolders.length + currentFiles.length,
+                        itemBuilder: (context, index) {
+                          if (index < currentFolders.length) {
+                            final folder = currentFolders[index];
+                            return ExplorerItemTile(
+                              folder: folder,
+                              onTap: () => gridBloc.add(OpenFolder(folder)),
+                            );
+                          } else {
+                            final file =
+                                currentFiles[index - currentFolders.length];
+                            return ExplorerItemTile(
+                              file: file,
+                              onTap: () {
+                                print("Abrir archivo: ${file.name}");
+                              },
+                            );
+                          }
                         },
-                      )),
-                ],
-              ),
+                      ),
             ),
           ],
         );

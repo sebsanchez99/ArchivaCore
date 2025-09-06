@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/presentation/widgets/folder/custom_folder2.dart';
 
 class FolderView extends StatefulWidget {
   const FolderView({super.key});
@@ -72,18 +71,7 @@ class _FolderPreviewDialogState extends State<FolderView> {
                 ),
                 const SizedBox(height: 12),
 
-                /// Lista de carpetas y archivos con customFolder2
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: currentItems.length,
-                    itemBuilder: (context, index) {
-                      final item = currentItems[index];
-                      final isFolder = item.toLowerCase().contains("proyecto") || item.toLowerCase().contains("carpeta");
-
-                      return  CustomFolder2(leading: Icons.add_ic_call_rounded, title: 'title');
-                    },
-                  ),
-                ),
+                /// Lista de carpetas y archivos 
               ],
             ),
           ),
