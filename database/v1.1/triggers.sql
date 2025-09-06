@@ -254,18 +254,6 @@ FOR EACH ROW
 EXECUTE FUNCTION fn_empresa_backup_usuarios();
 
 -- ===========================================
--- ========== TRIGGERS DOCUMENTO =============
--- ===========================================
-
-CREATE TRIGGER trg_documento_log_actividad
-AFTER INSERT OR UPDATE OR DELETE ON Documento
-FOR EACH ROW EXECUTE FUNCTION fn_log_actividad();
-
-CREATE TRIGGER trg_documento_log_empresa
-AFTER INSERT OR UPDATE OR DELETE ON Documento
-FOR EACH ROW EXECUTE FUNCTION fn_log_empresa();
-
--- ===========================================
 -- ========== TRIGGERS NOTIFICACIÓN ==========
 -- ===========================================
 
