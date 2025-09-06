@@ -2,16 +2,26 @@
  * @namespace Helpers
  * @description Helper para análisis de hoja de vida usando Gemini
  */
+const OpenAI = require( 'openai')
 const pdfParse = require("pdf-parse")
 const mammoth = require("mammoth")
-const { GoogleGenerativeAI } = require("@google/generative-ai")
-const { configGemini } = require("../config/config")
+const { configGPT } = require("../config/config")
 const { buildPrompt } = require('../utils/prompt.util')
 const ResponseUtil = require('../utils/response.util')
 
+const models = {
+  accurate: "gpt-4.1",               
+  balanced: "gpt-4o",                
+  fast: "gpt-4o-mini",               
+  cheap: "gpt-3.5-turbo",            
+}
+
 class AIHelper {
-  constructor() {
-    this.genAI = new GoogleGenerativeAI(configGemini.geminiApiKey)
+
+  constructor(){
+    this.client = new OpenAI({
+      apiKey: configGPT.gptApiKey
+    })
   }
 
   /**
@@ -49,15 +59,20 @@ class AIHelper {
    * @param {string} offerText - Texto de la oferta
    * @returns {Promise<Object>} Objeto JSON generado por Gemini
    */
-  async analyzeCV(buffer, ext, offerText) {
+  async analyzeCV(buffer, ext, offerText, mode = 'balanced') {
     const cvText = await this.extractTextFromBuffer(buffer, ext)
     const prompt = buildPrompt(cvText, offerText)
-
-    const model = this.genAI.getGenerativeModel({ model: "gemma-3n-e2b-it" })
-    const result = await model.generateContent(prompt)
-    const raw = result.response.text()
-
+    const model = models[mode] || models.balanced
     try {
+      const response = await this.client.chat.completions.create({
+        model,
+        messages: [
+          { role: "system", content: "Eres un asistente que ayuda a analizar hojas de vida en base a ofertas laborales. Responde estrictamente en formato JSON y bien estructurado." },
+          { role: "user", content: prompt }
+        ],
+        temperature: 0.2,
+      })
+      const raw = response.choices[0].message.content
       const clean = raw.replace(/```json/g, "").replace(/```/g, "").trim()
       const jsonResponse = JSON.parse(clean)
       return ResponseUtil.success('Resumen generado exitosamente.', jsonResponse)

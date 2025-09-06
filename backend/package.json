@@ -12,7 +12,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
     "@supabase/supabase-js": "^2.55.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
@@ -22,6 +21,7 @@
     "jsonwebtoken": "^9.0.2",
     "mammoth": "^1.10.0",
     "multer": "^2.0.2",
+    "openai": "^5.19.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
@@ -31,9 +31,6 @@
     "supabase": "^2.34.3"
   },
   "devDependencies": {
-    "documentation": "^14.0.3",
-    "jsdoc": "^4.0.4",
-    "nodemon": "^3.1.9",
-    "standard": "^17.1.2"
+    "nodemon": "^3.1.9"
   }
 }

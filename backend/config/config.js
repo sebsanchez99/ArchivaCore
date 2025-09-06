@@ -29,8 +29,8 @@ const configSupaBase = {
 }
 
 //Configurar servicio de Gemini
-const configGemini = {
-    geminiApiKey: process.env.GEMINI_API_KEY
+const configGPT = {
+    gptApiKey: process.env.GPT_API_KEY
 }
 
 
@@ -39,6 +39,6 @@ module.exports = {
     configDB,
     configToken,
     configSupaBase,
-    configGemini
+    configGPT
 }
 
