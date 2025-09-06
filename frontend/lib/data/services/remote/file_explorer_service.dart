@@ -113,4 +113,10 @@ class FileExplorerService {
     );
   }
 
+  HttpFuture<ServerResponseModel> updateFolder(String folderName, String currentRoute, String newRoute) {
+    return DioHandler.handleRequest(
+      () => _dio.put('/supa/updateFolder', data: {'folderName': folderName, 'currentRoute': currentRoute, 'newRoute': newRoute}),
+      (response) => ServerResponseModel.fromJson(response),
+    );
+  }
 }
