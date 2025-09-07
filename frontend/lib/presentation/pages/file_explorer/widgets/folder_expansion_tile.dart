@@ -6,7 +6,6 @@ class FolderExpansionTile extends StatelessWidget {
   final FolderModel folder;
   const FolderExpansionTile({super.key, required this.folder});
 
-  // Definimos iconos y colores por tipo de archivo
   IconData _getFileIcon(String type) {
     switch (type.toLowerCase()) {
       case "pdf":
@@ -53,69 +52,123 @@ class FolderExpansionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      //  tenga separación
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: ExpansionTile(
-        dense: true,
-        leading: Icon(Icons.folder, color: SchemaColors.warning, size: 34),
-        title: Text(
-          folder.name,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: SchemaColors.textPrimary,
+    final isEmpty = folder.subFolders.isEmpty && folder.files.isEmpty;
+
+    if (isEmpty) {
+      // Caso carpeta vacía → ListTile sin expandirse
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(
+            Icons.folder,
+            color: SchemaColors.warning,
+            size: 34,
           ),
-        ),
-        childrenPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 4,
-        ), // 🔹 Espaciado interno
-        children: [
-          ...folder.subFolders.map((sub) => FolderExpansionTile(folder: sub)),
-          ...folder.files.map(
-            (file) => Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 4,
-              ), // 🔹 separación archivos
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 6,
-                ),
-                leading: Icon(
-                  _getFileIcon(file.type),
-                  color: _getFileColor(file.type),
-                  size: 28,
-                ),
-                title: Text(
-                  file.name,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                subtitle: Text(
-                  file.type,
-                  style: TextStyle(fontSize: 13, color: Colors.grey[700]),
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      "${file.size} MB",
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black54,
-                      ),
-                    ),
-                  ],
-                ),
+          title: Tooltip(
+            message: folder.name, // nombre completo al pasar el mouse
+            child: Text(
+              folder.name,
+              overflow: TextOverflow.ellipsis, // corta con "..."
+              maxLines: 1,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: SchemaColors.textPrimary,
               ),
             ),
           ),
-        ],
+          trailing: null,
+          onTap: null, // sin acción al tocar
+        ),
+      );
+    }
+
+    // Caso carpeta con hijos → ExpansionTile normal
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          hoverColor: Colors.transparent,
+        ),
+        child: ExpansionTile(
+          dense: true,
+          tilePadding: EdgeInsets.zero,
+          backgroundColor: Colors.transparent,
+          collapsedBackgroundColor: Colors.transparent,
+          shape: const Border(),
+          collapsedShape: const Border(),
+          leading: const Icon(
+            Icons.folder,
+            color: SchemaColors.warning,
+            size: 34,
+          ),
+          title: Tooltip(
+            message: folder.name, // tooltip en la carpeta
+            child: Text(
+              folder.name,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: SchemaColors.textPrimary,
+              ),
+            ),
+          ),
+          childrenPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 4,
+          ),
+          children: [
+            // Subcarpetas
+            ...folder.subFolders.map((sub) => FolderExpansionTile(folder: sub)),
+
+            // Archivos
+            ...folder.files.map(
+              (file) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 6,
+                  ),
+                  leading: Icon(
+                    _getFileIcon(file.type),
+                    color: _getFileColor(file.type),
+                    size: 28,
+                  ),
+                  title: Tooltip(
+                    message: file.name, // tooltip en el archivo
+                    child: Text(
+                      file.name,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  subtitle: Text(
+                    file.type,
+                    style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+                  ),
+                  trailing: Text(
+                    "${file.size} MB",
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
