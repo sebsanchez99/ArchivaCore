@@ -18,12 +18,41 @@ class FileExplorerTreeView extends StatelessWidget {
           loaded: (value) {
             final folders = value.filteredFolders;
 
-            return ListView.builder(
-              padding: EdgeInsets.zero,
-              itemCount: folders.length,
-              itemBuilder: (context, index) {
-                return FolderExpansionTile(folder: folders[index]);
-              },
+            //Tema local: sin divisores ni efectos de tinta
+            final base = Theme.of(context);
+            final transparentTheme = base.copyWith(
+              canvasColor: Colors.transparent,
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              dividerColor: Colors.transparent,
+              dividerTheme: const DividerThemeData(
+                color: Colors.transparent,
+                thickness: 0,
+                space: 0,
+              ),
+              listTileTheme: const ListTileThemeData(
+                tileColor: Colors.transparent,
+                selectedTileColor: Colors.transparent,
+              ),
+              expansionTileTheme: const ExpansionTileThemeData(
+                backgroundColor: Colors.transparent,
+                collapsedBackgroundColor: Colors.transparent,
+                shape: Border(),
+                collapsedShape: Border(),
+                tilePadding: EdgeInsets.zero,
+                childrenPadding: EdgeInsets.only(left: 12), // indenta hijos
+              ),
+            );
+
+            return Theme(
+              data: transparentTheme,
+              child: ListView.builder(
+                padding: EdgeInsets.zero,
+                itemCount: folders.length,
+                itemBuilder: (context, index) {
+                  return FolderExpansionTile(folder: folders[index]);
+                },
+              ),
             );
           },
           orElse: () => const LoadingState(),
