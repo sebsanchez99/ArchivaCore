@@ -28,17 +28,14 @@ class SideMenuCubit extends Cubit<SideMenuState> {
   }
   
   void navigateTo(String itemTitle) {
-    // 1. Encuentra el índice original del ítem en el mapa completo
     final originalEntry = menuItems.entries.firstWhere(
       (e) => e.value['title'] == itemTitle,
     );
 
-    // 2. Encuentra la posición (índice visual) de ese ítem en la lista filtrada
     final visualIndex = _filteredMenuItems.indexWhere(
       (e) => e.key == originalEntry.key,
     );
 
-    // 3. Navega usando el índice visual para ambos controladores
     if (visualIndex != -1) {
       pageController.jumpToPage(visualIndex);
       sideMenuController.changePage(visualIndex);
