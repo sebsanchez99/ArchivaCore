@@ -6,8 +6,8 @@ import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
 import 'package:frontend/presentation/widgets/custom_input.dart';
 import 'package:frontend/presentation/widgets/folder/custom_folder.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/location_picker_modal.dart';
-import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_bloc.dart';
-import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_events.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/file_explorer_bloc.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/events/file_explorer_events.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 class CreateFolder extends StatefulWidget {
