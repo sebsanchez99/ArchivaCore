@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_bloc.dart';
-import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_state.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/file_explorer_bloc.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/states/file_explorer_state.dart';
 import 'package:frontend/presentation/widgets/states/loading_state.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/folder_expansion_tile.dart';
 
@@ -18,7 +18,6 @@ class FileExplorerTreeView extends StatelessWidget {
           loaded: (value) {
             final folders = value.filteredFolders;
 
-            //Tema local: sin divisores ni efectos de tinta
             final base = Theme.of(context);
             final transparentTheme = base.copyWith(
               canvasColor: Colors.transparent,
@@ -40,7 +39,7 @@ class FileExplorerTreeView extends StatelessWidget {
                 shape: Border(),
                 collapsedShape: Border(),
                 tilePadding: EdgeInsets.zero,
-                childrenPadding: EdgeInsets.only(left: 12), // indenta hijos
+                childrenPadding: EdgeInsets.only(left: 12), 
               ),
             );
 
@@ -50,7 +49,7 @@ class FileExplorerTreeView extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 itemCount: folders.length,
                 itemBuilder: (context, index) {
-                  return FolderExpansionTile(folder: folders[index]);
+                  return FolderExpansionTile(folder: folders[index], bloc: bloc);
                 },
               ),
             );
