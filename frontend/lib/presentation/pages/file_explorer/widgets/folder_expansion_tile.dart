@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/domain/models/folder_model.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/file_explorer_bloc.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/events/file_explorer_events.dart';
 
 class FolderExpansionTile extends StatelessWidget {
   final FolderModel folder;
-  const FolderExpansionTile({super.key, required this.folder});
+  final FileExplorerBloc bloc;
+  const FolderExpansionTile({
+    super.key, 
+    required this.folder,
+    required this.bloc,
+  });
 
   IconData _getFileIcon(String type) {
     switch (type.toLowerCase()) {
@@ -55,36 +62,35 @@ class FolderExpansionTile extends StatelessWidget {
     final isEmpty = folder.subFolders.isEmpty && folder.files.isEmpty;
 
     if (isEmpty) {
-      // Caso carpeta vacía → ListTile sin expandirse
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
         child: ListTile(
+          dense: true,
           contentPadding: EdgeInsets.zero,
           leading: const Icon(
             Icons.folder,
             color: SchemaColors.warning,
-            size: 34,
+            size: 30,
           ),
           title: Tooltip(
-            message: folder.name, // nombre completo al pasar el mouse
+            message: folder.name, 
             child: Text(
               folder.name,
-              overflow: TextOverflow.ellipsis, // corta con "..."
+              overflow: TextOverflow.ellipsis, 
               maxLines: 1,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: SchemaColors.textPrimary,
               ),
             ),
           ),
           trailing: null,
-          onTap: null, // sin acción al tocar
+          onTap: null, 
         ),
       );
     }
 
-    // Caso carpeta con hijos → ExpansionTile normal
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Theme(
@@ -103,18 +109,23 @@ class FolderExpansionTile extends StatelessWidget {
           leading: const Icon(
             Icons.folder,
             color: SchemaColors.warning,
-            size: 34,
+            size: 30,
           ),
           title: Tooltip(
-            message: folder.name, // tooltip en la carpeta
-            child: Text(
-              folder.name,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: SchemaColors.textPrimary,
+            message: folder.name, 
+            child: InkWell(
+              onTap: () {
+                bloc.add(FileExplorerEvents.selectFolder(folder: folder));
+              },
+              child: Text(
+                folder.name,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: SchemaColors.textPrimary,
+                ),
               ),
             ),
           ),
@@ -124,13 +135,14 @@ class FolderExpansionTile extends StatelessWidget {
           ),
           children: [
             // Subcarpetas
-            ...folder.subFolders.map((sub) => FolderExpansionTile(folder: sub)),
+            ...folder.subFolders.map((sub) => FolderExpansionTile(folder: sub, bloc: bloc,)),
 
             // Archivos
             ...folder.files.map(
               (file) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 6),
                 child: ListTile(
+                  dense: true,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 6,
@@ -141,13 +153,13 @@ class FolderExpansionTile extends StatelessWidget {
                     size: 28,
                   ),
                   title: Tooltip(
-                    message: file.name, // tooltip en el archivo
+                    message: file.name, 
                     child: Text(
                       file.name,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                       style: const TextStyle(
-                        fontSize: 15,
+                        fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -159,11 +171,14 @@ class FolderExpansionTile extends StatelessWidget {
                   trailing: Text(
                     "${file.size} MB",
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: FontWeight.w400,
                       color: Colors.black54,
                     ),
                   ),
+                  onTap: () {
+                    bloc.add(FileExplorerEvents.selectFile(file: file));
+                  },
                 ),
               ),
             ),
