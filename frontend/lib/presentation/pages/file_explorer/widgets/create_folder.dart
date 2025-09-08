@@ -1,13 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/domain/models/folder_model.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
-import 'package:frontend/presentation/pages/file_explorer/widgets/drop_button.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
 import 'package:frontend/presentation/widgets/custom_input.dart';
 import 'package:frontend/presentation/widgets/folder/custom_folder.dart';
+import 'package:frontend/presentation/pages/file_explorer/widgets/location_picker_modal.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_bloc.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_events.dart';
 import 'package:dotted_border/dotted_border.dart';
 
-class CreateFolder extends StatelessWidget {
-  const CreateFolder({super.key});
+class CreateFolder extends StatefulWidget {
+  final List<FolderModel> path;
+  const CreateFolder({super.key, required this.path});
+  @override
+  State<CreateFolder> createState() => _CreateFolderState();
+}
+
+class _CreateFolderState extends State<CreateFolder> {
+  final TextEditingController _nameController = TextEditingController();
+  String? selectedPath;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  void _createFolder() {
+    final folderName = _nameController.text.trim();
+    final route = selectedPath ?? "/";
+
+    if (folderName.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("El nombre de la carpeta es obligatorio")),
+      );
+      return;
+    }
+
+    context.read<FileExplorerBloc>().add(
+      FileExplorerEvents.createFolder(
+        folderName: folderName,
+        routefolder: route,
+      ),
+    );
+
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -20,37 +60,75 @@ class CreateFolder extends StatelessWidget {
           children: [
             Title(
               color: SchemaColors.textPrimary,
-              child: Text(
+              child: const Text(
                 "Crear Nueva Carpeta",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
             ),
-            SizedBox(height: 5),
-            Text('Organizar tus archivos creando una nueva carpeta.'),
-            SizedBox(height: 10),
-            Text(
+            const SizedBox(height: 5),
+            const Text('Organiza tus archivos creando una nueva carpeta.'),
+            const SizedBox(height: 10),
+
+            //  Nombre
+            const Text(
               'Nombre de la carpeta',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
-            CustomInput(isPassword: false, hintText: "ej: ArchivaCore"),
-            SizedBox(height: 20),
-            Text(
-              'Descripción (Opcional)',
+            const SizedBox(height: 10),
+            CustomInput(
+              controller: _nameController,
+              isPassword: false,
+              hintText: "ej: ArchivaCore",
+            ),
+            const SizedBox(height: 20),
+
+            // 🔹 Ubicación
+            const Text(
+              'Ubicación',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
-            CustomInput(
-              isPassword: false,
-              hintText: "Describe el contenido o propocito de esta carpeta...",
+            const SizedBox(height: 10),
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                side: const BorderSide(color: SchemaColors.border),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
+              onPressed: () async {
+                final ruta = await showDialog<String>(
+                  context: context,
+                  builder:
+                      (context) =>
+                          LocationPickerModal(rootFolders: widget.path),
+                );
+
+                if (ruta != null) {
+                  setState(() {
+                    selectedPath = ruta;
+                  });
+                }
+              },
+              child: Text(
+                selectedPath ?? "Seleccionar ubicación",
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: SchemaColors.textPrimary,
+                ),
+              ),
             ),
-            SizedBox(height: 20),
-            Text('Ubicación', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 10),
-            DropButton(),
-            SizedBox(height: 20),
-            Text('Vista previa', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 10),
+            const SizedBox(height: 20),
+
+            // 🔹 Vista previa
+            const Text(
+              'Vista previa',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
             Center(
               child: Container(
                 width: 330,
@@ -60,18 +138,21 @@ class CreateFolder extends StatelessWidget {
                   color: SchemaColors.background,
                 ),
                 child: DottedBorder(
-                  dashPattern: [9],
+                  dashPattern: const [9],
                   color: SchemaColors.border,
                   strokeWidth: 1,
                   borderType: BorderType.RRect,
-                  radius: Radius.circular(10),
+                  radius: const Radius.circular(10),
                   child: Center(
                     child: CustomFolder(
                       onPressed: () {},
                       icon: Icons.folder,
-                      name: 'ArchivaCore',
-                      fileCount: '9 Archivos',
-                      size: '1.2 GB',
+                      name:
+                          _nameController.text.isEmpty
+                              ? 'Nueva Carpeta'
+                              : _nameController.text,
+                      fileCount: '—',
+                      size: '—',
                     ),
                   ),
                 ),
@@ -85,12 +166,7 @@ class CreateFolder extends StatelessWidget {
           message: 'Cancelar',
           onPressed: () => Navigator.pop(context),
         ),
-        CustomButton(
-          message: 'Crear Carpeta',
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        CustomButton(message: 'Crear Carpeta', onPressed: _createFolder),
       ],
     );
   }
