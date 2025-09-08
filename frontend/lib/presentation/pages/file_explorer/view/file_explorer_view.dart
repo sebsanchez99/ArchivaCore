@@ -75,7 +75,7 @@ class FileExplorerView extends StatelessWidget {
                                   },
                                   items: <PopupMenuEntry<String>>[
                                     PopupMenuItem<String>(
-                                      value: 'Crear Carpeta',
+                                      value: 'Crear carpeta',
                                       child: Row(
                                         children: [
                                           const Icon(
