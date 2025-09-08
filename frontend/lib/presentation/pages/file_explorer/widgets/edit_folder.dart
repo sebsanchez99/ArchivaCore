@@ -5,7 +5,6 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:frontend/domain/models/folder_model.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/file_explorer_bloc.dart';
-import 'package:frontend/presentation/pages/file_explorer/widgets/drop_button.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_icon_button.dart';
 import 'package:frontend/presentation/widgets/custom_input.dart';
@@ -100,7 +99,6 @@ class EditFolderState extends State<EditFolder> {
                           const SizedBox(height: 20),
                           _buildSectionTitle('Ubicación'),
                           const SizedBox(height: 10),
-                          _buildLocationDropdown(),
                           const SizedBox(height: 5),
                           Text(
                             'Ruta: ${widget.folder.path}',
@@ -150,29 +148,6 @@ class EditFolderState extends State<EditFolder> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildLocationDropdown() {
-    return widget.bloc.state.maybeMap(
-      loaded: (value) {
-        final List<String> availablePaths = List.from(value.paths);
-        final currentFolderPath = widget.folder.path;
-
-        if (!availablePaths.contains(currentFolderPath)) {
-          availablePaths.insert(0, currentFolderPath);
-        }
-
-        return DropButton(
-          items: availablePaths,
-          hint: 'Seleccionar ubicación',
-          selectedValue: currentFolderPath,
-          onChanged: (newPath) {
-            // No se implementa la lógica de cambio en este widget por la indicación del usuario
-          },
-        );
-      },
-      orElse: () => const SizedBox.shrink(),
     );
   }
 

@@ -6,7 +6,6 @@ import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/file_explor
 import 'package:frontend/presentation/widgets/custom_input.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_icon_button.dart';
-import 'package:frontend/presentation/pages/file_explorer/widgets/drop_button.dart';
 import 'package:frontend/utils/validator/form_validator.dart';
 import 'package:frontend/utils/validator/form_validator_extension.dart';
 import 'package:intl/intl.dart'; // Mantén este import si el otro desarrollador lo necesita
@@ -95,7 +94,6 @@ class EditFileState extends State<EditFile> {
                           const SizedBox(height: 10),
                           _buildSectionTitle('Ubicación'),
                           const SizedBox(height: 10),
-                          _buildLocationDropdown(),
                         ],
                       ),
                     ),
@@ -137,30 +135,6 @@ class EditFileState extends State<EditFile> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildLocationDropdown() {
-    return widget.bloc.state.maybeMap(
-      loaded: (value) {
-        final List<String> availablePaths = List.from(value.paths);
-        
-        if (!availablePaths.contains(_currentFolderPath)) {
-          availablePaths.insert(0, _currentFolderPath);
-        }
-
-        return DropButton(
-          items: availablePaths,
-          hint: 'Seleccionar ubicación',
-          selectedValue: _selectedNewPath,
-          onChanged: (newPath) {
-            setState(() {
-              _selectedNewPath = newPath;
-            });
-          },
-        );
-      },
-      orElse: () => const SizedBox.shrink(),
     );
   }
 
