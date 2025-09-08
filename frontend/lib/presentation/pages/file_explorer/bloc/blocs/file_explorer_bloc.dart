@@ -9,10 +9,11 @@ import 'package:frontend/presentation/pages/file_explorer/bloc/states/file_explo
 
 class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
   final SearchController searchController = SearchController();
-  FileExplorerBloc(super.initialState, {
+
+  FileExplorerBloc(
+    super.initialState, {
     required FileExplorerRepository fileExplorerRepository,
   }) : _fileExplorerRepository = fileExplorerRepository {
-
     searchController.addListener(() {
       add(FilterFilesEvent(fileName: searchController.text));
     });
@@ -23,12 +24,13 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     on<SelectFileEvent>(_onSelectFile);
     on<SelectFolderEvent>(_onSelectFolder);
     on<UploadFileEvent>(_onUploadFile);
+    on<CreateFolderEvent>(_onCreateFolder);
   }
 
   final FileExplorerRepository _fileExplorerRepository;
+  
   Future<void> _onInitialize(InitializeEvent event, Emitter<FileExplorerState> emit) async {
     final result = await _fileExplorerRepository.getFolders();
-    final paths = await _fileExplorerRepository.getPaths();
     emit(
       result.when(
         right: (response) {
@@ -39,7 +41,6 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
             folders: folders, 
             filteredFolders: folders, 
             response: response, 
-            paths: paths,
             selectedFile: null,
             selectedFolder: null,
           );
@@ -47,10 +48,12 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
         left: (failure) => FileExplorerState.failed(failure),
       ),
     );
-
   }
 
-  Future<void> _onChangeViewType(ChangeViewTypeEvent event, Emitter<FileExplorerState> emit) async {
+  Future<void> _onChangeViewType(
+    ChangeViewTypeEvent event,
+    Emitter<FileExplorerState> emit,
+  ) async {
     state.mapOrNull(
       loaded: (value) {
         emit(value.copyWith(viewType: event.viewType));
@@ -67,20 +70,51 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
   Future<void> _onFilterFiles(FilterFilesEvent event, Emitter<FileExplorerState> emit) async {
     state.mapOrNull(
       loaded: (value) {
-        final filteredFolders = _filterFoldersRecursive(value.folders, event.fileName);
+        final filteredFolders =
+            _filterFoldersRecursive(value.folders, event.fileName);
         emit(value.copyWith(filteredFolders: filteredFolders));
-      },  
+      },
     );
   }
 
-  List<FolderModel> _filterFoldersRecursive(List<FolderModel> folders, String query) {
+  Future<void> _onCreateFolder(
+    CreateFolderEvent event,
+    Emitter<FileExplorerState> emit,
+  ) async {
+    await state.mapOrNull(
+      loaded: (value) async {
+        emit(FileExplorerState.loading());
+
+        final result = await _fileExplorerRepository.createFolder(
+          event.folderName,
+          event.routefolder,
+        );
+
+        emit(
+          result.when(
+            left: (failure) => FileExplorerState.failed(failure),
+            right: (response) {
+              // Refresca la lista de carpetas
+              add(FileExplorerEvents.initialize());
+              return value.copyWith(response: response);
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  List<FolderModel> _filterFoldersRecursive(
+    List<FolderModel> folders,
+    String query,
+  ) {
     final lowerQuery = query.toLowerCase();
     return folders.map((folder) {
-      // Filtra subcarpetas recursivamente
-      final filteredSubFolders = _filterFoldersRecursive(folder.subFolders, query);
-      final matches = folder.name.toLowerCase().contains(lowerQuery) || filteredSubFolders.isNotEmpty;
+      final filteredSubFolders =
+          _filterFoldersRecursive(folder.subFolders, query);
+      final matches = folder.name.toLowerCase().contains(lowerQuery) ||
+          filteredSubFolders.isNotEmpty;
       if (matches) {
-        // Devuelve la carpeta con solo las subcarpetas que coinciden
         return folder.copyWith(subFolders: filteredSubFolders);
       } else {
         return null;

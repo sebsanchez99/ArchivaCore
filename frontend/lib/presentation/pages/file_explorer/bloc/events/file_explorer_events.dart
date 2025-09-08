@@ -30,7 +30,7 @@ class FileExplorerEvents with _$FileExplorerEvents {
   // Crear archivo
   factory FileExplorerEvents.createFiles({
     required String fileName,
-  }) = CreateFileEvent;
+  }) = CreateFileEvent; 
 
   // Eliminar archivo
   factory FileExplorerEvents.deleteFiles({
@@ -42,7 +42,7 @@ class FileExplorerEvents with _$FileExplorerEvents {
     required List<FolderModel> folders,
   }) = LoadFoldersEvent;
 
-  //Cargar archivos (si quieres exponerlos directo)
+  //Cargar archivos 
   factory FileExplorerEvents.loadFiles({
     required List<FileModel> files,
   }) = LoadFilesEvent;
@@ -57,4 +57,9 @@ class FileExplorerEvents with _$FileExplorerEvents {
 
   const factory FileExplorerEvents.uploadFile(PlatformFile? result) = UploadFileEvent;
 
+  // Crear carpeta
+  factory FileExplorerEvents.createFolder({
+    required String folderName,
+    required String routefolder,
+  }) = CreateFolderEvent;
 }

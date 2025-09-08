@@ -14,10 +14,25 @@ import 'package:frontend/presentation/pages/file_explorer/widgets/folderdetailsd
 import 'package:frontend/presentation/widgets/dialogs/info_dialog.dart';
 
 Future<void> showCreateFolderDialog(BuildContext context) async {
+  final bloc = context.read<FileExplorerBloc>();
+  final state = bloc.state;
+
   return showDialog(
     context: context,
     barrierDismissible: false,
-    builder: (context) => CreateFolder(),
+    builder: (dialogContext) {
+      return BlocProvider.value(
+        value: bloc,
+        child: state.maybeWhen(
+          loaded: (viewType, folders, filteredFolders, response) {
+            return CreateFolder(path: folders);
+          },
+          orElse: () {
+            return const Center(child: CircularProgressIndicator());
+          },
+        ),
+      );
+    },
   );
 }
 
