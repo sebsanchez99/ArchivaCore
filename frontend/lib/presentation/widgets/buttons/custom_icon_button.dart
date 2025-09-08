@@ -6,7 +6,8 @@ class CustomIconButton extends StatelessWidget {
   final double height;
   final bool disabled;
   final Color backgroundColor;
-  final VoidCallback onPressed;
+  final Color? disabledBackgroundColor;
+  final VoidCallback? onPressed;
   final String message;
   final IconData icon;
   final Color? iconColor;
@@ -17,14 +18,15 @@ class CustomIconButton extends StatelessWidget {
     super.key,
     required this.message,
     required this.icon,
-    required this.onPressed,
+    this.onPressed,
     this.iconColor,
     this.iconSize,
     this.height = 18,
     this.width = 25,
     this.iconAtEnd = false,
-    this.backgroundColor = SchemaColors.primary, 
+    this.backgroundColor = SchemaColors.primary,
     this.disabled = false,
+    this.disabledBackgroundColor,
   });
 
   @override
@@ -36,8 +38,8 @@ class CustomIconButton extends StatelessWidget {
     );
 
     return ElevatedButton(
-
       style: ElevatedButton.styleFrom(
+        disabledBackgroundColor: disabledBackgroundColor,
         backgroundColor: backgroundColor,
         padding: EdgeInsets.symmetric(horizontal: width, vertical: height),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
