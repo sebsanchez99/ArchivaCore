@@ -4,6 +4,7 @@ import 'package:frontend/presentation/global/constants/schema_colors.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/file_explorer_bloc.dart';
 import 'package:frontend/presentation/pages/file_explorer/utils/utils.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_icon_button.dart';
+import 'package:intl/intl.dart';
 
 class FileDetails extends StatelessWidget {
   final FileModel file;
@@ -88,6 +89,8 @@ Widget build(BuildContext context) {
   }
 
   Widget _buildFileProperties() {
+    final formattedDate = DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(file.date));
+    final formattedCreationDate = DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(file.initialDate));
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -101,8 +104,10 @@ Widget build(BuildContext context) {
             const Divider(thickness: 1, color: SchemaColors.neutral800),
             _buildDetailRow(label: 'Tipo', value: file.type.toUpperCase()),
             _buildDetailRow(label: 'Tamaño', value: '${file.size} KB'),
+            _buildDetailRow(label: 'Autor', value: file.author),
+            _buildDetailRow(label: 'Fecha creación', value: formattedCreationDate),
+            _buildDetailRow(label: 'Última modificación', value: formattedDate),
             _buildDetailRow(label: 'Ruta', value: file.path),
-            _buildDetailRow(label: 'Última modificación', value: file.date),
           ],
         ),
       ),

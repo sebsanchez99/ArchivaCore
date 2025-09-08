@@ -68,8 +68,10 @@ class FileExplorerView extends StatelessWidget {
                                   tooltip: 'Agregar o crear',
                                   onSelected: (option) {
                                     if (option == 'Crear carpeta') {
+                                      Navigator.pop(context);
                                       showCreateFolderDialog(context);
                                     } else if (option == 'Adjuntar archivo') {
+                                      Navigator.pop(context);
                                       showAttachFolderDialog(context, bloc);
                                     }
                                   },

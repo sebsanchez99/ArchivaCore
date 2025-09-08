@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/domain/models/folder_model.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
+import 'package:frontend/presentation/pages/file_explorer/widgets/location_button.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
 import 'package:frontend/presentation/widgets/custom_input.dart';
 import 'package:frontend/presentation/widgets/folder/custom_folder.dart';
@@ -22,9 +23,20 @@ class _CreateFolderState extends State<CreateFolder> {
   String? selectedPath;
 
   @override
+  void initState() {
+    super.initState();
+    _nameController.addListener(_updatePreview);
+  }
+
+  @override
   void dispose() {
+    _nameController.removeListener(_updatePreview);
     _nameController.dispose();
     super.dispose();
+  }
+
+  void _updatePreview() {
+    setState(() {});
   }
 
   void _createFolder() {
@@ -69,7 +81,7 @@ class _CreateFolderState extends State<CreateFolder> {
             const Text('Organiza tus archivos creando una nueva carpeta.'),
             const SizedBox(height: 10),
 
-            //  Nombre
+            // 🔹 Nombre
             const Text(
               'Nombre de la carpeta',
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -82,43 +94,28 @@ class _CreateFolderState extends State<CreateFolder> {
             ),
             const SizedBox(height: 20),
 
-            // 🔹 Ubicación
             const Text(
               'Ubicación',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                side: const BorderSide(color: SchemaColors.border),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
-                ),
-              ),
-              onPressed: () async {
-                final ruta = await showDialog<String>(
-                  context: context,
-                  builder:
-                      (context) =>
-                          LocationPickerModal(rootFolders: widget.path),
-                );
-
-                if (ruta != null) {
-                  setState(() {
-                    selectedPath = ruta;
-                  });
-                }
-              },
-              child: Text(
-                selectedPath ?? "Seleccionar ubicación",
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: SchemaColors.textPrimary,
-                ),
+            SizedBox(
+              width: double.infinity,
+              child: LocationButton(
+                text: 'Seleccionar ubicación',
+                selectedPath: selectedPath,
+                onPressed: () async {
+                  final ruta = await showDialog<String>(
+                    context: context,
+                    builder: (context) => LocationPickerModal(rootFolders: widget.path),
+                  );
+              
+                  if (ruta != null) {
+                    setState(() {
+                      selectedPath = ruta;
+                    });
+                  }
+                },
               ),
             ),
             const SizedBox(height: 20),
@@ -147,12 +144,11 @@ class _CreateFolderState extends State<CreateFolder> {
                     child: CustomFolder(
                       onPressed: () {},
                       icon: Icons.folder,
-                      name:
-                          _nameController.text.isEmpty
-                              ? 'Nueva Carpeta'
-                              : _nameController.text,
-                      fileCount: '—',
-                      size: '—',
+                      name: _nameController.text.isEmpty
+                          ? 'Nueva Carpeta'
+                          : _nameController.text,
+                      fileCount: selectedPath != null ? 'En: ${selectedPath!}' : '—', // ⬅️ ¡Aquí está el cambio!
+                      size: '',
                     ),
                   ),
                 ),

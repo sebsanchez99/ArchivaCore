@@ -6,21 +6,47 @@ import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/file_explor
 import 'package:frontend/presentation/pages/file_explorer/bloc/events/file_explorer_events.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/states/file_explorer_state.dart';
 import 'package:frontend/presentation/pages/file_explorer/utils/utils.dart';
+import 'package:frontend/presentation/pages/file_explorer/widgets/location_button.dart';
+import 'package:frontend/presentation/pages/file_explorer/widgets/location_picker_modal.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 
-class AttachFile extends StatelessWidget {
+class AttachFile extends StatefulWidget {
   final FileExplorerBloc bloc;
 
   const AttachFile({
     super.key, 
-    required this.bloc
+    required this.bloc,
   });
+
+  @override
+  State<AttachFile> createState() => _AttachFileState();
+}
+
+class _AttachFileState extends State<AttachFile> {
+  final TextEditingController _nameController = TextEditingController();
+  String? selectedPath;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController.addListener(_updatePreview);
+  }
+
+  @override
+  void dispose() {
+    _nameController.removeListener(_updatePreview);
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  void _updatePreview() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: bloc,
+      value: widget.bloc,
       child: Form(
         child: AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -47,7 +73,7 @@ class AttachFile extends StatelessWidget {
                         loaded: (value) {
                           return value.file == null
                             ? InkWell(
-                                onTap: () => pickFile(context, bloc),
+                                onTap: () => pickFile(context, widget.bloc),
                                 child: DottedBorder(
                                   padding: const EdgeInsets.all(20),
                                   dashPattern: const [9],
@@ -81,62 +107,94 @@ class AttachFile extends StatelessWidget {
                                   ),
                                 ),
                               )
-                            : Container( 
-                              width: 355,
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              decoration: BoxDecoration(
-                                color: SchemaColors.neutral100,
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: SchemaColors.border),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
-                                    blurRadius: 5,
-                                    offset: const Offset(0, 2),
+                            : Column(
+                              children: [
+                                Container( 
+                                  width: 355,
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                  decoration: BoxDecoration(
+                                    color: SchemaColors.neutral100,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(color: SchemaColors.border),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.05),
+                                        blurRadius: 5,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              child: Row(
-                                children: [
-                                  // 🔹 Icono
-                                  const Icon(
-                                    LucideIcons.fileText, 
-                                    color: SchemaColors.primary700,
-                                    size: 28,
-                                  ),
-                                  const SizedBox(width: 15),
-                                  // 🔹 Nombre y tamaño del archivo
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          value.file!.name,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            color: SchemaColors.textPrimary,
-                                          ),
-                                          overflow: TextOverflow.ellipsis, 
+                                  child: Row(
+                                    children: [
+                                      // 🔹 Icono
+                                      Icon(
+                                        _getFileIcon(value.file!.extension!),
+                                        color: _getFileColor(value.file!.extension!),
+                                        size: 28,
+                                      ),
+                                      const SizedBox(width: 15),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              value.file!.name,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                color: SchemaColors.textPrimary,
+                                              ),
+                                              overflow: TextOverflow.ellipsis, 
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              "${(value.file!.size / 1024).toStringAsFixed(2)} KB",
+                                              style: const TextStyle(
+                                                color: SchemaColors.textSecondary,
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              'En: ${selectedPath ?? "—"}',
+                                              style: const TextStyle(
+                                                color: SchemaColors.textSecondary,
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          "${(value.file!.size / 1024).toStringAsFixed(2)} KB",
-                                          style: const TextStyle(
-                                            color: SchemaColors.textSecondary,
-                                            fontSize: 13,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                      // 🔹 Botón de eliminar
+                                      IconButton(
+                                        icon: const Icon(Icons.close, color: Colors.red, size: 20),
+                                        onPressed: () => context.read<FileExplorerBloc>().add(FileExplorerEvents.uploadFile(null)),
+                                        tooltip: 'Eliminar archivo',
+                                      ),
+                                    ],
                                   ),
-                                  // 🔹 Botón de eliminar
-                                  IconButton(
-                                    icon: const Icon(Icons.close, color: Colors.red, size: 20),
-                                    onPressed: () => context.read<FileExplorerBloc>().add(FileExplorerEvents.uploadFile(null)),
-                                    tooltip: 'Eliminar archivo',
+                                ),
+                                const SizedBox(height: 20),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  width: double.infinity,
+                                  child: LocationButton(
+                                    text: 'Seleccionar ubicación',
+                                    selectedPath: selectedPath,
+                                    onPressed: () async {
+                                      final ruta = await showDialog<String>(
+                                        context: context,
+                                        builder: (context) => LocationPickerModal(rootFolders: value.folders),
+                                      );
+                                  
+                                      if (ruta != null) {
+                                        setState(() {
+                                          selectedPath = ruta;
+                                        });
+                                      }
+                                    },
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             );
                         },
                         orElse: () => const SizedBox.shrink(),
@@ -144,7 +202,6 @@ class AttachFile extends StatelessWidget {
                     );
                   },
                 ),
-                const SizedBox(height: 40),
               ],
             ),
           ),
@@ -153,7 +210,7 @@ class AttachFile extends StatelessWidget {
               message: 'Cancelar',
               onPressed: () {
                 Navigator.pop(context);
-                bloc.add(FileExplorerEvents.uploadFile(null));
+                widget.bloc.add(FileExplorerEvents.uploadFile(null));
               } 
             ),
             CustomButton(
@@ -166,5 +223,49 @@ class AttachFile extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  IconData _getFileIcon(String type) {
+    switch (type.toLowerCase()) {
+      case "pdf":
+        return Icons.picture_as_pdf;
+      case "doc":
+      case "docx":
+        return Icons.description;
+      case "jpg":
+      case "png":
+      case "jpeg":
+        return Icons.image;
+      case "mp4":
+      case "avi":
+        return Icons.movie;
+      case "mp3":
+      case "wav":
+        return Icons.music_note;
+      default:
+        return Icons.insert_drive_file;
+    }
+  }
+
+  Color _getFileColor(String type) {
+    switch (type.toLowerCase()) {
+      case "pdf":
+        return Colors.red;
+      case "doc":
+      case "docx":
+        return Colors.blue;
+      case "jpg":
+      case "png":
+      case "jpeg":
+        return Colors.orange;
+      case "mp4":
+      case "avi":
+        return Colors.purple;
+      case "mp3":
+      case "wav":
+        return Colors.green;
+      default:
+        return SchemaColors.primary;
+    }
   }
 }
