@@ -17,7 +17,6 @@ class FileExplorerState with _$FileExplorerState {
     required FileExplorerViewType viewType,
     required List<FolderModel> folders,
     required List<FolderModel> filteredFolders,
-    required List<String> paths,
     ServerResponseModel? response,
     FileModel? selectedFile,
     FolderModel? selectedFolder,
