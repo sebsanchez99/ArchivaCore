@@ -12,15 +12,15 @@ class GridExplorerState with _$GridExplorerState {
     FolderModel? currentFolder,
     @Default([]) List<FolderModel> navigationStack,
     required List<FolderModel> path,
-    required List<FolderModel> rootFolders, // <-- carpeta raíz
+    required List<FolderModel> rootFolders, 
   }) = _GridExplorerState;
 
   factory GridExplorerState.initial({List<FolderModel>? rootFolders}) => GridExplorerState(
-        folders: rootFolders ?? [],
-        files: [],
-        navigationStack: [],
-        currentFolder: null,
-        path: [],
-        rootFolders: rootFolders ?? [],
-      );
+    folders: rootFolders ?? [],
+    files: [],
+    navigationStack: [],
+    currentFolder: null,
+    path: [],
+    rootFolders: rootFolders ?? [],
+  );
 }

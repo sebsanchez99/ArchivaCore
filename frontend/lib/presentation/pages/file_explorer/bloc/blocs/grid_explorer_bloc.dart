@@ -1,25 +1,19 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/domain/models/folder_model.dart';
 import 'package:frontend/domain/models/file_model.dart';
-import 'package:frontend/domain/repositories/file_explorer_repository.dart';
-import 'grid_explorer_events.dart';
-import 'grid_explorer_state.dart';
+import '../events/grid_explorer_events.dart';
+import '../states/grid_explorer_state.dart';
 
 class GridExplorerBloc extends Bloc<GridExplorerEvents, GridExplorerState> {
-  final FileExplorerRepository fileExplorerRepository;
 
-  GridExplorerBloc(GridExplorerState gridExplorerState, {
-    required List<FolderModel> rootFolders,
-    required this.fileExplorerRepository,
-  }) : super(GridExplorerState.initial(rootFolders: rootFolders)) {
+  GridExplorerBloc(super.initialState) {
     on<UpdateFromExplorer>(_onUpdateFromExplorer);
     on<OpenFolder>(_onOpenFolder);
     on<GoBack>(_onGoBack);
   }
 
   /// Actualiza el estado desde el bloc general
-  void _onUpdateFromExplorer(
-      UpdateFromExplorer event, Emitter<GridExplorerState> emit) {
+  void _onUpdateFromExplorer(UpdateFromExplorer event, Emitter<GridExplorerState> emit) {
     emit(state.copyWith(
       folders: event.folders.cast<FolderModel>(),
       files: event.files.cast<FileModel>(),
@@ -69,4 +63,5 @@ class GridExplorerBloc extends Bloc<GridExplorerEvents, GridExplorerState> {
       navigationStack: newStack,
     ));
   }
+
 }

@@ -13,4 +13,5 @@ class GridExplorerEvents with _$GridExplorerEvents {
   const factory GridExplorerEvents.openFolder(FolderModel folder) = OpenFolder;
 
   const factory GridExplorerEvents.goBack() = GoBack;
+  
 }

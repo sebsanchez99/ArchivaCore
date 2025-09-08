@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/presentation/enums/file_explorer_view_type.dart';
 import 'package:frontend/domain/models/folder_model.dart';
@@ -45,4 +46,15 @@ class FileExplorerEvents with _$FileExplorerEvents {
   factory FileExplorerEvents.loadFiles({
     required List<FileModel> files,
   }) = LoadFilesEvent;
+
+    factory FileExplorerEvents.selectFile({
+    required FileModel file,
+  }) = SelectFileEvent;
+
+  factory FileExplorerEvents.selectFolder({
+    required FolderModel folder,
+  }) = SelectFolderEvent;
+
+  const factory FileExplorerEvents.uploadFile(PlatformFile? result) = UploadFileEvent;
+
 }

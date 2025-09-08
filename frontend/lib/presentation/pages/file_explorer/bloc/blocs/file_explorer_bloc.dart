@@ -4,8 +4,8 @@ import 'package:frontend/domain/models/folder_model.dart';
 import 'package:frontend/domain/models/folder_response.dart';
 import 'package:frontend/domain/repositories/file_explorer_repository.dart';
 import 'package:frontend/presentation/enums/file_explorer_view_type.dart';
-import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_events.dart';
-import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_state.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/events/file_explorer_events.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/states/file_explorer_state.dart';
 
 class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
   final SearchController searchController = SearchController();
@@ -20,16 +20,29 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     on<InitializeEvent>(_onInitialize);
     on<ChangeViewTypeEvent>(_onChangeViewType);
     on<FilterFilesEvent>(_onFilterFiles);
+    on<SelectFileEvent>(_onSelectFile);
+    on<SelectFolderEvent>(_onSelectFolder);
+    on<UploadFileEvent>(_onUploadFile);
   }
+
   final FileExplorerRepository _fileExplorerRepository;
   Future<void> _onInitialize(InitializeEvent event, Emitter<FileExplorerState> emit) async {
     final result = await _fileExplorerRepository.getFolders();
+    final paths = await _fileExplorerRepository.getPaths();
     emit(
       result.when(
         right: (response) {
           final responseData = response.data;
           List<FolderModel> folders = (responseData is Map<String, dynamic>) ? FolderResponse.fromJson(responseData).folders : [];
-          return FileExplorerState.loaded(viewType: FileExplorerViewType.list(), folders: folders, filteredFolders: folders, response: response);
+          return FileExplorerState.loaded(
+            viewType: FileExplorerViewType.grid(), 
+            folders: folders, 
+            filteredFolders: folders, 
+            response: response, 
+            paths: paths,
+            selectedFile: null,
+            selectedFolder: null,
+          );
         }, 
         left: (failure) => FileExplorerState.failed(failure),
       ),
@@ -42,6 +55,12 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
       loaded: (value) {
         emit(value.copyWith(viewType: event.viewType));
       },
+    );
+  }
+
+  Future<void> _onUploadFile(UploadFileEvent event, Emitter<FileExplorerState> emit) async {
+    state.mapOrNull(
+      loaded: (value) => emit(value.copyWith(file: event.result))
     );
   }
 
@@ -67,6 +86,22 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
         return null;
       }
     }).whereType<FolderModel>().toList();
+  }
+
+  Future<void> _onSelectFile(SelectFileEvent event, Emitter<FileExplorerState> emit) async {
+    state.mapOrNull(
+      loaded: (value) {
+        emit(value.copyWith(selectedFile: event.file, selectedFolder: null)); // 👈 Update file and clear folder
+      },
+    );
+  }
+
+  Future<void> _onSelectFolder(SelectFolderEvent event, Emitter<FileExplorerState> emit) async {
+    state.mapOrNull(
+      loaded: (value) {
+        emit(value.copyWith(selectedFolder: event.folder, selectedFile: null)); // 👈 Update folder and clear file
+      },
+    );
   }
 
   @override
