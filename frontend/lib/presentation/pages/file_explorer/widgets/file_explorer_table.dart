@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_expandable_table/flutter_expandable_table.dart';
 import 'package:frontend/domain/models/file_model.dart';
-import 'package:frontend/presentation/widgets/buttons/custom_popupmenu.dart';
 import 'package:intl/intl.dart';
 import 'package:frontend/domain/models/folder_model.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
@@ -9,15 +8,13 @@ import 'package:frontend/presentation/global/constants/schema_colors.dart';
 class FolderExpandableTable extends StatelessWidget {
   final List<FolderModel> folders;
   final void Function(FileModel file)? onPreviewFile;
-  final void Function(FolderModel folder)? onEditFolder;
-  final void Function(FolderModel folder)? onOrganizeFolder;
+  final void Function(FolderModel folder)? onPreviewFolder;
 
   const FolderExpandableTable({
     super.key,
     required this.folders,
     this.onPreviewFile,
-    this.onEditFolder,
-    this.onOrganizeFolder,
+    this.onPreviewFolder,
   });
 
   static const double _rowHeight = 48.0;
@@ -71,11 +68,11 @@ class FolderExpandableTable extends StatelessWidget {
         },
       ),
       cells: [
-        _buildFileCell('${file.type} • ${file.size} MB'),  // Detalles
-        _buildFileCell(formattedCreated),                  // Creado
-        _buildFileCell(formattedLastModified),            // Última vez
-        _buildFileCell(file.author),                       // Autor
-        ExpandableTableCell(                               // Acciones
+        _buildFileCell('${file.type} • ${file.size} MB'), 
+        _buildFileCell(formattedCreated),                 
+        _buildFileCell(formattedLastModified),            
+        _buildFileCell(file.author),                      
+        ExpandableTableCell(                              
           child: Center(
             child: ElevatedButton(
               onPressed: () => onPreviewFile?.call(file),
@@ -142,43 +139,18 @@ class FolderExpandableTable extends StatelessWidget {
       ),
       cells: [
         _buildFileCell('${folder.files.length} archivos • ${totalSizeMB.toStringAsFixed(2)} MB'), // Última vez
-        _buildFileCell('--'),                                     // Detalles
-        _buildFileCell('--'),                                     // Creado
-        _buildFileCell('--'),                                     // Autor
-        ExpandableTableCell(                                       // Acciones
+        _buildFileCell('--'),                                     
+        _buildFileCell('--'),                                     
+        _buildFileCell('--'),                                     
+        ExpandableTableCell(                              
           child: Center(
-            child: SizedBox(
-              width: 36,
-              height: 36,
-              child: CustomPopupMenu<String>(
-                onSelected: (option) {
-                  if (option == 'edit') onEditFolder?.call(folder);
-                  if (option == 'organize') onOrganizeFolder?.call(folder);
-                },
-                items: const [
-                  PopupMenuItem(
-                    value: 'edit',
-                    child: Row(
-                      children: [
-                        Icon(Icons.edit, size: 18),
-                        SizedBox(width: 6),
-                        Text('Editar'),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'organize',
-                    child: Row(
-                      children: [
-                        Icon(Icons.folder_open, size: 18),
-                        SizedBox(width: 6),
-                        Text('Organizar'),
-                      ],
-                    ),
-                  ),
-                ],
-                child: const Text('・・・', textAlign: TextAlign.center),
+            child: ElevatedButton(
+              onPressed: () => onPreviewFolder?.call(folder),
+              style: ElevatedButton.styleFrom(
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               ),
+              child: const Text('👁️'),
             ),
           ),
         ),

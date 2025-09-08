@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/domain/models/folder_model.dart';
-import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_bloc.dart';
-import 'package:frontend/presentation/pages/file_explorer/bloc/grid_explorer_bloc.dart';
-import 'package:frontend/presentation/pages/file_explorer/bloc/grid_explorer_events.dart';
-import 'package:frontend/presentation/pages/file_explorer/bloc/grid_explorer_state.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/file_explorer_bloc.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/grid_explorer_bloc.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/events/grid_explorer_events.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/states/grid_explorer_state.dart';
+import 'package:frontend/presentation/pages/file_explorer/utils/utils.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/explorer_item_tile.dart';
 
 class FileExplorerGridView extends StatelessWidget {
@@ -38,28 +39,20 @@ class FileExplorerGridView extends StatelessWidget {
 
         return Column(
           children: [
-            // Barra de navegación
             Row(
               children: [
                 IconButton(
                   icon: Icon(
                     state.currentFolder == null ? Icons.home : Icons.arrow_back,
-                    color:
-                        state.currentFolder == null
-                            ? Colors
-                                .grey // home gris decorativo
-                            : Colors.black, // back normal
+                    color: state.currentFolder == null ? Colors.grey : Colors.black,
                   ),
-                  onPressed:
-                      state.currentFolder == null
-                          ? null // desactivado en home
-                          : () => gridBloc.add(GoBack()),
+                  onPressed: state.currentFolder == null ? null : () => gridBloc.add(GoBack()),
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                   hoverColor: Colors.transparent,
-                  disabledColor:
-                      Colors.grey, // color fijo cuando está deshabilitado
+                  disabledColor:Colors.grey, // color fijo cuando está deshabilitado
                 ),
+
                 const SizedBox(width: 10),
 
                 // Breadcrumb
@@ -96,7 +89,7 @@ class FileExplorerGridView extends StatelessWidget {
                               ),
                             ],
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                   ),
@@ -134,8 +127,7 @@ class FileExplorerGridView extends StatelessWidget {
                       : GridView.builder(
                         gridDelegate:
                             const SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent:
-                                  180, // ancho máximo de cada ítem
+                              maxCrossAxisExtent: 150, 
                               mainAxisSpacing: 10,
                               crossAxisSpacing: 10,
                               childAspectRatio: 1,
@@ -145,6 +137,7 @@ class FileExplorerGridView extends StatelessWidget {
                           if (index < currentFolders.length) {
                             final folder = currentFolders[index];
                             return ExplorerItemTile(
+                              bloc: bloc,
                               folder: folder,
                               onTap: () => gridBloc.add(OpenFolder(folder)),
                             );
@@ -152,10 +145,9 @@ class FileExplorerGridView extends StatelessWidget {
                             final file =
                                 currentFiles[index - currentFolders.length];
                             return ExplorerItemTile(
+                              bloc: bloc,
                               file: file,
-                              onTap: () {
-                                print("Abrir archivo: ${file.name}");
-                              },
+                              onTap: () => showFileDetailsDialog(context, file),
                             );
                           }
                         },

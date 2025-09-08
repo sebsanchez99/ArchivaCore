@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_bloc.dart';
-import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_state.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/file_explorer_bloc.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/states/file_explorer_state.dart';
+import 'package:frontend/presentation/pages/file_explorer/utils/utils.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/file_explorer_table.dart';
 import 'package:frontend/presentation/widgets/states/loading_state.dart';
 
@@ -21,7 +22,11 @@ class FileExplorerListView extends StatelessWidget {
               children: [
                 SizedBox(
                   height: MediaQuery.of(context).size.height - 250,
-                  child: FolderExpandableTable(folders: folders),
+                  child: FolderExpandableTable(
+                    folders: folders,
+                    onPreviewFolder: (folder) => showFolderDetailsDialog(context, folder),
+                    onPreviewFile: (file) => showFileDetailsDialog(context, file),
+                  ),
                 ),
               ],
             );

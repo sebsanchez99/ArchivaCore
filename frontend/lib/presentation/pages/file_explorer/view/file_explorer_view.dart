@@ -3,16 +3,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/domain/repositories/file_explorer_repository.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
 import 'package:frontend/presentation/enums/file_explorer_view_type.dart';
-import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_bloc.dart';
-import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_events.dart';
-import 'package:frontend/presentation/pages/file_explorer/bloc/file_explorer_state.dart';
-import 'package:frontend/presentation/pages/file_explorer/bloc/grid_explorer_bloc.dart';
-import 'package:frontend/presentation/pages/file_explorer/bloc/grid_explorer_state.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/file_explorer_bloc.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/events/file_explorer_events.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/states/file_explorer_state.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/grid_explorer_bloc.dart';
+import 'package:frontend/presentation/pages/file_explorer/bloc/states/grid_explorer_state.dart';
 import 'package:frontend/presentation/pages/file_explorer/utils/utils.dart';
 import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_details_view.dart';
 import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_grid_view.dart';
 import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_list_view.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
+import 'package:frontend/presentation/widgets/buttons/custom_icon_button.dart';
+import 'package:frontend/presentation/widgets/buttons/custom_popupmenu.dart';
 import 'package:frontend/presentation/widgets/states/failure_state.dart';
 import 'package:frontend/presentation/widgets/states/loading_state.dart';
 
@@ -21,147 +23,170 @@ class FileExplorerView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final widtdh = MediaQuery.of(context).size.width;
-
     return MultiBlocProvider(
       providers: [
-        /// Bloc general
         BlocProvider<FileExplorerBloc>(
           create: (_) => FileExplorerBloc(
             FileExplorerState.loading(),
             fileExplorerRepository: context.read<FileExplorerRepository>(),
           )..add(InitializeEvent()),
         ),
-
-        /// Bloc específico para Grid
         BlocProvider<GridExplorerBloc>(
-          create: (_) => GridExplorerBloc(
-            GridExplorerState.initial(rootFolders: []),
-            fileExplorerRepository: context.read<FileExplorerRepository>(), rootFolders: [],
-          ),
+          create: (_) => GridExplorerBloc(GridExplorerState.initial(rootFolders: [])),
         ),
       ],
       child: BlocConsumer<FileExplorerBloc, FileExplorerState>(
         listener: (context, state) {},
         builder: (context, state) {
           final bloc = context.read<FileExplorerBloc>();
-          final gridBloc = context.read<GridExplorerBloc>();
 
           return state.map(
             loading: (_) => const LoadingState(),
             loaded: (value) {
               return Scaffold(
                 body: Padding(
-                  padding: const EdgeInsets.only(left: 16.0, top: 16.0),
+                  padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      /// Encabezado con título y menú
+                      // Header Row
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
                             "Carpetas",
                             style: TextStyle(
-                              fontSize: 25,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          PopupMenuButton<String>(
-                            tooltip: 'Crear Carpeta o Adjuntar Archivo',
-                            offset: const Offset(0, 40),
-                            itemBuilder: (BuildContext context) =>
-                                <PopupMenuEntry<String>>[
-                              PopupMenuItem<String>(
-                                value: 'Crear Carpeta',
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.folder,
-                                      size: 25,
-                                      color: SchemaColors.warning,
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                CustomPopupMenu<String>(
+                                  tooltip: 'Agregar o crear',
+                                  onSelected: (option) {
+                                    if (option == 'Crear carpeta') {
+                                      showCreateFolderDialog(context);
+                                    } else if (option == 'Adjuntar archivo') {
+                                      showAttachFolderDialog(context, bloc);
+                                    }
+                                  },
+                                  items: <PopupMenuEntry<String>>[
+                                    PopupMenuItem<String>(
+                                      value: 'Crear Carpeta',
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.folder,
+                                            size: 25,
+                                            color: SchemaColors.warning,
+                                          ),
+                                          const SizedBox(width: 10),
+                                          const Text('Crear carpeta'),
+                                        ],
+                                      ),
                                     ),
-                                    const SizedBox(width: 10),
-                                    const Text('Crear Carpeta'),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem<String>(
-                                value: 'Adjuntar Archivo',
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.file_copy,
-                                      size: 25,
-                                      color: SchemaColors.secondary500,
+                                    PopupMenuItem<String>(
+                                      value: 'Adjuntar archivo',
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.file_copy,
+                                            size: 25,
+                                            color: SchemaColors.secondary500,
+                                          ),
+                                          const SizedBox(width: 10),
+                                          const Text('Adjuntar Archivo'),
+                                        ],
+                                      ),
                                     ),
-                                    const SizedBox(width: 10),
-                                    const Text('Adjuntar Archivo'),
                                   ],
+                                  child: CustomIconButton(
+                                    message: 'Agregar o crear',
+                                    icon: Icons.add,
+                                    disabledBackgroundColor: SchemaColors.primary500,
+                                  ),
                                 ),
-                              ),
-                            ],
-                            onSelected: (option) {
-                              if (option == 'Crear Carpeta') {
-                                showCreateFolderDialog(context);
-                              } else if (option == 'Adjuntar Archivo') {
-                                showAttachFolderDialog(context);
-                              }
-                            },
-                            child: TextButton.icon(
-                              icon: Icon(
-                                Icons.add,
-                                size: 30,
-                                color: SchemaColors.primary700,
-                              ),
-                              label: Text(
-                                'Agregar o crear',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: SchemaColors.primary700,
+                                const SizedBox(width: 20),
+                                IconButton(
+                                  tooltip: 'Refrescar',
+                                  onPressed: () => bloc.add(InitializeEvent()),
+                                  icon: Icon(Icons.refresh),
                                 ),
-                              ),
-                              onPressed: null,
-                              style: TextButton.styleFrom(
-                                foregroundColor: SchemaColors.primary700,
-                                backgroundColor: Colors.transparent,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 12,
-                                ),
-                                side: BorderSide(
-                                  color: SchemaColors.border,
-                                  width: 1,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                              ),
+                              ],
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 20),
 
-                      /// Barra de búsqueda + filtros + botones de vista
-                      Center(
-                        child: Wrap(
-                          verticalDirection: VerticalDirection.up,
-                          runSpacing: 10,
-                          alignment: WrapAlignment.center,
-                          spacing: 30,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          if (constraints.maxWidth > 800) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                // Search bar
+                                Expanded(
+                                  child: TextField(
+                                    controller: bloc.searchController,
+                                    decoration: InputDecoration(
+                                      isDense: true,
+                                      hintText: "Buscar carpetas...",
+                                      prefixIcon: const Icon(Icons.search),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 30),
+                                // Filter and view type buttons
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    CustomButton(onPressed: () {}, message: 'Tipo'),
+                                    const SizedBox(width: 20),
+                                    CustomButton(onPressed: () {}, message: 'Persona'),
+                                    const SizedBox(width: 20),
+                                    CustomButton(onPressed: () {}, message: 'Fecha'),
+                                    const SizedBox(width: 30),
+                                    IconButton(
+                                      tooltip: 'Cuadrícula',
+                                      icon: const Icon(Icons.grid_view),
+                                      color: SchemaColors.primary700,
+                                      iconSize: 30,
+                                      onPressed: () => bloc.add(ChangeViewTypeEvent(viewType: FileExplorerViewType.grid())),
+                                    ),
+                                    IconButton(
+                                      tooltip: 'Lista',
+                                      icon: const Icon(Icons.format_list_bulleted),
+                                      color: SchemaColors.primary700,
+                                      iconSize: 30,
+                                      onPressed: () => bloc.add(ChangeViewTypeEvent(viewType: FileExplorerViewType.details())),
+                                    ),
+                                    IconButton(
+                                      tooltip: 'Tabla',
+                                      icon: const Icon(Icons.table_chart),
+                                      color: SchemaColors.primary700,
+                                      iconSize: 30,
+                                      onPressed: () => bloc.add(ChangeViewTypeEvent(viewType: FileExplorerViewType.list())),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          } else {
+                            // Mobile/tablet view (smaller screens)
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 TextField(
                                   controller: bloc.searchController,
                                   decoration: InputDecoration(
                                     isDense: true,
-                                    constraints:
-                                        BoxConstraints(maxWidth: widtdh * 0.3),
                                     hintText: "Buscar carpetas...",
                                     prefixIcon: const Icon(Icons.search),
                                     border: OutlineInputBorder(
@@ -169,63 +194,53 @@ class FileExplorerView extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                CustomButton(onPressed: () {}, message: 'Tipo'),
-                                const SizedBox(width: 20),
-                                CustomButton(onPressed: () {}, message: 'Persona'),
-                                const SizedBox(width: 20),
-                                CustomButton(onPressed: () {}, message: 'Fecha'),
-                                const SizedBox(width: 30),
-                                IconButton(
-                                  tooltip: 'Inicio',
-                                  icon: Icon(
-                                    Icons.list,
-                                    color: SchemaColors.primary700,
-                                    size: 30,
-                                  ),
-                                  onPressed: () => bloc.add(ChangeViewTypeEvent(
-                                      viewType: FileExplorerViewType.list())),
-                                ),
-                                IconButton(
-                                  tooltip: 'Cuadrícula',
-                                  icon: Icon(
-                                    Icons.grid_view,
-                                    color: SchemaColors.primary700,
-                                    size: 30,
-                                  ),
-                                  onPressed: () => bloc.add(ChangeViewTypeEvent(
-                                      viewType: FileExplorerViewType.grid())),
-                                ),
-                                IconButton(
-                                  tooltip: 'Bodega',
-                                  icon: Icon(
-                                    Icons.details,
-                                    color: SchemaColors.primary700,
-                                    size: 30,
-                                  ),
-                                  onPressed: () => bloc.add(ChangeViewTypeEvent(
-                                      viewType: FileExplorerViewType.details())),
+                                const SizedBox(height: 20),
+                                Wrap(
+                                  spacing: 20,
+                                  runSpacing: 10,
+                                  children: [
+                                    CustomButton(onPressed: () {}, message: 'Tipo'),
+                                    CustomButton(onPressed: () {}, message: 'Persona'),
+                                    CustomButton(onPressed: () {}, message: 'Fecha'),
+                                    IconButton(
+                                      tooltip: 'Cuadrícula',
+                                      icon: const Icon(Icons.grid_view),
+                                      color: SchemaColors.primary700,
+                                      iconSize: 30,
+                                      onPressed: () => bloc.add(ChangeViewTypeEvent(viewType: FileExplorerViewType.grid())),
+                                    ),
+                                    IconButton(
+                                      tooltip: 'Lista',
+                                      icon: const Icon(Icons.format_list_bulleted),
+                                      color: SchemaColors.primary700,
+                                      iconSize: 30,
+                                      onPressed: () => bloc.add(ChangeViewTypeEvent(viewType: FileExplorerViewType.details())),
+                                    ),
+                                    IconButton(
+                                      tooltip: 'Tabla',
+                                      icon: const Icon(Icons.table_chart),
+                                      color: SchemaColors.primary700,
+                                      iconSize: 30,
+                                      onPressed: () => bloc.add(ChangeViewTypeEvent(viewType: FileExplorerViewType.list())),
+                                    ),
+                                  ],
                                 ),
                               ],
-                            ),
-                          ],
-                        ),
+                            );
+                          }
+                        },
                       ),
+
                       const SizedBox(height: 20),
 
-                      /// Vista principal: Lista, Grid o Details
                       Expanded(
                         child: value.viewType.when(
-                          list: () => FileExplorerListView(bloc: bloc),
                           grid: () => FileExplorerGridView(
                             bloc: bloc,
-                            gridBloc: gridBloc,
+                            gridBloc: context.read<GridExplorerBloc>(),
                           ),
                           details: () => FileExplorerDetailsView(bloc: bloc),
+                          list: () => FileExplorerListView(bloc: bloc),
                         ),
                       ),
                     ],
@@ -233,8 +248,7 @@ class FileExplorerView extends StatelessWidget {
                 ),
               );
             },
-            failed: (value) =>
-                FailureState(failure: value.failure, onRetry: () {}),
+            failed: (value) => FailureState(failure: value.failure, onRetry: () {}),
           );
         },
       ),
