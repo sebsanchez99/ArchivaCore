@@ -31,6 +31,10 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
   final FileExplorerRepository _fileExplorerRepository;
   
   Future<void> _onInitialize(InitializeEvent event, Emitter<FileExplorerState> emit) async {
+    state.maybeWhen(
+      loading: () {},
+      orElse: () => emit(FileExplorerState.loading()),
+    );
     final result = await _fileExplorerRepository.getFolders();
     emit(
       result.when(
