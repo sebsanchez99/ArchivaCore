@@ -7,6 +7,7 @@ import 'package:frontend/domain/models/folder_model.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/file_explorer_bloc.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/states/file_explorer_state.dart';
+import 'package:frontend/presentation/pages/file_explorer/utils/utils.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/location_button.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/location_picker_modal.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
@@ -166,6 +167,11 @@ class EditFolderState extends State<EditFolder> {
        backgroundColor: SchemaColors.primary,
        iconColor: Colors.white,
        onPressed: () async {
+        if (selectedPath == null) {
+          await showErrorDialog(context, 'La ubicación de la carpeta es obligatoria');
+          return;
+        }   
+             
         if (_formKey.currentState!.validate()) {
         }
        },

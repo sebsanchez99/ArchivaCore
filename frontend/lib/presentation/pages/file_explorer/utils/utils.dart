@@ -11,6 +11,7 @@ import 'package:frontend/presentation/pages/file_explorer/widgets/edit_file.dart
 import 'package:frontend/presentation/pages/file_explorer/widgets/edit_folder.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/filedetailsdialog.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/folderdetailsdialog.dart';
+import 'package:frontend/presentation/widgets/dialogs/error_dialog.dart';
 import 'package:frontend/presentation/widgets/dialogs/info_dialog.dart';
 
 Future<void> showCreateFolderDialog(BuildContext context) async {
@@ -105,6 +106,15 @@ Future<void> showDownloadFileConfirmationDialog(BuildContext context, FileModel 
       message: '¿Desea descargar ${file.name}?',
       onPressed: () {}
       // onPressed: () => bloc.add(DeleteFileEvent(fileID: fileID))
+    ),
+  );
+}
+
+Future<void> showErrorDialog(BuildContext context, String message) async{
+  return showDialog(
+    context: context, 
+    builder:(context) => ErrorDialog(
+      message: message
     ),
   );
 }

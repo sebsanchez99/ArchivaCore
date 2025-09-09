@@ -5,6 +5,7 @@ import 'package:frontend/domain/models/file_model.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/file_explorer_bloc.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/states/file_explorer_state.dart';
+import 'package:frontend/presentation/pages/file_explorer/utils/utils.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/location_button.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/location_picker_modal.dart';
 import 'package:frontend/presentation/widgets/custom_input.dart';
@@ -12,7 +13,7 @@ import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_icon_button.dart';
 import 'package:frontend/utils/validator/form_validator.dart';
 import 'package:frontend/utils/validator/form_validator_extension.dart';
-import 'package:intl/intl.dart'; // Mantén este import si el otro desarrollador lo necesita
+import 'package:intl/intl.dart'; 
 
 class EditFile extends StatefulWidget {
   final FileModel file;
@@ -157,11 +158,14 @@ class EditFileState extends State<EditFile> {
               backgroundColor: SchemaColors.primary,
               iconColor: Colors.white,
               onPressed:() async {
+                if (selectedPath == null) {
+                  await showErrorDialog(context, 'La ubicación de la carpeta es obligatoria');
+                  return;
+                }  
+                
                 if (_formKey.currentState!.validate()) {
                   // widget.bloc.add();
-                } else {
-                  return;
-                }
+                } 
               },
             ),
           ],
