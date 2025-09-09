@@ -65,4 +65,8 @@ class FileExplorerEvents with _$FileExplorerEvents {
 
   factory FileExplorerEvents.deleteResponse() = DeleteResponseEvent;
   factory FileExplorerEvents.downloadFile({required String filePath}) = DownloadFileEvent;
+    factory FileExplorerEvents.filterByTypesAndAuthors({
+    required Set<String> selectedTypes,
+    required Set<String> selectedAuthors,
+  }) = FilterByTypesAndAuthorsEvent;
 }

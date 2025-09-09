@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/presentation/global/constants/schema_colors.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/file_explorer_bloc.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/states/file_explorer_state.dart';
 import 'package:frontend/presentation/widgets/states/loading_state.dart';

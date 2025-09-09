@@ -12,7 +12,7 @@ import 'package:frontend/presentation/pages/file_explorer/utils/utils.dart';
 import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_details_view.dart';
 import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_grid_view.dart';
 import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_list_view.dart';
-import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
+import 'package:frontend/presentation/pages/file_explorer/widgets/multi_select_dropdown.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_icon_button.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_popupmenu.dart';
 import 'package:frontend/presentation/widgets/states/failure_state.dart';
@@ -159,11 +159,19 @@ class FileExplorerView extends StatelessWidget {
                                 Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    CustomButton(onPressed: () {}, message: 'Tipo'),
+                                    MultiSelectDropdown(
+                                      hintText: 'Tipo', 
+                                      items: value.allTypes, 
+                                      tooltip: 'Tipo de archivo', 
+                                      onSelectionChanged: (selectedTypes)=> bloc.add(FilterByTypesAndAuthorsEvent(selectedTypes: selectedTypes, selectedAuthors: value.selectedAuthors))
+                                    ),
                                     const SizedBox(width: 20),
-                                    CustomButton(onPressed: () {}, message: 'Persona'),
-                                    const SizedBox(width: 20),
-                                    CustomButton(onPressed: () {}, message: 'Fecha'),
+                                    MultiSelectDropdown(
+                                      hintText: 'Autor', 
+                                      items: value.allAuthors, 
+                                      tooltip: 'Autor de archivo', 
+                                      onSelectionChanged: (selectedAuthors)=> bloc.add(FilterByTypesAndAuthorsEvent(selectedTypes: value.selectedTypes, selectedAuthors: selectedAuthors))
+                                    ),
                                     const SizedBox(width: 30),
                                     IconButton(
                                       tooltip: 'Cuadrícula',
@@ -211,9 +219,19 @@ class FileExplorerView extends StatelessWidget {
                                   spacing: 20,
                                   runSpacing: 10,
                                   children: [
-                                    CustomButton(onPressed: () {}, message: 'Tipo'),
-                                    CustomButton(onPressed: () {}, message: 'Persona'),
-                                    CustomButton(onPressed: () {}, message: 'Fecha'),
+                                    MultiSelectDropdown(
+                                      hintText: 'Tipo', 
+                                      items: value.allTypes, 
+                                      tooltip: 'Tipo de archivo', 
+                                      onSelectionChanged: (selectedTypes)=> bloc.add(FilterByTypesAndAuthorsEvent(selectedTypes: selectedTypes, selectedAuthors: value.selectedAuthors))
+                                    ),
+                                    const SizedBox(width: 20),
+                                    MultiSelectDropdown(
+                                      hintText: 'Autor', 
+                                      items: value.allAuthors, 
+                                      tooltip: 'Autor de archivo', 
+                                      onSelectionChanged: (selectedAuthors)=> bloc.add(FilterByTypesAndAuthorsEvent(selectedTypes: value.selectedTypes, selectedAuthors: selectedAuthors))
+                                    ),
                                     IconButton(
                                       tooltip: 'Cuadrícula',
                                       icon: const Icon(Icons.grid_view),

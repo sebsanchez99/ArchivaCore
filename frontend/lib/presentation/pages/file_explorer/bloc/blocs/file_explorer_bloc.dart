@@ -1,11 +1,13 @@
+// file_explorer_bloc.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/domain/models/folder_model.dart';
 import 'package:frontend/domain/models/folder_response.dart';
 import 'package:frontend/domain/repositories/file_explorer_repository.dart';
 import 'package:frontend/presentation/enums/file_explorer_view_type.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/events/file_explorer_events.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/states/file_explorer_state.dart';
+import 'package:frontend/utils/file_filter.dart';
 
 class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
   final SearchController searchController = SearchController();
@@ -27,10 +29,12 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     on<CreateFolderEvent>(_onCreateFolder);
     on<DeleteResponseEvent>(_onDeleteResponse);
     on<DownloadFileEvent>(_onDownloadFile);
+    on<FilterByTypesAndAuthorsEvent>(_onFilterByTypesAndAuthors);
   }
 
   final FileExplorerRepository _fileExplorerRepository;
-  
+  final _fileFilter = FileFilter();
+
   Future<void> _onInitialize(InitializeEvent event, Emitter<FileExplorerState> emit) async {
     state.maybeWhen(
       loading: () {},
@@ -42,15 +46,19 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
         right: (response) {
           final responseData = response.data;
           FolderResponse content = FolderResponse.fromJson(responseData);
+          final allTypes = _fileFilter.getAllTypes(content);
+          final allAuthors = _fileFilter.getAllAuthors(content);
           return FileExplorerState.loaded(
-            viewType: FileExplorerViewType.grid(), 
-            content: content, 
-            filteredContent: content, 
-            response: null, 
+            viewType: FileExplorerViewType.grid(),
+            content: content,
+            filteredContent: content,
+            response: null,
             selectedFile: null,
             selectedFolder: null,
+            allTypes: allTypes,
+            allAuthors: allAuthors,
           );
-        }, 
+        },
         left: (failure) => FileExplorerState.failed(failure),
       ),
     );
@@ -68,19 +76,19 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
   }
 
   Future<void> _onUploadFile(UploadFileEvent event, Emitter<FileExplorerState> emit) async {
-    state.mapOrNull(
-      loaded: (value) => emit(value.copyWith(file: event.result))
-    );
+    state.mapOrNull(loaded: (value) => emit(value.copyWith(file: event.result)));
   }
 
   Future<void> _onFilterContent(FilterContentEvent event, Emitter<FileExplorerState> emit) async {
     state.mapOrNull(
       loaded: (value) {
-        final elementName = event.fileName.toLowerCase();
-        final filteredFolders = value.content.folders.where((folder) => folder.name.toLowerCase().contains(elementName)).toList();
-        final filteredFiles = value.content.files.where((file) => file.name.toLowerCase().contains(elementName)).toList();
-        final filteredContent = FolderResponse(files: filteredFiles, folders: filteredFolders);
-        emit(value.copyWith(filteredContent: filteredContent));
+        final result = _fileFilter.applyAllFilters(
+          content: value.content,
+          query: searchController.text,
+          selectedTypes: value.selectedTypes,
+          selectedAuthors: value.selectedAuthors,
+        );
+        emit(value.copyWith(filteredContent: result));
       },
     );
   }
@@ -92,17 +100,14 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     await state.mapOrNull(
       loaded: (value) async {
         emit(FileExplorerState.loading());
-
         final result = await _fileExplorerRepository.createFolder(
           event.folderName,
           event.routefolder,
         );
-
         emit(
           result.when(
             left: (failure) => FileExplorerState.failed(failure),
             right: (response) {
-              // Refresca la lista de carpetas
               add(FileExplorerEvents.initialize());
               return value.copyWith(response: response);
             },
@@ -112,28 +117,10 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     );
   }
 
-  List<FolderModel> _filterFoldersRecursive(
-    List<FolderModel> folders,
-    String query,
-  ) {
-    final lowerQuery = query.toLowerCase();
-    return folders.map((folder) {
-      final filteredSubFolders =
-          _filterFoldersRecursive(folder.subFolders, query);
-      final matches = folder.name.toLowerCase().contains(lowerQuery) ||
-          filteredSubFolders.isNotEmpty;
-      if (matches) {
-        return folder.copyWith(subFolders: filteredSubFolders);
-      } else {
-        return null;
-      }
-    }).whereType<FolderModel>().toList();
-  }
-
   Future<void> _onSelectFile(SelectFileEvent event, Emitter<FileExplorerState> emit) async {
     state.mapOrNull(
       loaded: (value) {
-        emit(value.copyWith(selectedFile: event.file, selectedFolder: null)); 
+        emit(value.copyWith(selectedFile: event.file, selectedFolder: null));
       },
     );
   }
@@ -141,7 +128,7 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
   Future<void> _onSelectFolder(SelectFolderEvent event, Emitter<FileExplorerState> emit) async {
     state.mapOrNull(
       loaded: (value) {
-        emit(value.copyWith(selectedFolder: event.folder, selectedFile: null)); 
+        emit(value.copyWith(selectedFolder: event.folder, selectedFile: null));
       },
     );
   }
@@ -149,23 +136,39 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
   Future<void> _onDeleteResponse(DeleteResponseEvent event, Emitter<FileExplorerState> emit) async {
     state.mapOrNull(
       loaded: (value) {
-        emit(value.copyWith(response: null)); 
+        emit(value.copyWith(response: null));
       },
     );
   }
 
   Future<void> _onDownloadFile(DownloadFileEvent event, Emitter<FileExplorerState> emit) async {
     final result = await _fileExplorerRepository.downloadFile(event.filePath);
-      result.when(
-        right: (response){
-          print(response);
-          final responseData = response.data as String;
-          print(responseData);
-        }, 
-        left: (failure) => FileExplorerState.failed(failure)
-      );
-    // emit(
-    // );
+    result.when(
+      right: (response) {
+        print(response);
+        final responseData = response.data as String;
+        print(responseData);
+      },
+      left: (failure) => FileExplorerState.failed(failure),
+    );
+  }
+
+  Future<void> _onFilterByTypesAndAuthors(FilterByTypesAndAuthorsEvent event, Emitter<FileExplorerState> emit) async {
+    state.mapOrNull(
+      loaded: (value) {
+        final updatedState = value.copyWith(
+          selectedTypes: event.selectedTypes,
+          selectedAuthors: event.selectedAuthors,
+        );
+        final result = _fileFilter.applyAllFilters(
+          content: value.content,
+          query: searchController.text,
+          selectedTypes: event.selectedTypes,
+          selectedAuthors: event.selectedAuthors,
+        );
+        emit(updatedState.copyWith(filteredContent: result));
+      },
+    );
   }
 
   @override

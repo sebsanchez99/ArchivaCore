@@ -16,8 +16,12 @@ class FileExplorerState with _$FileExplorerState {
   //Estado de cargado de la vista de archivos
   factory FileExplorerState.loaded({
     required FileExplorerViewType viewType,
+    @Default(<String>{}) Set<String> selectedTypes,
+    @Default(<String>{}) Set<String> selectedAuthors,
     @Default(FolderResponse(folders: [], files: [])) FolderResponse content,
     @Default(FolderResponse(folders: [], files: [])) FolderResponse filteredContent,
+    @Default([]) List<String> allTypes,
+    @Default([]) List<String> allAuthors,
     ServerResponseModel? response,
     FileModel? selectedFile,
     FolderModel? selectedFolder,
