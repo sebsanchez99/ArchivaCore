@@ -1,5 +1,8 @@
 // file_explorer_bloc.dart
 
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/domain/models/folder_response.dart';
@@ -141,17 +144,37 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     );
   }
 
-  Future<void> _onDownloadFile(DownloadFileEvent event, Emitter<FileExplorerState> emit) async {
-    final result = await _fileExplorerRepository.downloadFile(event.filePath);
-    result.when(
-      right: (response) {
-        print(response);
-        final responseData = response.data as String;
-        print(responseData);
-      },
-      left: (failure) => FileExplorerState.failed(failure),
-    );
-  }
+Future<void> _onDownloadFile(DownloadFileEvent event, Emitter<FileExplorerState> emit) async {
+  final result = await _fileExplorerRepository.downloadFile(event.filePath);
+  
+  result.when(
+    right: (response) async {
+      final fileData = response.data as Map<String, dynamic>;
+      final rawBuffer = fileData['buffer']['data'] as List<dynamic>;
+      final fileName = fileData['fileName'] as String;
+
+      final List<int> buffer = rawBuffer.cast<int>();
+
+      final Uint8List bytes = Uint8List.fromList(buffer);
+      
+      try {
+        final String? filePath = await FilePicker.platform.saveFile(
+          fileName: fileName,
+          bytes: bytes,
+        );
+
+        if (filePath != null) {
+          print('Archivo guardado en: $filePath');
+        } else {
+          print('El usuario canceló la descarga.');
+        }
+      } catch (e) {
+        print('Error al guardar el archivo: $e');
+      }
+    },
+    left: (failure) => emit(FileExplorerState.failed(failure)),
+  );
+}
 
   Future<void> _onFilterByTypesAndAuthors(FilterByTypesAndAuthorsEvent event, Emitter<FileExplorerState> emit) async {
     state.mapOrNull(

@@ -23,8 +23,9 @@ class FileExplorerService {
   }
 
   HttpFuture<ServerResponseModel> downloadFile(String fileRoute) {
+    print(fileRoute);
     return DioHandler.handleRequest(
-      () => _dio.get('/supa/downloadFile', queryParameters: {'fileRoute': fileRoute}),
+      () => _dio.get('/supa/downloadFile', data: {'fileRoute': fileRoute}),
       (response) => ServerResponseModel.fromJson(response),
     );
   }
