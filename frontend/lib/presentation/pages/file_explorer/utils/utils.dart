@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/domain/models/file_model.dart';
 import 'package:frontend/domain/models/folder_model.dart';
 import 'package:frontend/domain/models/server_response_model.dart';
+import 'package:frontend/presentation/global/constants/schema_colors.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/file_explorer_bloc.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/events/file_explorer_events.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/attach_file.dart';
@@ -28,7 +29,7 @@ Future<void> showCreateFolderDialog(BuildContext context) async {
         value: bloc,
         child: state.maybeMap(
           loaded: (value) {
-            return CreateFolder(path: value.folders);
+            return CreateFolder(path: value.content.folders);
           },
           orElse: () {
             return const Center(child: CircularProgressIndicator());
@@ -137,3 +138,47 @@ Future<void> showResult(BuildContext context, ServerResponseModel response) asyn
     builder: (context) => response.result ? SuccessDialog (message: response.message) : ErrorDialog(message: response.message),
   );
 }
+
+  IconData getFileIcon(String type) {
+    switch (type.toLowerCase()) {
+      case "pdf":
+        return Icons.picture_as_pdf;
+      case "doc":
+      case "docx":
+        return Icons.description;
+      case "jpg":
+      case "png":
+      case "jpeg":
+        return Icons.image;
+      case "mp4":
+      case "avi":
+        return Icons.movie;
+      case "mp3":
+      case "wav":
+        return Icons.music_note;
+      default:
+        return Icons.insert_drive_file;
+    }
+  }
+
+  Color getFileColor(String type) {
+    switch (type.toLowerCase()) {
+      case "pdf":
+        return Colors.red;
+      case "doc":
+      case "docx":
+        return Colors.blue;
+      case "jpg":
+      case "png":
+      case "jpeg":
+        return Colors.orange;
+      case "mp4":
+      case "avi":
+        return Colors.purple;
+      case "mp3":
+      case "wav":
+        return Colors.green;
+      default:
+        return SchemaColors.primary;
+    }
+  }

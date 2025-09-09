@@ -17,13 +17,15 @@ class FileExplorerListView extends StatelessWidget {
       builder: (context, state) {
         return state.maybeMap(
           loaded: (value) {
-            final folders = value.filteredFolders;
+            final folders = value.filteredContent.folders;
+            final files = value.filteredContent.files;
             return Column(
               children: [
                 SizedBox(
                   height: MediaQuery.of(context).size.height - 250,
                   child: FolderExpandableTable(
                     folders: folders,
+                    files: files,
                     onPreviewFolder: (folder) => showFolderDetailsDialog(context, folder),
                     onPreviewFile: (file) => showFileDetailsDialog(context, file),
                   ),

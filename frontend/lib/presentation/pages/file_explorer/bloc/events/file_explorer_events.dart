@@ -17,9 +17,9 @@ class FileExplorerEvents with _$FileExplorerEvents {
   }) = ChangeViewTypeEvent;
 
   // Filtrar archivos por nombre
-  factory FileExplorerEvents.filterFiles({
+  factory FileExplorerEvents.filterContent({
     required String fileName,
-  }) = FilterFilesEvent;
+  }) = FilterContentEvent;
 
   // Actualizar un archivo
   factory FileExplorerEvents.putFiles({

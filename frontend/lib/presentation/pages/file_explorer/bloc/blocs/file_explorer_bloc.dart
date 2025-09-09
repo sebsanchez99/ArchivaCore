@@ -15,12 +15,12 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     required FileExplorerRepository fileExplorerRepository,
   }) : _fileExplorerRepository = fileExplorerRepository {
     searchController.addListener(() {
-      add(FilterFilesEvent(fileName: searchController.text));
+      add(FilterContentEvent(fileName: searchController.text));
     });
 
     on<InitializeEvent>(_onInitialize);
     on<ChangeViewTypeEvent>(_onChangeViewType);
-    on<FilterFilesEvent>(_onFilterFiles);
+    on<FilterContentEvent>(_onFilterContent);
     on<SelectFileEvent>(_onSelectFile);
     on<SelectFolderEvent>(_onSelectFolder);
     on<UploadFileEvent>(_onUploadFile);
@@ -41,11 +41,11 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
       result.when(
         right: (response) {
           final responseData = response.data;
-          List<FolderModel> folders = (responseData is Map<String, dynamic>) ? FolderResponse.fromJson(responseData).folders : [];
+          FolderResponse content = FolderResponse.fromJson(responseData);
           return FileExplorerState.loaded(
             viewType: FileExplorerViewType.grid(), 
-            folders: folders, 
-            filteredFolders: folders, 
+            content: content, 
+            filteredContent: content, 
             response: null, 
             selectedFile: null,
             selectedFolder: null,
@@ -73,12 +73,14 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     );
   }
 
-  Future<void> _onFilterFiles(FilterFilesEvent event, Emitter<FileExplorerState> emit) async {
+  Future<void> _onFilterContent(FilterContentEvent event, Emitter<FileExplorerState> emit) async {
     state.mapOrNull(
       loaded: (value) {
-        final filteredFolders =
-            _filterFoldersRecursive(value.folders, event.fileName);
-        emit(value.copyWith(filteredFolders: filteredFolders));
+        final elementName = event.fileName.toLowerCase();
+        final filteredFolders = value.content.folders.where((folder) => folder.name.toLowerCase().contains(elementName)).toList();
+        final filteredFiles = value.content.files.where((file) => file.name.toLowerCase().contains(elementName)).toList();
+        final filteredContent = FolderResponse(files: filteredFiles, folders: filteredFolders);
+        emit(value.copyWith(filteredContent: filteredContent));
       },
     );
   }

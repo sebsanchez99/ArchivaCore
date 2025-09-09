@@ -109,7 +109,7 @@ class EditFileState extends State<EditFile> {
                                 onPressed: () async {
                                   final ruta = await showDialog<String>(
                                   context: context,
-                                  builder: (context) => LocationPickerModal(rootFolders: value.folders),
+                                  builder: (context) => LocationPickerModal(rootFolders: value.content.folders),
                                   );
                                   if (ruta != null) {
                                     setState(() {

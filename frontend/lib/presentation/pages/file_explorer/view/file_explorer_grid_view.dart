@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/domain/models/file_model.dart';
 import 'package:frontend/domain/models/folder_model.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/file_explorer_bloc.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/grid_explorer_bloc.dart';
@@ -22,12 +23,16 @@ class FileExplorerGridView extends StatelessWidget {
   Widget build(BuildContext context) {
     // Carpetas raíz desde el bloc general
     final folders = bloc.state.maybeMap(
-      loaded: (value) => List<FolderModel>.from(value.filteredFolders),
-      orElse: () => <FolderModel>[],
+    loaded: (value) => List<FolderModel>.from(value.filteredContent.folders),
+    orElse: () => <FolderModel>[],
     );
 
+      final files = bloc.state.maybeMap(
+    loaded: (value) => List<FileModel>.from(value.filteredContent.files),
+    orElse: () => <FileModel>[],
+    );
     // Inicializamos el GridBloc con las carpetas raíz
-    gridBloc.add(UpdateFromExplorer(folders: folders, files: []));
+    gridBloc.add(UpdateFromExplorer(folders: folders, files: files));
 
     return BlocBuilder<GridExplorerBloc, GridExplorerState>(
       bloc: gridBloc,

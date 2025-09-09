@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:frontend/domain/failures/http_request_failure.dart';
 import 'package:frontend/domain/models/file_model.dart';
 import 'package:frontend/domain/models/folder_model.dart';
+import 'package:frontend/domain/models/folder_response.dart';
 import 'package:frontend/domain/models/server_response_model.dart';
 import 'package:frontend/presentation/enums/file_explorer_view_type.dart';
 
@@ -15,8 +16,8 @@ class FileExplorerState with _$FileExplorerState {
   //Estado de cargado de la vista de archivos
   factory FileExplorerState.loaded({
     required FileExplorerViewType viewType,
-    required List<FolderModel> folders,
-    required List<FolderModel> filteredFolders,
+    @Default(FolderResponse(folders: [], files: [])) FolderResponse content,
+    @Default(FolderResponse(folders: [], files: [])) FolderResponse filteredContent,
     ServerResponseModel? response,
     FileModel? selectedFile,
     FolderModel? selectedFolder,
