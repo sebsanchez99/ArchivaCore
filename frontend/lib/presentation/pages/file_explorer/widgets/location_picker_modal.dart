@@ -60,6 +60,7 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
       backgroundColor: SchemaColors.neutral100,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: const Text("Seleccionar ubicación"),
+      actionsAlignment: MainAxisAlignment.center,
       content: SizedBox(
         width: 400,
         height: 300,
