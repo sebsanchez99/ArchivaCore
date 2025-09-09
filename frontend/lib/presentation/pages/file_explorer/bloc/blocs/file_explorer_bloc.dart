@@ -26,6 +26,7 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     on<UploadFileEvent>(_onUploadFile);
     on<CreateFolderEvent>(_onCreateFolder);
     on<DeleteResponseEvent>(_onDeleteResponse);
+    on<DownloadFileEvent>(_onDownloadFile);
   }
 
   final FileExplorerRepository _fileExplorerRepository;
@@ -149,6 +150,20 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
         emit(value.copyWith(response: null)); 
       },
     );
+  }
+
+  Future<void> _onDownloadFile(DownloadFileEvent event, Emitter<FileExplorerState> emit) async {
+    final result = await _fileExplorerRepository.downloadFile(event.filePath);
+      result.when(
+        right: (response){
+          print(response);
+          final responseData = response.data as String;
+          print(responseData);
+        }, 
+        left: (failure) => FileExplorerState.failed(failure)
+      );
+    // emit(
+    // );
   }
 
   @override

@@ -105,8 +105,7 @@ Future<void> showDownloadFileConfirmationDialog(BuildContext context, FileModel 
     context: context, 
     builder:(context) => InfoDialog(
       message: '¿Desea descargar ${file.name}?',
-      onPressed: () {}
-      // onPressed: () => bloc.add(DeleteFileEvent(fileID: fileID))
+      onPressed: () => bloc.add(DownloadFileEvent(filePath: file.path))
     ),
   );
 }

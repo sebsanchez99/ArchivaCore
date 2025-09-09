@@ -64,4 +64,5 @@ class FileExplorerEvents with _$FileExplorerEvents {
   }) = CreateFolderEvent;
 
   factory FileExplorerEvents.deleteResponse() = DeleteResponseEvent;
+  factory FileExplorerEvents.downloadFile({required String filePath}) = DownloadFileEvent;
 }
