@@ -62,4 +62,6 @@ class FileExplorerEvents with _$FileExplorerEvents {
     required String folderName,
     required String routefolder,
   }) = CreateFolderEvent;
+
+  factory FileExplorerEvents.deleteResponse() = DeleteResponseEvent;
 }

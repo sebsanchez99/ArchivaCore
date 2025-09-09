@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/domain/models/file_model.dart';
 import 'package:frontend/domain/models/folder_model.dart';
+import 'package:frontend/domain/models/server_response_model.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/file_explorer_bloc.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/events/file_explorer_events.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/attach_file.dart';
@@ -13,6 +14,7 @@ import 'package:frontend/presentation/pages/file_explorer/widgets/filedetailsdia
 import 'package:frontend/presentation/pages/file_explorer/widgets/folderdetailsdialog.dart';
 import 'package:frontend/presentation/widgets/dialogs/error_dialog.dart';
 import 'package:frontend/presentation/widgets/dialogs/info_dialog.dart';
+import 'package:frontend/presentation/widgets/dialogs/success_dialog.dart';
 
 Future<void> showCreateFolderDialog(BuildContext context) async {
   final bloc = context.read<FileExplorerBloc>();
@@ -38,7 +40,6 @@ Future<void> showCreateFolderDialog(BuildContext context) async {
 }
 
 Future<void> showEditFolderDialog(BuildContext context, FolderModel folder, FileExplorerBloc bloc) async {
-  
   return showDialog(
     context: context,
     barrierDismissible: false,
@@ -123,11 +124,17 @@ Future<void> pickFile(BuildContext context, FileExplorerBloc bloc) async {
   final result = await FilePicker.platform.pickFiles(
     withData: true,
     type: FileType.custom,
-    allowedExtensions: ['pdf', 'docx', 'txt'], 
   );
 
   if (result != null && result.files.isNotEmpty) {
     final file = result.files.first;  
     bloc.add(UploadFileEvent(file)); 
   }
+}
+
+Future<void> showResult(BuildContext context, ServerResponseModel response) async {
+  return showDialog(
+    context: context,
+    builder: (context) => response.result ? SuccessDialog (message: response.message) : ErrorDialog(message: response.message),
+  );
 }

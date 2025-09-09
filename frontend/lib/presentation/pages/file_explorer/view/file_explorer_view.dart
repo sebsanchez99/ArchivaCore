@@ -36,7 +36,17 @@ class FileExplorerView extends StatelessWidget {
         ),
       ],
       child: BlocConsumer<FileExplorerBloc, FileExplorerState>(
-        listener: (context, state) {},
+        listener: (context, state) {
+          state.mapOrNull(
+            loaded: (value) {
+              final response = value.response;
+              if (response != null) {
+                showResult(context, response);
+                context.read<FileExplorerBloc>().add(DeleteResponseEvent());
+              }
+            },
+          );
+        },
         builder: (context, state) {
           final bloc = context.read<FileExplorerBloc>();
 

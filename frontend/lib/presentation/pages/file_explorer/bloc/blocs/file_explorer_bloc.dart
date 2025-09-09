@@ -25,6 +25,7 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     on<SelectFolderEvent>(_onSelectFolder);
     on<UploadFileEvent>(_onUploadFile);
     on<CreateFolderEvent>(_onCreateFolder);
+    on<DeleteResponseEvent>(_onDeleteResponse);
   }
 
   final FileExplorerRepository _fileExplorerRepository;
@@ -40,7 +41,7 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
             viewType: FileExplorerViewType.grid(), 
             folders: folders, 
             filteredFolders: folders, 
-            response: response, 
+            response: null, 
             selectedFile: null,
             selectedFolder: null,
           );
@@ -125,7 +126,7 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
   Future<void> _onSelectFile(SelectFileEvent event, Emitter<FileExplorerState> emit) async {
     state.mapOrNull(
       loaded: (value) {
-        emit(value.copyWith(selectedFile: event.file, selectedFolder: null)); // 👈 Update file and clear folder
+        emit(value.copyWith(selectedFile: event.file, selectedFolder: null)); 
       },
     );
   }
@@ -133,7 +134,15 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
   Future<void> _onSelectFolder(SelectFolderEvent event, Emitter<FileExplorerState> emit) async {
     state.mapOrNull(
       loaded: (value) {
-        emit(value.copyWith(selectedFolder: event.folder, selectedFile: null)); // 👈 Update folder and clear file
+        emit(value.copyWith(selectedFolder: event.folder, selectedFile: null)); 
+      },
+    );
+  }
+
+  Future<void> _onDeleteResponse(DeleteResponseEvent event, Emitter<FileExplorerState> emit) async {
+    state.mapOrNull(
+      loaded: (value) {
+        emit(value.copyWith(response: null)); 
       },
     );
   }
