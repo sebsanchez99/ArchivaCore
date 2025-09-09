@@ -250,7 +250,7 @@ class FileExplorerView extends StatelessWidget {
                 ),
               );
             },
-            failed: (value) => FailureState(failure: value.failure, onRetry: () {}),
+            failed: (value) => FailureState(failure: value.failure, onRetry: () => bloc.add(InitializeEvent())),
           );
         },
       ),
