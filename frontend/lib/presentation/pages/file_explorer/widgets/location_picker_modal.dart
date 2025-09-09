@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/domain/models/folder_model.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
+import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
+import 'package:frontend/presentation/widgets/buttons/custom_icon_button.dart';
 
 class LocationPickerModal extends StatefulWidget {
   final List<FolderModel> rootFolders;
@@ -12,7 +14,7 @@ class LocationPickerModal extends StatefulWidget {
 }
 
 class _LocationPickerModalState extends State<LocationPickerModal> {
-  List<String> path = []; // almacena la ruta actual
+  List<String> path = []; 
   List<FolderModel> currentFolders = [];
 
   @override
@@ -32,7 +34,6 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
     if (path.isNotEmpty) {
       setState(() {
         path.removeLast();
-        // reconstruir desde root
         List<FolderModel> folders = widget.rootFolders;
         for (var segment in path) {
           final next = folders.firstWhere((f) => f.name == segment);
@@ -107,7 +108,26 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
             Expanded(
               child:
                   currentFolders.isEmpty
-                      ? const Center(child: Text("Carpeta vacía"))
+                      ? const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.delete_sweep_outlined,
+                              color: Colors.grey,
+                              size: 40,
+                            ),
+                            Text(
+                              'Carpeta vacía.',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        )
+                        )
                       : GridView.builder(
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
@@ -118,21 +138,19 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
                         itemCount: currentFolders.length,
                         itemBuilder: (context, index) {
                           final folder = currentFolders[index];
-                          return GestureDetector(
-                            onTap: () => _navigateTo(folder),
-                            child: Column(
-                              children: [
-                                const Icon(
-                                  Icons.folder,
-                                  color: SchemaColors.warning,
-                                  size: 40,
-                                ),
-                                Text(
-                                  folder.name,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
+                          return Column(
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.folder),
+                                color: SchemaColors.warning,
+                                onPressed: () => _navigateTo(folder),
+                                iconSize: 40,
+                              ),
+                              Text(
+                                folder.name,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
                           );
                         },
                       ),
@@ -142,14 +160,26 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
       ),
       actions: [
         if (path.isNotEmpty)
-          TextButton(onPressed: _goBack, child: const Text("Atrás")),
-        TextButton(
-          onPressed: () => Navigator.pop(context), // cancelar
-          child: const Text("Cancelar"),
+          CustomIconButton(
+            icon: Icons.keyboard_arrow_left,
+            onPressed: _goBack, 
+            message: "Atrás",
+            height: 15,
+            width: 15,
+          ),
+        CustomButton(
+          onPressed: () => Navigator.pop(context), 
+          message: "Cancelar",
+          height: 15,
+          width: 15,
+          color: SchemaColors.error,
         ),
-        ElevatedButton(
+        CustomButton(
           onPressed: _selectLocation,
-          child: const Text("Seleccionar"),
+          message: "Seleccionar",
+          height: 15,
+          width: 15,
+          color: SchemaColors.success,
         ),
       ],
     );
