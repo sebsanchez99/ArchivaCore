@@ -14,8 +14,12 @@ class LocationPickerModal extends StatefulWidget {
 }
 
 class _LocationPickerModalState extends State<LocationPickerModal> {
-  List<String> path = []; 
+  // Mantienes el path para la navegación
+  List<String> path = [];
   List<FolderModel> currentFolders = [];
+
+  // Esta variable guarda el objeto de la carpeta actual
+  FolderModel? currentSelectedFolder;
 
   @override
   void initState() {
@@ -27,6 +31,7 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
     setState(() {
       path.add(folder.name);
       currentFolders = folder.subFolders;
+      currentSelectedFolder = folder; // Actualiza el folder actual
     });
   }
 
@@ -35,21 +40,29 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
       setState(() {
         path.removeLast();
         List<FolderModel> folders = widget.rootFolders;
+        FolderModel? parentFolder; // Almacena el padre
         for (var segment in path) {
-          final next = folders.firstWhere((f) => f.name == segment);
-          folders = next.subFolders;
+          parentFolder = folders.firstWhere((f) => f.name == segment);
+          folders = parentFolder.subFolders;
         }
         currentFolders = folders;
+        currentSelectedFolder = parentFolder; // Actualiza el folder actual al padre
+      });
+    } else {
+      setState(() {
+        currentSelectedFolder = null; // En la raíz, no hay folder seleccionado
+        currentFolders = widget.rootFolders;
       });
     }
   }
 
   void _selectLocation() {
     String location;
-    if (path.isEmpty) {
-      location = "/"; // raíz
+    if (currentSelectedFolder != null) {
+      // Retorna la ruta completa de la carpeta seleccionada
+      location = currentSelectedFolder!.path;
     } else {
-      location = "/${path.join("/")}";
+      location = "/"; // Si está en la raíz, devuelve "/"
     }
     Navigator.pop(context, location);
   }
@@ -67,7 +80,6 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 🔹 Ruta actual con breadcrumbs
             Row(
               children: [
                 const Icon(
@@ -81,6 +93,7 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
                     setState(() {
                       path.clear();
                       currentFolders = widget.rootFolders;
+                      currentSelectedFolder = null; // Al volver a la raíz, no hay carpeta seleccionada
                     });
                   },
                   child: const Text(
@@ -104,57 +117,55 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
               ],
             ),
             const Divider(),
-
-            // 🔹 Grid de carpetas
             Expanded(
               child:
                   currentFolders.isEmpty
                       ? const Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.delete_sweep_outlined,
-                              color: Colors.grey,
-                              size: 40,
-                            ),
-                            Text(
-                              'Carpeta vacía.',
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        )
-                        )
-                      : GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              mainAxisSpacing: 10,
-                              crossAxisSpacing: 10,
-                            ),
-                        itemCount: currentFolders.length,
-                        itemBuilder: (context, index) {
-                          final folder = currentFolders[index];
-                          return Column(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              IconButton(
-                                icon: Icon(Icons.folder),
-                                color: SchemaColors.warning,
-                                onPressed: () => _navigateTo(folder),
-                                iconSize: 40,
+                              Icon(
+                                Icons.delete_sweep_outlined,
+                                color: Colors.grey,
+                                size: 40,
                               ),
                               Text(
-                                folder.name,
-                                overflow: TextOverflow.ellipsis,
+                                'Carpeta vacía.',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ],
-                          );
-                        },
-                      ),
+                          ),
+                        )
+                      : GridView.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                mainAxisSpacing: 10,
+                                crossAxisSpacing: 10,
+                              ),
+                          itemCount: currentFolders.length,
+                          itemBuilder: (context, index) {
+                            final folder = currentFolders[index];
+                            return Column(
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.folder),
+                                  color: SchemaColors.warning,
+                                  onPressed: () => _navigateTo(folder),
+                                  iconSize: 40,
+                                ),
+                                Text(
+                                  folder.name,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            );
+                          },
+                        ),
             ),
           ],
         ),
@@ -163,13 +174,13 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
         if (path.isNotEmpty)
           CustomIconButton(
             icon: Icons.keyboard_arrow_left,
-            onPressed: _goBack, 
+            onPressed: _goBack,
             message: "Atrás",
             height: 15,
             width: 15,
           ),
         CustomButton(
-          onPressed: () => Navigator.pop(context), 
+          onPressed: () => Navigator.pop(context),
           message: "Cancelar",
           height: 15,
           width: 15,

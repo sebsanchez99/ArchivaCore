@@ -36,6 +36,8 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     on<FilterByTypesAndAuthorsEvent>(_onFilterByTypesAndAuthors);
     on<DeleteFileEvent>(_onDeleteFile);
     on<DeleteFolderEvent>(_onDeleteFolder);
+    on<PutFolderEvent>(_onPutFolder);
+    on<PutFileEvent>(_onPutFile);
   }
 
   final FileExplorerRepository _fileExplorerRepository;
@@ -124,6 +126,38 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     }
     final result = await _fileExplorerRepository.moveFolderToRecycle(event.folderPath);
 
+    await result.when(
+      left: (failure) {
+        emit(FileExplorerState.failed(failure));
+      },
+      right: (response) async {
+        await _refreshContentAndEmit(emit, response: response);
+      },
+    );
+  }
+
+  Future<void> _onPutFolder(PutFolderEvent event, Emitter<FileExplorerState> emit) async {
+    final currentState = state.mapOrNull(loaded: (value) => value);
+    if (currentState != null) {
+      emit(currentState.copyWith(isBusy: true));
+    }
+    final result = await _fileExplorerRepository.updateFolder(event.folderName, event.currentRoute, event.newRoute);
+    await result.when(
+      left: (failure) {
+        emit(FileExplorerState.failed(failure));
+      },
+      right: (response) async {
+        await _refreshContentAndEmit(emit, response: response);
+      },
+    );
+  }
+
+  Future<void> _onPutFile(PutFileEvent event, Emitter<FileExplorerState> emit) async {
+    final currentState = state.mapOrNull(loaded: (value) => value);
+    if (currentState != null) {
+      emit(currentState.copyWith(isBusy: true));
+    }
+    final result = await _fileExplorerRepository.updateFile(event.fileName, event.currentRoute, event.newRoute);
     await result.when(
       left: (failure) {
         emit(FileExplorerState.failed(failure));
