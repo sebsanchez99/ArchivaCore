@@ -22,10 +22,17 @@ class FileExplorerEvents with _$FileExplorerEvents {
   }) = FilterContentEvent;
 
   // Actualizar un archivo
-  factory FileExplorerEvents.putFiles({
-    required String fileID,
+  factory FileExplorerEvents.putFile({
     required String fileName,
+    required String currentRoute,
+    required String newRoute,
   }) = PutFileEvent;
+
+  factory FileExplorerEvents.putFolder({
+    required String folderName,
+    required String currentRoute,
+    required String newRoute,
+  }) = PutFolderEvent;
 
   // Crear archivo
   factory FileExplorerEvents.createFiles({
@@ -34,8 +41,12 @@ class FileExplorerEvents with _$FileExplorerEvents {
 
   // Eliminar archivo
   factory FileExplorerEvents.deleteFiles({
-    required String fileID,
+    required String filePath,
   }) = DeleteFileEvent;
+
+  factory FileExplorerEvents.deleteFolder({
+    required String folderPath,
+  }) = DeleteFolderEvent;
 
   //Cargar carpetas en memoria (para GridExplorerBloc)
   factory FileExplorerEvents.loadFolders({

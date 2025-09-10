@@ -81,8 +81,7 @@ Future<void> showDeleteFileConfirmationDialog(BuildContext context, FileModel fi
     context: context, 
     builder:(context) => InfoDialog(
       message: '¿Desea cambiar eliminar el archivo ${file.name}?',
-      onPressed: () {}
-      // onPressed: () => bloc.add(DeleteFileEvent(fileID: fileID))
+      onPressed: () => bloc.add(DeleteFileEvent(filePath: file.path))
     ),
   );
 }
@@ -92,8 +91,7 @@ Future<void> showDeleteFolderConfirmationDialog(BuildContext context, FolderMode
     context: context, 
     builder:(context) => InfoDialog(
       message: '¿Desea cambiar eliminar la carpeta ${folder.name}?',
-      onPressed: () {}
-      // onPressed: () => bloc.add(DeleteFileEvent(fileID: fileID))
+      onPressed: () => bloc.add(DeleteFolderEvent(folderPath: folder.path))
     ),
   );
 }

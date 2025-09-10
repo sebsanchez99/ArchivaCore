@@ -34,6 +34,8 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     on<DeleteResponseEvent>(_onDeleteResponse);
     on<DownloadFileEvent>(_onDownloadFile);
     on<FilterByTypesAndAuthorsEvent>(_onFilterByTypesAndAuthors);
+    on<DeleteFileEvent>(_onDeleteFile);
+    on<DeleteFolderEvent>(_onDeleteFolder);
   }
 
   final FileExplorerRepository _fileExplorerRepository;
@@ -104,6 +106,40 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
       emit(currentState.copyWith(isBusy: true));
     }
     final result = await _fileExplorerRepository.createFolder(event.folderName, event.routefolder);
+
+    await result.when(
+      left: (failure) {
+        emit(FileExplorerState.failed(failure));
+      },
+      right: (response) async {
+        await _refreshContentAndEmit(emit, response: response);
+      },
+    );
+  }
+
+  Future<void> _onDeleteFolder(DeleteFolderEvent event, Emitter<FileExplorerState> emit) async {
+    final currentState = state.mapOrNull(loaded: (value) => value);
+    if (currentState != null) {
+      emit(currentState.copyWith(isBusy: true));
+    }
+    final result = await _fileExplorerRepository.moveFolderToRecycle(event.folderPath);
+
+    await result.when(
+      left: (failure) {
+        emit(FileExplorerState.failed(failure));
+      },
+      right: (response) async {
+        await _refreshContentAndEmit(emit, response: response);
+      },
+    );
+  }
+
+  Future<void> _onDeleteFile(DeleteFileEvent event, Emitter<FileExplorerState> emit) async {
+    final currentState = state.mapOrNull(loaded: (value) => value);
+    if (currentState != null) {
+      emit(currentState.copyWith(isBusy: true));
+    }
+    final result = await _fileExplorerRepository.moveToRecycle(event.filePath);
 
     await result.when(
       left: (failure) {
