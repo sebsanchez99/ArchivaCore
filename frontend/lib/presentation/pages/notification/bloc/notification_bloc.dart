@@ -144,8 +144,14 @@ class NotificationBloc extends Bloc<NotificationEvents, NotificationState> {
         right: (response) {
           final responseData = response.data as List<dynamic>;
           final List<NotificationModel> notifications = responseData.map((notification) => NotificationModel.fromJson(notification)).toList();
-          return NotificationState.loaded(notifications: notifications, filteredNotifications: notifications);
-        }, 
+
+          notifications.sort((a, b) => b.date.compareTo(a.date));
+
+          return NotificationState.loaded(
+            notifications: notifications,
+            filteredNotifications: notifications,
+          );
+        },
         left: (failure) => NotificationState.failed(failure),
       ),
     );

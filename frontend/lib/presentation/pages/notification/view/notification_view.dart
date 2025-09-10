@@ -48,18 +48,6 @@ class _NotificationViewState extends State<NotificationView> {
                     'Notificaciones',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  ElevatedButton.icon(
-                  onPressed: () {
-                    context.read<NotificationBloc>().add(
-                      NotificationEvents.createNotification(
-                        title: 'Nueva Notificación',
-                        message: 'Esta es una notificación de prueba en tiempo real.',
-                      ),
-                    );
-                  },
-                  icon: Icon(Icons.add),
-                  label: Text('Crear Notificación'),
-                  ),
                   IconButton(
                     tooltip: 'Eliminar todas las notificaciones',
                     icon: Icon(Icons.delete_sweep, color: SchemaColors.error, size: 30),
