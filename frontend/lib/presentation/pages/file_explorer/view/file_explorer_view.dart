@@ -13,6 +13,7 @@ import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_det
 import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_grid_view.dart';
 import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_list_view.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/multi_select_dropdown.dart';
+import 'package:frontend/presentation/pages/notification/bloc/notification_bloc.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_icon_button.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_popupmenu.dart';
 import 'package:frontend/presentation/widgets/states/failure_state.dart';
@@ -29,6 +30,7 @@ class FileExplorerView extends StatelessWidget {
         BlocProvider<FileExplorerBloc>(
           create: (_) => FileExplorerBloc(
             FileExplorerState.loading(),
+            context.read<NotificationBloc>(),
             fileExplorerRepository: context.read<FileExplorerRepository>(),
           )..add(InitializeEvent()),
         ),

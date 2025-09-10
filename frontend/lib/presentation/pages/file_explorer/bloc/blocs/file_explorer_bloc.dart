@@ -11,13 +11,16 @@ import 'package:frontend/domain/repositories/file_explorer_repository.dart';
 import 'package:frontend/presentation/enums/file_explorer_view_type.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/events/file_explorer_events.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/states/file_explorer_state.dart';
+import 'package:frontend/presentation/pages/notification/bloc/notification_bloc.dart';
+import 'package:frontend/presentation/pages/notification/bloc/notification_events.dart';
 import 'package:frontend/utils/file_filter.dart';
 
 class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
   final SearchController searchController = SearchController();
+    final NotificationBloc _notificationBloc;
 
   FileExplorerBloc(
-    super.initialState, {
+    super.initialState, this._notificationBloc, {
     required FileExplorerRepository fileExplorerRepository,
   }) : _fileExplorerRepository = fileExplorerRepository {
     searchController.addListener(() {
@@ -115,6 +118,9 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
         emit(FileExplorerState.failed(failure));
       },
       right: (response) async {
+        if (response.result) {
+          _notificationBloc.add(NotificationEvents.createNotification(title: 'Carpeta creada', message: 'Se creó la carpeta ${event.folderName}.'));
+        }
         await _refreshContentAndEmit(emit, response: response);
       },
     );
@@ -132,6 +138,9 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
         emit(FileExplorerState.failed(failure));
       },
       right: (response) async {
+        if (response.result) {
+          _notificationBloc.add(NotificationEvents.createNotification(title: 'Carpeta movida a reciclaje', message: 'Se movió a reciclaje la carpeta ${event.folderPath}.'));
+        }
         await _refreshContentAndEmit(emit, response: response);
       },
     );
@@ -148,6 +157,9 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
         emit(FileExplorerState.failed(failure));
       },
       right: (response) async {
+        if (response.result) {
+          _notificationBloc.add(NotificationEvents.createNotification(title: 'Carpeta actualizada', message: 'Se actualizó la carpeta ${event.folderName}.'));
+        }
         await _refreshContentAndEmit(emit, response: response);
       },
     );
@@ -164,6 +176,9 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
         emit(FileExplorerState.failed(failure));
       },
       right: (response) async {
+        if (response.result) {
+          _notificationBloc.add(NotificationEvents.createNotification(title: 'Información de archivo actualizada', message: 'Se actualizó al información del archivo ${event.fileName}.'));
+        }
         await _refreshContentAndEmit(emit, response: response);
       },
     );
@@ -181,6 +196,9 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
         emit(FileExplorerState.failed(failure));
       },
       right: (response) async {
+        if (response.result) {
+          _notificationBloc.add(NotificationEvents.createNotification(title: 'Archivo movida a reciclaje', message: 'Se movió a reciclaje el archivo ${event.filePath}.'));
+        }
         await _refreshContentAndEmit(emit, response: response);
       },
     );
@@ -215,28 +233,18 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     
     result.when(
       right: (response) async {
+        if (response.result) {
+          _notificationBloc.add(NotificationEvents.createNotification(title: 'Archivo descargado', message: 'Se descargó el archivo ${event.filePath}.'));
+        }
         final fileData = response.data as Map<String, dynamic>;
         final rawBuffer = fileData['buffer']['data'] as List<dynamic>;
         final fileName = fileData['fileName'] as String;
-
         final List<int> buffer = rawBuffer.cast<int>();
-
         final Uint8List bytes = Uint8List.fromList(buffer);
-        
-        try {
-          final String? filePath = await FilePicker.platform.saveFile(
-            fileName: fileName,
-            bytes: bytes,
-          );
-
-          if (filePath != null) {
-            print('Archivo guardado en: $filePath');
-          } else {
-            print('El usuario canceló la descarga.');
-          }
-        } catch (e) {
-          print('Error al guardar el archivo: $e');
-        }
+        await FilePicker.platform.saveFile(
+          fileName: fileName,
+          bytes: bytes,
+        );
       },
       left: (failure) => emit(FileExplorerState.failed(failure)),
     );
@@ -249,12 +257,16 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     }
     await state.mapOrNull(
       loaded: (value) async{
+        final fileName =  value.file?.name;
         final result = await _fileExplorerRepository.createFiles(value.file!, event.folderRoute);
         await result.when(
           left: (failure) {
             emit(FileExplorerState.failed(failure));
           },
           right: (response) async {
+            if (response.result) {
+              _notificationBloc.add(NotificationEvents.createNotification(title: 'Archivo subido', message: 'Se subió el archivo $fileName'));
+            }
             await _refreshContentAndEmit(emit, response: response);
           },
         );
