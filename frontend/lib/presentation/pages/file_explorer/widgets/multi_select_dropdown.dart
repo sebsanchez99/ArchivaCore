@@ -28,7 +28,7 @@ class MultiSelectDropdownState extends State<MultiSelectDropdown> {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
-      tooltip: 'Mostrar opciones',
+      tooltip: widget.tooltip,
       elevation: 3,
       onSelected: (String item) {},
       // El contenido del menú

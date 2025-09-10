@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend/presentation/global/constants/schema_colors.dart';
 
 class CustomPopupMenu<T> extends StatelessWidget {
-  final Widget? child;
   final IconData? icon;
   final List<PopupMenuEntry<T>> items;
   final void Function(T)? onSelected;
@@ -13,7 +12,6 @@ class CustomPopupMenu<T> extends StatelessWidget {
 
   const CustomPopupMenu({
     super.key,
-    this.child,
     this.icon,
     required this.items,
     this.onSelected,
@@ -30,7 +28,7 @@ class CustomPopupMenu<T> extends StatelessWidget {
     final iColor = iconColor ?? theme.iconTheme.color;
 
     return PopupMenuButton<T>(
-      
+      iconSize: 35,
       padding: EdgeInsets.zero,
       tooltip: tooltip,
       icon: icon != null ? Icon(icon, color: iColor) : null,
@@ -60,7 +58,6 @@ class CustomPopupMenu<T> extends StatelessWidget {
         return item;
       }).toList(),
       color: bgColor,
-      child: child,
     );
   }
 }

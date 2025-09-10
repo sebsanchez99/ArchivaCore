@@ -14,7 +14,6 @@ import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_gri
 import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_list_view.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/multi_select_dropdown.dart';
 import 'package:frontend/presentation/pages/notification/bloc/notification_bloc.dart';
-import 'package:frontend/presentation/widgets/buttons/custom_icon_button.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_popupmenu.dart';
 import 'package:frontend/presentation/widgets/states/failure_state.dart';
 import 'package:frontend/presentation/widgets/states/loading_state.dart';
@@ -83,6 +82,7 @@ class FileExplorerView extends StatelessWidget {
                           child: Row(
                             children: [
                               CustomPopupMenu<String>(
+                                icon: Icons.add_circle_outline_outlined,
                                 tooltip: 'Agregar o crear',
                                 onSelected: (option) async {
                                   Navigator.pop(context);
@@ -114,14 +114,10 @@ class FileExplorerView extends StatelessWidget {
                                     ),
                                   ),
                                 ],
-                                child: const CustomIconButton(
-                                  message: 'Agregar o crear',
-                                  icon: Icons.add,
-                                  disabledBackgroundColor: SchemaColors.primary500,
-                                ),
                               ),
                               const SizedBox(width: 20),
                               IconButton(
+                                iconSize: 35,
                                 tooltip: 'Refrescar',
                                 onPressed: () => bloc.add(InitializeEvent()),
                                 icon: const Icon(Icons.refresh),
@@ -137,9 +133,7 @@ class FileExplorerView extends StatelessWidget {
                   LayoutBuilder(
                     builder: (context, constraints) {
                       final isDesktop = constraints.maxWidth > 800;
-                      return isDesktop
-                          ? _buildDesktopControls(bloc, bloc.searchController)
-                          : _buildMobileControls(bloc, bloc.searchController);
+                      return isDesktop ? _buildDesktopControls(bloc, bloc.searchController) : _buildMobileControls(bloc, bloc.searchController);
                     },
                   ),
                   const SizedBox(height: 20),
@@ -149,12 +143,10 @@ class FileExplorerView extends StatelessWidget {
                       loading: (_) => const LoadingState(),
                       failed: (value) => FailureState(failure: value.failure, onRetry: () => bloc.add(InitializeEvent())),
                       loaded: (value) {
-                        // Muestra el indicador de carga si `isBusy` es verdadero
                         if (value.isBusy) {
                           return const LoadingState();
                         }
                         
-                        // Muestra la vista correcta según el viewType
                         return value.viewType.when(
                           grid: () => FileExplorerGridView(bloc: bloc, gridBloc: gridBloc),
                           details: () => FileExplorerDetailsView(bloc: bloc),
@@ -183,6 +175,13 @@ class FileExplorerView extends StatelessWidget {
             child: TextField(
               controller: controller,
               decoration: InputDecoration(
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide(
+                    color: SchemaColors.secondary500
+                  )
+                ),
+                hintStyle: TextStyle(fontSize: 14),
                 isDense: true,
                 hintText: "Buscar carpetas...",
                 prefixIcon: const Icon(Icons.search),
