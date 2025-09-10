@@ -9,6 +9,7 @@ import 'package:frontend/presentation/pages/administration/bloc/administration_e
 import 'package:frontend/presentation/pages/administration/bloc/administration_state.dart';
 import 'package:frontend/presentation/pages/administration/widgets/create_user_window.dart';
 import 'package:frontend/presentation/pages/administration/widgets/edit_user_window.dart';
+import 'package:frontend/presentation/widgets/buttons/custom_icon_button.dart';
 import 'package:frontend/presentation/widgets/dialogs/error_dialog.dart';
 import 'package:frontend/presentation/widgets/dialogs/info_dialog.dart';
 import 'package:frontend/presentation/widgets/dialogs/success_dialog.dart';
@@ -78,32 +79,11 @@ class AdministrationView extends StatelessWidget {
                       showFirstLastButtons: true,
                       arrowHeadColor: SchemaColors.primary800,
                       actions: [
-                        FilledButton.tonalIcon(
+                        CustomIconButton(
+                          message: 'Agregar usuario', 
+                          icon: Icons.add,
+                          iconColor: Colors.white,
                           onPressed: () => _showCreateDialog(context),
-                          label: Text(
-                            'Agregar usuario',
-                            style: TextStyle(color: SchemaColors.neutral),
-                          ),
-                          icon: Icon(Icons.add, color: SchemaColors.neutral),
-                          iconAlignment: IconAlignment.start,
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStatePropertyAll(
-                              SchemaColors.primary400,
-                            ),
-                            elevation: WidgetStatePropertyAll(3),
-                            iconSize: WidgetStatePropertyAll(30),
-                            padding: WidgetStatePropertyAll(
-                              EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 15,
-                              ),
-                            ),
-                            shape: WidgetStatePropertyAll(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                            ),
-                          ),
                         ),
                       ],
                       header: Align(
@@ -112,6 +92,7 @@ class AdministrationView extends StatelessWidget {
                           width: 500,
                           height: 40,
                           child: SearchAnchor.bar(
+                            barElevation: WidgetStatePropertyAll(0),
                             barBackgroundColor: WidgetStatePropertyAll(
                               SchemaColors.neutral,
                             ),
@@ -123,6 +104,7 @@ class AdministrationView extends StatelessWidget {
                             barShape: WidgetStatePropertyAll(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15),
+                                side: BorderSide(color: SchemaColors.primary)
                               ),
                             ),
                             isFullScreen: false,
