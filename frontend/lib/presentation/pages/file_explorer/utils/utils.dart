@@ -27,12 +27,9 @@ Future<void> showCreateFolderDialog(BuildContext context) async {
     builder: (dialogContext) {
       return BlocProvider.value(
         value: bloc,
-        child: state.maybeMap(
+        child: state.mapOrNull(
           loaded: (value) {
             return CreateFolder(path: value.content.folders);
-          },
-          orElse: () {
-            return const Center(child: CircularProgressIndicator());
           },
         ),
       );

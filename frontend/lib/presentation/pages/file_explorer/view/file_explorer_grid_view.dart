@@ -1,7 +1,7 @@
+// file_explorer_grid_view.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/domain/models/file_model.dart';
-import 'package:frontend/domain/models/folder_model.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/file_explorer_bloc.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/blocs/grid_explorer_bloc.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/events/grid_explorer_events.dart';
@@ -15,25 +15,12 @@ class FileExplorerGridView extends StatelessWidget {
 
   const FileExplorerGridView({
     super.key,
-    required this.bloc,
     required this.gridBloc,
+    required this.bloc,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Carpetas raíz desde el bloc general
-    final folders = bloc.state.maybeMap(
-    loaded: (value) => List<FolderModel>.from(value.filteredContent.folders),
-    orElse: () => <FolderModel>[],
-    );
-
-      final files = bloc.state.maybeMap(
-    loaded: (value) => List<FileModel>.from(value.filteredContent.files),
-    orElse: () => <FileModel>[],
-    );
-    // Inicializamos el GridBloc con las carpetas raíz
-    gridBloc.add(UpdateFromExplorer(folders: folders, files: files));
-
     return BlocBuilder<GridExplorerBloc, GridExplorerState>(
       bloc: gridBloc,
       builder: (context, state) {
@@ -51,16 +38,13 @@ class FileExplorerGridView extends StatelessWidget {
                     state.currentFolder == null ? Icons.home : Icons.arrow_back,
                     color: state.currentFolder == null ? Colors.grey : Colors.black,
                   ),
-                  onPressed: state.currentFolder == null ? null : () => gridBloc.add(GoBack()),
+                  onPressed: state.currentFolder == null ? null : () => gridBloc.add(const GoBack()),
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                   hoverColor: Colors.transparent,
-                  disabledColor:Colors.grey, // color fijo cuando está deshabilitado
+                  disabledColor: Colors.grey,
                 ),
-
                 const SizedBox(width: 10),
-
-                // Breadcrumb
                 Expanded(
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -101,62 +85,57 @@ class FileExplorerGridView extends StatelessWidget {
                 ),
               ],
             ),
-
-            // Grid o mensaje vacío
             Expanded(
-              child:
-                  isEmpty
-                      ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.folder_open,
-                              size: 80,
+              child: isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.folder_open,
+                            size: 80,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            state.currentFolder == null
+                                ? "No hay elementos en la raíz"
+                                : "Carpeta vacía",
+                            style: const TextStyle(
+                              fontSize: 16,
                               color: Colors.grey,
+                              fontWeight: FontWeight.w500,
                             ),
-                            const SizedBox(height: 10),
-                            Text(
-                              state.currentFolder == null
-                                  ? "No hay elementos en la raíz"
-                                  : "Carpeta vacía",
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                      : GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 150, 
-                              mainAxisSpacing: 10,
-                              crossAxisSpacing: 10,
-                              childAspectRatio: 1,
-                            ),
-                        itemCount: currentFolders.length + currentFiles.length,
-                        itemBuilder: (context, index) {
-                          if (index < currentFolders.length) {
-                            final folder = currentFolders[index];
-                            return ExplorerItemTile(
-                              bloc: bloc,
-                              folder: folder,
-                              onTap: () => gridBloc.add(OpenFolder(folder)),
-                            );
-                          } else {
-                            final file =
-                                currentFiles[index - currentFolders.length];
-                            return ExplorerItemTile(
-                              bloc: bloc,
-                              file: file,
-                              onTap: () => showFileDetailsDialog(context, file),
-                            );
-                          }
-                        },
+                          ),
+                        ],
                       ),
+                    )
+                  : GridView.builder(
+                      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 150,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
+                        childAspectRatio: 1,
+                      ),
+                      itemCount: currentFolders.length + currentFiles.length,
+                      itemBuilder: (context, index) {
+                        if (index < currentFolders.length) {
+                          final folder = currentFolders[index];
+                          return ExplorerItemTile(
+                            bloc: bloc,
+                            folder: folder,
+                            onTap: () => gridBloc.add(OpenFolder(folder)),
+                          );
+                        } else {
+                          final file = currentFiles[index - currentFolders.length];
+                          return ExplorerItemTile(
+                            bloc: bloc,
+                            file: file,
+                            onTap: () => showFileDetailsDialog(context, file),
+                          );
+                        }
+                      },
+                    ),
             ),
           ],
         );

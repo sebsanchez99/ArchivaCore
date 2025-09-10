@@ -22,6 +22,7 @@ class FileExplorerState with _$FileExplorerState {
     @Default(FolderResponse(folders: [], files: [])) FolderResponse filteredContent,
     @Default([]) List<String> allTypes,
     @Default([]) List<String> allAuthors,
+    @Default(false) bool isBusy,
     ServerResponseModel? response,
     FileModel? selectedFile,
     FolderModel? selectedFolder,

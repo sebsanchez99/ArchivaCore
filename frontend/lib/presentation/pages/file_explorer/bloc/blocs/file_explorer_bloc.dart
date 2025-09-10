@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/domain/models/folder_response.dart';
+import 'package:frontend/domain/models/server_response_model.dart';
 import 'package:frontend/domain/repositories/file_explorer_repository.dart';
 import 'package:frontend/presentation/enums/file_explorer_view_type.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/events/file_explorer_events.dart';
@@ -60,6 +61,7 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
             selectedFolder: null,
             allTypes: allTypes,
             allAuthors: allAuthors,
+            isBusy: false
           );
         },
         left: (failure) => FileExplorerState.failed(failure),
@@ -96,26 +98,19 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     );
   }
 
-  Future<void> _onCreateFolder(
-    CreateFolderEvent event,
-    Emitter<FileExplorerState> emit,
-  ) async {
-    await state.mapOrNull(
-      loaded: (value) async {
-        emit(FileExplorerState.loading());
-        final result = await _fileExplorerRepository.createFolder(
-          event.folderName,
-          event.routefolder,
-        );
-        emit(
-          result.when(
-            left: (failure) => FileExplorerState.failed(failure),
-            right: (response) {
-              add(FileExplorerEvents.initialize());
-              return value.copyWith(response: response);
-            },
-          ),
-        );
+  Future<void> _onCreateFolder(CreateFolderEvent event, Emitter<FileExplorerState> emit) async {
+    final currentState = state.mapOrNull(loaded: (value) => value);
+    if (currentState != null) {
+      emit(currentState.copyWith(isBusy: true));
+    }
+    final result = await _fileExplorerRepository.createFolder(event.folderName, event.routefolder);
+
+    await result.when(
+      left: (failure) {
+        emit(FileExplorerState.failed(failure));
+      },
+      right: (response) async {
+        await _refreshContentAndEmit(emit, response: response);
       },
     );
   }
@@ -144,36 +139,36 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     );
   }
 
-Future<void> _onDownloadFile(DownloadFileEvent event, Emitter<FileExplorerState> emit) async {
-  final result = await _fileExplorerRepository.downloadFile(event.filePath);
-  
-  result.when(
-    right: (response) async {
-      final fileData = response.data as Map<String, dynamic>;
-      final rawBuffer = fileData['buffer']['data'] as List<dynamic>;
-      final fileName = fileData['fileName'] as String;
+  Future<void> _onDownloadFile(DownloadFileEvent event, Emitter<FileExplorerState> emit) async {
+    final result = await _fileExplorerRepository.downloadFile(event.filePath);
+    
+    result.when(
+      right: (response) async {
+        final fileData = response.data as Map<String, dynamic>;
+        final rawBuffer = fileData['buffer']['data'] as List<dynamic>;
+        final fileName = fileData['fileName'] as String;
 
-      final List<int> buffer = rawBuffer.cast<int>();
+        final List<int> buffer = rawBuffer.cast<int>();
 
-      final Uint8List bytes = Uint8List.fromList(buffer);
-      
-      try {
-        final String? filePath = await FilePicker.platform.saveFile(
-          fileName: fileName,
-          bytes: bytes,
-        );
+        final Uint8List bytes = Uint8List.fromList(buffer);
+        
+        try {
+          final String? filePath = await FilePicker.platform.saveFile(
+            fileName: fileName,
+            bytes: bytes,
+          );
 
-        if (filePath != null) {
-          print('Archivo guardado en: $filePath');
-        } else {
-          print('El usuario canceló la descarga.');
+          if (filePath != null) {
+            print('Archivo guardado en: $filePath');
+          } else {
+            print('El usuario canceló la descarga.');
+          }
+        } catch (e) {
+          print('Error al guardar el archivo: $e');
         }
-      } catch (e) {
-        print('Error al guardar el archivo: $e');
-      }
-    },
-    left: (failure) => emit(FileExplorerState.failed(failure)),
-  );
+      },
+      left: (failure) => emit(FileExplorerState.failed(failure)),
+    );
 }
 
   Future<void> _onFilterByTypesAndAuthors(FilterByTypesAndAuthorsEvent event, Emitter<FileExplorerState> emit) async {
@@ -190,6 +185,39 @@ Future<void> _onDownloadFile(DownloadFileEvent event, Emitter<FileExplorerState>
           selectedAuthors: event.selectedAuthors,
         );
         emit(updatedState.copyWith(filteredContent: result));
+      },
+    );
+  }
+
+  Future<void> _refreshContentAndEmit(Emitter<FileExplorerState> emit, {ServerResponseModel? response}) async {
+    final result = await _fileExplorerRepository.getFolders();
+
+    result.when(
+      left: (failure) {
+        emit(FileExplorerState.failed(failure));
+      },
+      right: (newContentResponse) {
+        final currentState = state.mapOrNull(loaded: (value) => value);
+        
+        final responseData = newContentResponse.data;
+        final newContent = FolderResponse.fromJson(responseData);
+        final allTypes = _fileFilter.getAllTypes(newContent);
+        final allAuthors = _fileFilter.getAllAuthors(newContent);
+
+        emit(FileExplorerState.loaded(
+          content: newContent,
+          filteredContent: _fileFilter.applyAllFilters(
+            content: newContent,
+            query: searchController.text,
+            selectedTypes: currentState?.selectedTypes ?? {},
+            selectedAuthors: currentState?.selectedAuthors ?? {},
+          ),
+          allTypes: allTypes,
+          allAuthors: allAuthors,
+          response: response,
+          viewType: currentState?.viewType ?? FileExplorerViewType.grid(),
+          isBusy: false,
+        ));
       },
     );
   }
