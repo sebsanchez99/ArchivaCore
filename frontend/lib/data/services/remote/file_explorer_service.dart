@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:frontend/data/services/handler/dio_client.dart';
 import 'package:frontend/data/services/handler/dio_handler.dart';
 import 'package:frontend/domain/models/server_response_model.dart';
@@ -15,9 +16,20 @@ class FileExplorerService {
     );
   }
 
-  HttpFuture<ServerResponseModel> createFiles(String fileContent, String folderRoute) {
+  HttpFuture<ServerResponseModel> createFiles(PlatformFile file, String folderRoute) {
+    final formData = FormData.fromMap({
+      'folderRoute': folderRoute,
+      'fileContent': MultipartFile.fromBytes(
+        file.bytes!,
+        filename: file.name
+      ),
+    });
     return DioHandler.handleRequest(
-      () => _dio.post('/supa/createFiles', data: {'fileContent': fileContent, 'folderRoute': folderRoute}),
+      () => _dio.post(
+        '/supa/createFile', 
+        data: formData,
+        options: Options(contentType: 'multipart/form-data')        
+      ),
       (response) => ServerResponseModel.fromJson(response),
     );
   }

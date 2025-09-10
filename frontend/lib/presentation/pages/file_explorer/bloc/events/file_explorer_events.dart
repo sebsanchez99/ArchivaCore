@@ -34,11 +34,6 @@ class FileExplorerEvents with _$FileExplorerEvents {
     required String newRoute,
   }) = PutFolderEvent;
 
-  // Crear archivo
-  factory FileExplorerEvents.createFiles({
-    required String fileName,
-  }) = CreateFileEvent; 
-
   // Eliminar archivo
   factory FileExplorerEvents.deleteFiles({
     required String filePath,
@@ -67,6 +62,9 @@ class FileExplorerEvents with _$FileExplorerEvents {
   }) = SelectFolderEvent;
 
   const factory FileExplorerEvents.uploadFile(PlatformFile? result) = UploadFileEvent;
+  
+  const factory FileExplorerEvents.createFile({required String folderRoute}) = CreateFileEvent;
+
 
   // Crear carpeta
   factory FileExplorerEvents.createFolder({

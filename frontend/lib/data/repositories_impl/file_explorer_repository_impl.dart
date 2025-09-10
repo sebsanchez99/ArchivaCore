@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:frontend/data/services/remote/file_explorer_service.dart';
 import 'package:frontend/domain/models/server_response_model.dart';
 import 'package:frontend/domain/repositories/file_explorer_repository.dart';
@@ -15,8 +16,8 @@ class FileExplorerRepositoryImpl implements FileExplorerRepository {
   }
   
   @override
-  HttpFuture<ServerResponseModel> createFiles(String fileContent, String folderRoute) {
-    return _fileExplorerService.createFiles(fileContent, folderRoute);
+  HttpFuture<ServerResponseModel> createFiles(PlatformFile file, String folderRoute) {
+    return _fileExplorerService.createFiles(file, folderRoute);
   }
   
   @override

@@ -118,12 +118,16 @@ Future<void> showErrorDialog(BuildContext context, String message) async{
 Future<void> pickFile(BuildContext context, FileExplorerBloc bloc) async {
   final result = await FilePicker.platform.pickFiles(
     withData: true,
-    type: FileType.custom,
+    type: FileType.any,
   );
-
-  if (result != null && result.files.isNotEmpty) {
-    final file = result.files.first;  
-    bloc.add(UploadFileEvent(file)); 
+  if (result != null && result.files.isNotEmpty && context.mounted) {
+    final file = result.files.first;
+    const maxFileSizeInBytes = 50 * 1024 * 1024; 
+    if (file.size > maxFileSizeInBytes) {
+      await showErrorDialog(context, 'El archivo es demasiado grande. El tamaño máximo permitido es 50 MB.');
+      return; 
+    }
+    bloc.add(UploadFileEvent(file));
   }
 }
 

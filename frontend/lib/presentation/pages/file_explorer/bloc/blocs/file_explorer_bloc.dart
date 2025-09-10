@@ -38,6 +38,7 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     on<DeleteFolderEvent>(_onDeleteFolder);
     on<PutFolderEvent>(_onPutFolder);
     on<PutFileEvent>(_onPutFile);
+    on<CreateFileEvent>(_onCreateFile);
   }
 
   final FileExplorerRepository _fileExplorerRepository;
@@ -239,7 +240,27 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
       },
       left: (failure) => emit(FileExplorerState.failed(failure)),
     );
-}
+  }
+
+  Future<void> _onCreateFile(CreateFileEvent event, Emitter<FileExplorerState> emit) async {
+    final currentState = state.mapOrNull(loaded: (value) => value);
+    if (currentState != null) {
+      emit(currentState.copyWith(isBusy: true));
+    }
+    await state.mapOrNull(
+      loaded: (value) async{
+        final result = await _fileExplorerRepository.createFiles(value.file!, event.folderRoute);
+        await result.when(
+          left: (failure) {
+            emit(FileExplorerState.failed(failure));
+          },
+          right: (response) async {
+            await _refreshContentAndEmit(emit, response: response);
+          },
+        );
+      },
+    );
+  }
 
   Future<void> _onFilterByTypesAndAuthors(FilterByTypesAndAuthorsEvent event, Emitter<FileExplorerState> emit) async {
     state.mapOrNull(
