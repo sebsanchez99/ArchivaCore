@@ -47,7 +47,7 @@ class FolderDetailsWindow extends StatelessWidget {
       content: SizedBox(
         width: 600,
         child: SingleChildScrollView(
-          child: _FolderContentDisplay(folder: folder), // Uso de la clase auxiliar
+          child: _FolderContentDisplay(folder: folder), 
         ),
       ),
       actions: [
