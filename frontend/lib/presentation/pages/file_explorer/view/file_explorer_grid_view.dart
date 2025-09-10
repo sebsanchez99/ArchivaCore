@@ -108,7 +108,7 @@ class FileExplorerGridView extends StatelessWidget {
                             const SizedBox(height: 10),
                             Text(
                               state.currentFolder == null
-                                  ? "No hay elementos en la raíz"
+                                  ? "No hay elementos por mostrar."
                                   : "Carpeta vacía",
                               style: const TextStyle(
                                 fontSize: 16,

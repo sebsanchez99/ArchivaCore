@@ -54,7 +54,27 @@ class FileExplorerTreeView extends StatelessWidget {
 
       // Si no hay carpetas ni archivos, mostrar mensaje de vacío
       if (sortedFolders.isEmpty && sortedFiles.isEmpty) {
-       return const Center(child: Text("No hay elementos en la raíz."));
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.folder_open,
+                size: 50,
+                color: Colors.grey,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                "No hay elementos por mostrar.",
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        );
       }
 
       return Theme(

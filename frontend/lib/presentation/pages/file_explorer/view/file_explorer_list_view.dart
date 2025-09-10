@@ -19,16 +19,39 @@ class FileExplorerListView extends StatelessWidget {
           loaded: (value) {
             final folders = value.filteredContent.folders;
             final files = value.filteredContent.files;
+            final isEmpty = folders.isEmpty && files.isEmpty;
             return Column(
               children: [
                 SizedBox(
                   height: MediaQuery.of(context).size.height - 250,
-                  child: FolderExpandableTable(
-                    folders: folders,
-                    files: files,
-                    onPreviewFolder: (folder) => showFolderDetailsDialog(context, folder),
-                    onPreviewFile: (file) => showFileDetailsDialog(context, file),
-                  ),
+                  child: !isEmpty 
+                  ?  FolderExpandableTable(
+                      folders: folders,
+                      files: files,
+                      onPreviewFolder: (folder) => showFolderDetailsDialog(context, folder),
+                      onPreviewFile: (file) => showFileDetailsDialog(context, file),
+                    )
+                  : Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.folder_open,
+                              size: 80,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              "No hay elementos por mostrar.",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
                 ),
               ],
             );
