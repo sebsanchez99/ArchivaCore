@@ -77,7 +77,7 @@ const userUpdate = async(req, res) => {
  */
 const deleteUser = async(req, res) => {
     try {
-        const currentIdUser = req.user.id
+        const currentIdUser = req.user.userId
         const { id } = req.body
         const adminHelper = new AdminHelper()
         const result = await adminHelper.deleteUsers(id, currentIdUser)
