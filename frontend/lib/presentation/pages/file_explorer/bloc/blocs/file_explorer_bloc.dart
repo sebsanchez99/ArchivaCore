@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/domain/failures/http_request_failure.dart';
 import 'package:frontend/domain/models/folder_response.dart';
 import 'package:frontend/domain/models/server_response_model.dart';
 import 'package:frontend/domain/repositories/file_explorer_repository.dart';
@@ -229,24 +230,40 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
   }
 
   Future<void> _onDownloadFile(DownloadFileEvent event, Emitter<FileExplorerState> emit) async {
-    final result = await _fileExplorerRepository.downloadFile(event.filePath);
-    
-    result.when(
-      right: (response) async {
-        if (response.result) {
-          _notificationBloc.add(NotificationEvents.createNotification(title: 'Archivo descargado', message: 'Se descargó el archivo ${event.filePath}.'));
-        }
-        final fileData = response.data as Map<String, dynamic>;
-        final rawBuffer = fileData['buffer']['data'] as List<dynamic>;
-        final fileName = fileData['fileName'] as String;
-        final List<int> buffer = rawBuffer.cast<int>();
-        final Uint8List bytes = Uint8List.fromList(buffer);
-        await FilePicker.platform.saveFile(
-          fileName: fileName,
-          bytes: bytes,
+    await state.mapOrNull(
+      loaded: (value) async {
+        emit(value.copyWith(downloading: true));
+
+        final result = await _fileExplorerRepository.downloadFile(event.filePath);
+
+        await result.when(
+          right: (response) async {
+            
+            final fileData = response.data as Map<String, dynamic>;
+            final rawBuffer = fileData['buffer']['data'] as List<dynamic>;
+            final fileName = fileData['fileName'] as String;
+            final List<int> buffer = rawBuffer.cast<int>();
+            final Uint8List bytes = Uint8List.fromList(buffer);
+
+            try {
+              await FilePicker.platform.saveFile(fileName: fileName, bytes: bytes);
+              if (response.result) {
+                _notificationBloc.add(NotificationEvents.createNotification(
+                  title: 'Archivo descargado',
+                  message: 'Se descargó el archivo ${event.filePath}.',
+                ));
+              }
+              emit(value.copyWith(downloading: false));
+
+            } catch (e) {
+              emit(FileExplorerState.failed(HttpRequestFailure.local()));
+            }
+          },
+          left: (failure) {
+            emit(FileExplorerState.failed(failure));
+          },
         );
       },
-      left: (failure) => emit(FileExplorerState.failed(failure)),
     );
   }
 
