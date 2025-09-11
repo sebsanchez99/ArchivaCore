@@ -1,8 +1,13 @@
 part of '../view/notifications_icon.dart';
 
-Future<void> _showNotificationMenu(  BuildContext context, List<NotificationModel> notifications, bool hasUnread) async {
+Future<void> _showNotificationMenu(
+  BuildContext context,
+  List<NotificationModel> notifications,
+  bool hasUnread,
+) async {
   final RenderBox button = context.findRenderObject() as RenderBox;
-  final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+  final RenderBox overlay =
+      Overlay.of(context).context.findRenderObject() as RenderBox;
   final Offset position = button.localToGlobal(Offset.zero, ancestor: overlay);
   const double menuOffset = 150.0;
 
@@ -17,8 +22,22 @@ Future<void> _showNotificationMenu(  BuildContext context, List<NotificationMode
       overlay.size.width - position.dx - button.size.width - menuOffset,
       overlay.size.height - position.dy - button.size.height,
     ),
+    constraints: BoxConstraints(maxHeight: 300, minWidth: 250, maxWidth: 300),
     menuPadding: EdgeInsets.all(8),
     items: <PopupMenuEntry<dynamic>>[
+      if (notifications.isNotEmpty)
+        const PopupMenuItem(
+          mouseCursor: SystemMouseCursors.click,
+          value: 'view_all',
+          child: Row(
+            children: [
+              Icon(Icons.list),
+              SizedBox(width: 8),
+              Text('Ver todas las notificaciones'),
+            ],
+          ),
+        ),
+      if (notifications.isNotEmpty) const PopupMenuDivider(),
       if (unreadNotifications.isEmpty)
         const PopupMenuItem(
           enabled: false,
@@ -50,24 +69,13 @@ Future<void> _showNotificationMenu(  BuildContext context, List<NotificationMode
           ),
         );
       }),
-      if (notifications.isNotEmpty) const PopupMenuDivider(),
-      if (notifications.isNotEmpty)
-        const PopupMenuItem(
-          mouseCursor: SystemMouseCursors.click,
-          value: 'view_all',
-          child: Row(
-            children: [
-              Icon(Icons.list),
-              SizedBox(width: 8),
-              Text('Ver todas las notificaciones'),
-            ],
-          ),
-        ),
     ],
   ).then((selected) {
     if (context.mounted) {
       if (hasUnread) {
-        context.read<NotificationBloc>().add(NotificationEvents.markAllNotifications());
+        context.read<NotificationBloc>().add(
+          NotificationEvents.markAllNotifications(),
+        );
       }
       if (selected == 'view_all') {
         final sideMenuCubit = context.read<SideMenuCubit>();
