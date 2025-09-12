@@ -6,32 +6,49 @@ import 'package:frontend/presentation/widgets/buttons/custom_icon_button.dart';
 
 class LocationPickerModal extends StatefulWidget {
   final List<FolderModel> rootFolders;
+  final FolderModel? excludedFolder; // 👈 Carpeta a excluir (opcional)
 
-  const LocationPickerModal({super.key, required this.rootFolders});
+  const LocationPickerModal({
+    super.key,
+    required this.rootFolders,
+    this.excludedFolder,
+  });
 
   @override
   State<LocationPickerModal> createState() => _LocationPickerModalState();
 }
 
 class _LocationPickerModalState extends State<LocationPickerModal> {
-  // Mantienes el path para la navegación
   List<String> path = [];
   List<FolderModel> currentFolders = [];
-
-  // Esta variable guarda el objeto de la carpeta actual
   FolderModel? currentSelectedFolder;
 
   @override
   void initState() {
     super.initState();
-    currentFolders = widget.rootFolders;
+    currentFolders = _filterExcluded(widget.rootFolders, widget.excludedFolder);
+  }
+
+  /// Filtra la carpeta excluida y todas sus subcarpetas
+  List<FolderModel> _filterExcluded(List<FolderModel> folders, FolderModel? excluded) {
+    if (excluded == null) return folders;
+
+    return folders
+        .where((f) => f.path != excluded.path)
+        .map((f) => FolderModel(
+              name: f.name,
+              files: f.files,
+              path: f.path,
+              subFolders: _filterExcluded(f.subFolders, excluded),
+            ))
+        .toList();
   }
 
   void _navigateTo(FolderModel folder) {
     setState(() {
       path.add(folder.name);
-      currentFolders = folder.subFolders;
-      currentSelectedFolder = folder; // Actualiza el folder actual
+      currentFolders = _filterExcluded(folder.subFolders, widget.excludedFolder);
+      currentSelectedFolder = folder;
     });
   }
 
@@ -39,19 +56,21 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
     if (path.isNotEmpty) {
       setState(() {
         path.removeLast();
-        List<FolderModel> folders = widget.rootFolders;
-        FolderModel? parentFolder; // Almacena el padre
+        List<FolderModel> folders =
+            _filterExcluded(widget.rootFolders, widget.excludedFolder);
+        FolderModel? parentFolder;
         for (var segment in path) {
           parentFolder = folders.firstWhere((f) => f.name == segment);
-          folders = parentFolder.subFolders;
+          folders = _filterExcluded(parentFolder.subFolders, widget.excludedFolder);
         }
         currentFolders = folders;
-        currentSelectedFolder = parentFolder; // Actualiza el folder actual al padre
+        currentSelectedFolder = parentFolder;
       });
     } else {
       setState(() {
-        currentSelectedFolder = null; // En la raíz, no hay folder seleccionado
-        currentFolders = widget.rootFolders;
+        currentSelectedFolder = null;
+        currentFolders =
+            _filterExcluded(widget.rootFolders, widget.excludedFolder);
       });
     }
   }
@@ -59,10 +78,9 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
   void _selectLocation() {
     String location;
     if (currentSelectedFolder != null) {
-      // Retorna la ruta completa de la carpeta seleccionada
       location = currentSelectedFolder!.path;
     } else {
-      location = "/"; // Si está en la raíz, devuelve "/"
+      location = "/";
     }
     Navigator.pop(context, location);
   }
@@ -82,18 +100,15 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
           children: [
             Row(
               children: [
-                const Icon(
-                  Icons.home,
-                  size: 18,
-                  color: SchemaColors.textPrimary,
-                ),
+                const Icon(Icons.home, size: 18, color: SchemaColors.textPrimary),
                 const SizedBox(width: 5),
                 GestureDetector(
                   onTap: () {
                     setState(() {
                       path.clear();
-                      currentFolders = widget.rootFolders;
-                      currentSelectedFolder = null; // Al volver a la raíz, no hay carpeta seleccionada
+                      currentFolders = _filterExcluded(
+                          widget.rootFolders, widget.excludedFolder);
+                      currentSelectedFolder = null;
                     });
                   },
                   child: const Text(
@@ -105,67 +120,54 @@ class _LocationPickerModalState extends State<LocationPickerModal> {
                   ),
                 ),
                 for (var segment in path) ...[
-                  const Text(
-                    " > ",
-                    style: TextStyle(color: SchemaColors.textSecondary),
-                  ),
-                  Text(
-                    segment,
-                    style: const TextStyle(color: SchemaColors.textPrimary),
-                  ),
+                  const Text(" > ", style: TextStyle(color: SchemaColors.textSecondary)),
+                  Text(segment, style: const TextStyle(color: SchemaColors.textPrimary)),
                 ],
               ],
             ),
             const Divider(),
             Expanded(
-              child:
-                  currentFolders.isEmpty
-                      ? const Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.delete_sweep_outlined,
-                                color: Colors.grey,
-                                size: 40,
-                              ),
-                              Text(
-                                'Carpeta vacía.',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
+              child: currentFolders.isEmpty
+                  ? const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.delete_sweep_outlined,
+                              color: Colors.grey, size: 40),
+                          Text(
+                            'Carpeta vacía.',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        )
-                      : GridView.builder(
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 3,
-                                mainAxisSpacing: 10,
-                                crossAxisSpacing: 10,
-                              ),
-                          itemCount: currentFolders.length,
-                          itemBuilder: (context, index) {
-                            final folder = currentFolders[index];
-                            return Column(
-                              children: [
-                                IconButton(
-                                  icon: Icon(Icons.folder),
-                                  color: SchemaColors.warning,
-                                  onPressed: () => _navigateTo(folder),
-                                  iconSize: 40,
-                                ),
-                                Text(
-                                  folder.name,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            );
-                          },
-                        ),
+                        ],
+                      ),
+                    )
+                  : GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
+                      ),
+                      itemCount: currentFolders.length,
+                      itemBuilder: (context, index) {
+                        final folder = currentFolders[index];
+                        return Column(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.folder),
+                              color: SchemaColors.warning,
+                              onPressed: () => _navigateTo(folder),
+                              iconSize: 40,
+                            ),
+                            Text(folder.name, overflow: TextOverflow.ellipsis),
+                          ],
+                        );
+                      },
+                    ),
             ),
           ],
         ),

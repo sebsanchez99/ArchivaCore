@@ -20,11 +20,7 @@ class EditFolder extends StatefulWidget {
   final FileExplorerBloc bloc;
   final FolderModel folder;
 
-  const EditFolder({
-    super.key,
-    required this.bloc,
-    required this.folder,
-  });
+  const EditFolder({super.key, required this.bloc, required this.folder});
 
   @override
   EditFolderState createState() => EditFolderState();
@@ -41,7 +37,10 @@ class EditFolderState extends State<EditFolder> {
     _nameController = TextEditingController(text: widget.folder.name);
     // Extrae la ruta de la carpeta padre para la ubicación inicial
     final lastSlashIndex = widget.folder.path.lastIndexOf('/');
-    selectedPath = lastSlashIndex > 0 ? widget.folder.path.substring(0, lastSlashIndex) : '/';
+    selectedPath =
+        lastSlashIndex > 0
+            ? widget.folder.path.substring(0, lastSlashIndex)
+            : '/';
   }
 
   @override
@@ -51,7 +50,10 @@ class EditFolderState extends State<EditFolder> {
   }
 
   String _calculateFolderSize() {
-    final totalSizeMB = widget.folder.files.fold<double>(0.0, (sum, f) => sum + (double.tryParse(f.size) ?? 0.0));
+    final totalSizeMB = widget.folder.files.fold<double>(
+      0.0,
+      (sum, f) => sum + (double.tryParse(f.size) ?? 0.0),
+    );
     return '${totalSizeMB.toStringAsFixed(2)} KB';
   }
 
@@ -65,14 +67,17 @@ class EditFolderState extends State<EditFolder> {
       value: widget.bloc,
       child: BlocBuilder<FileExplorerBloc, FileExplorerState>(
         builder: (context, state) {
-          final isBusy = state.mapOrNull(loaded: (value) => value.isBusy) ?? false;
-          
+          final isBusy =
+              state.mapOrNull(loaded: (value) => value.isBusy) ?? false;
+
           return AbsorbPointer(
             absorbing: isBusy,
             child: Form(
               key: _formKey,
               child: AlertDialog(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 backgroundColor: SchemaColors.neutral100,
                 content: SingleChildScrollView(
                   child: SizedBox(
@@ -105,8 +110,10 @@ class EditFolderState extends State<EditFolder> {
                                     isPassword: false,
                                     hintText: widget.folder.name,
                                     controller: _nameController,
-                                    validator: (value) =>
-                                        value.validateWith([FormValidator.notEmpty()]),
+                                    validator:
+                                        (value) => value.validateWith([
+                                          FormValidator.notEmpty(),
+                                        ]),
                                     onChanged: (text) {
                                       setState(() {});
                                     },
@@ -114,28 +121,43 @@ class EditFolderState extends State<EditFolder> {
                                   const SizedBox(height: 20),
                                   _buildSectionTitle('Ubicación actual'),
                                   const SizedBox(height: 10),
-                                  BlocBuilder<FileExplorerBloc, FileExplorerState>(
+                                  BlocBuilder<
+                                    FileExplorerBloc,
+                                    FileExplorerState
+                                  >(
                                     builder: (context, state) {
                                       return state.maybeMap(
                                         orElse: () => const SizedBox.shrink(),
-                                        loaded: (value) => SizedBox(
-                                          width: double.infinity,
-                                          child: LocationButton(
-                                            text: 'Seleccionar ubicación',
-                                            selectedPath: selectedPath,
-                                            onPressed: () async {
-                                              final ruta = await showDialog<String>(
-                                                context: context,
-                                                builder: (context) => LocationPickerModal(rootFolders: value.content.folders),
-                                              );
-                                              if (ruta != null) {
-                                                setState(() {
-                                                  selectedPath = ruta;
-                                                });
-                                              }
-                                            },
-                                          ),
-                                        ),
+                                        loaded:
+                                            (value) => SizedBox(
+                                              width: double.infinity,
+                                              child: LocationButton(
+                                                text: 'Seleccionar ubicación',
+                                                selectedPath: selectedPath,
+                                                onPressed: () async {
+                                                  final ruta = await showDialog<
+                                                    String
+                                                  >(
+                                                    context: context,
+                                                    builder:
+                                                        (context) =>
+                                                            LocationPickerModal(
+                                                              rootFolders:
+                                                                  value
+                                                                      .content
+                                                                      .folders,
+                                                              excludedFolder:
+                                                                  widget.folder,
+                                                            ),
+                                                  );
+                                                  if (ruta != null) {
+                                                    setState(() {
+                                                      selectedPath = ruta;
+                                                    });
+                                                  }
+                                                },
+                                              ),
+                                            ),
                                       );
                                     },
                                   ),
@@ -165,7 +187,11 @@ class EditFolderState extends State<EditFolder> {
                 ),
                 actions: [
                   if (isBusy)
-                    const Center(child: CircularProgressIndicator(color: SchemaColors.primary))
+                    const Center(
+                      child: CircularProgressIndicator(
+                        color: SchemaColors.primary,
+                      ),
+                    )
                   else ...[
                     CustomButton(
                       message: 'Cancelar',
@@ -178,12 +204,15 @@ class EditFolderState extends State<EditFolder> {
                       iconColor: Colors.white,
                       onPressed: () async {
                         if (selectedPath == null) {
-                          await showErrorDialog(context, 'La ubicación de la carpeta es obligatoria');
+                          await showErrorDialog(
+                            context,
+                            'La ubicación de la carpeta es obligatoria',
+                          );
                           return;
-                        } 
-                        
+                        }
+
                         if (_formKey.currentState!.validate()) {
-                           // Lanza el evento para actualizar la carpeta
+                          // Lanza el evento para actualizar la carpeta
                           context.read<FileExplorerBloc>().add(
                             FileExplorerEvents.putFolder(
                               folderName: _nameController.text.trim(),
@@ -232,9 +261,10 @@ class EditFolderState extends State<EditFolder> {
         child: CustomFolder(
           onPressed: () {},
           icon: Icons.folder,
-          name: _nameController.text.isEmpty
-              ? 'Nombre no definido'
-              : _nameController.text,
+          name:
+              _nameController.text.isEmpty
+                  ? 'Nombre no definido'
+                  : _nameController.text,
           fileCount:
               '${widget.folder.files.length + widget.folder.subFolders.length} Elementos',
           size: _calculateFolderSize(),
@@ -255,7 +285,10 @@ class EditFolderState extends State<EditFolder> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildDetailRow(label: 'Número de elementos', value: _calculateTotalItems().toString()),
+          _buildDetailRow(
+            label: 'Número de elementos',
+            value: _calculateTotalItems().toString(),
+          ),
           _buildDetailRow(label: 'Tamaño', value: _calculateFolderSize()),
           _buildDetailRow(label: 'Ruta actual', value: widget.folder.path),
         ],
@@ -273,10 +306,7 @@ class EditFolderState extends State<EditFolder> {
             width: 130,
             child: Text(
               '$label:',
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
             ),
           ),
           Expanded(
