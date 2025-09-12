@@ -2,8 +2,8 @@
  * @namespace Controladores
  * @description Controladores de la API
  */
-const SupaBaseHelper = require('../../helpers/supabase.helper ')
-const ResponseUtil = require('../../utils/response.util')
+const SupaBaseHelper = require('../../helpers/supabase.helper.js')
+const ResponseUtil = require('../../utils/response.util.js')
 
 /**
  * @namespace FolderController

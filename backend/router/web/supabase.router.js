@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const { getTotalStorage } = require('../../controllers/web/supabase.controller')
+const { getTotalStorage } = require('../../controllers/web/supabase.controller.js')
 
 const router = Router()
 

@@ -1,4 +1,4 @@
-const { emitAgentStatus, emitSystemMessage } = require('../services/statusService')
+const { emitAgentStatus, emitSystemMessage } = require('../services/statusService.js')
 
 function handleEndChat({ empresaId, room }, context) {
   console.log(`[WS] Chat finalizado por asesor para empresaId=${empresaId} en room=${room}`)

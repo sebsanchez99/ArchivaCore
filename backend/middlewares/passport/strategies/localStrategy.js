@@ -1,6 +1,6 @@
 const { Strategy: LocalStrategy } = require('passport-local');
 const bcrypt = require('bcrypt');
-const pool = require('../../../libs/postgres');
+const pool = require('../../../libs/postgres.js');
 
 const QUERIES = {
   EMPRESA: 'SELECT * FROM obtener_empresa_por_correo($1)',

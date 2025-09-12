@@ -3,7 +3,7 @@ const {
   emitEmpresaStatus,
   emitSystemMessage,
   emitSinAsesor
-} = require('../services/statusService')
+} = require('../services/statusService.js')
 
 function handleDisconnect(socket, context) {
   if (context.asesores.has(socket.id)) {

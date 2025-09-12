@@ -1,10 +1,10 @@
 // Importa las utilidades de respuesta y todos los helpers refactorizados
-const BucketHelper = require('./supabase/bucket.helper');
-const FileHelper = require('./supabase/file.helper');
-const FolderHelper = require('./supabase/folder.helper');
-const recycleBinHelper = require('./supabase/recycleBin.helper');
-const RecycleBinHelper = require('./supabase/recycleBin.helper');
-const StorageHelper = require('./supabase/storage.helper');
+const BucketHelper = require('./supabase/bucket.helper.js');
+const FileHelper = require('./supabase/file.helper.js');
+const FolderHelper = require('./supabase/folder.helper.js');
+const recycleBinHelper = require('./supabase/recycleBin.helper.js');
+const RecycleBinHelper = require('./supabase/recycleBin.helper.js');
+const StorageHelper = require('./supabase/storage.helper.js');
 
 /**
  * @class Esta clase es un orquestador que expone métodos para la gestión de carpetas de usuarios.

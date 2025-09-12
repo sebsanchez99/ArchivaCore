@@ -5,7 +5,7 @@ const {
     changeUserPassword,
     updateUserInfo,
     deleteCompanyAccount
-} = require('../../controllers/web/settings.controller')
+} = require('../../controllers/web/settings.controller.js')
 
 const router = Router()
 

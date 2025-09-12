@@ -1,5 +1,5 @@
-const pool = require('../libs/postgres');
-const ResponseUtil = require('../utils/response.util');
+const pool = require('../libs/postgres.js');
+const ResponseUtil = require('../utils/response.util.js');
 
 class RepositoryHelper {
     

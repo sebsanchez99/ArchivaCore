@@ -1,4 +1,4 @@
-const { emitEmpresaStatus } = require('../services/statusService')
+const { emitEmpresaStatus } = require('../services/statusService.js')
 
 function handleMessage(socket, { room, message, fromUserId }, context) {
   const [empresaId] = room.replace("chat_", "").split("_")

@@ -2,9 +2,9 @@
  * @namespace Helpers
  * @description Grupo de helpers para la aplicación.
  */
-const pool = require("../libs/postgres");
+const pool = require("../libs/postgres.js");
 const bcrypt = require('bcrypt');
-const ResponseUtil = require('../utils/response.util')
+const ResponseUtil = require('../utils/response.util.js')
 
 /**
  * @class Esta clase contiene métodos para la gestión de usuarios en la base de datos.

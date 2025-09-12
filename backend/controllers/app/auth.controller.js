@@ -1,5 +1,5 @@
-const AuthHelper = require('../../helpers/auth.helper')
-const ResponseUtil = require('../../utils/response.util')
+const AuthHelper = require('../../helpers/auth.helper.js')
+const ResponseUtil = require('../../utils/response.util.js')
 
 /**
  * @namespace AuthController

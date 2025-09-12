@@ -1,7 +1,7 @@
 const path = require('path');
-const poolNewClient = require('../libs/supaBase'); // Se necesita para #builderStructure
-const ResponseUtil = require('./response.util');
-const SupabaseClient = require('../clients/supabase.client');
+const poolNewClient = require('../libs/supaBase.js'); // Se necesita para #builderStructure
+const ResponseUtil = require('./response.util.js');
+const SupabaseClient = require('../clients/supabase.client.js');
 
 // Mueve de forma recursiva todos los archivos y subcarpetas
 const copyFilesFoldersRecursively = async (

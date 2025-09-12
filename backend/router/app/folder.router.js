@@ -17,7 +17,7 @@ const {
     listAllRoutes,
     updateFile,
     updateFolder,
-} = require('../../controllers/app/folder.controllers')
+} = require('../../controllers/app/folder.controllers.js')
 
 const router = Router()
 const upload = multer({ storage: multer.memoryStorage() })

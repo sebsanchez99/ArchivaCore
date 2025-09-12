@@ -1,5 +1,5 @@
-const { assignEmpresaToAsesor } = require('../services/AssignmentService')
-const { emitSinAsesor } = require('../services/statusService')
+const { assignEmpresaToAsesor } = require('../services/assignmentService.js')
+const { emitSinAsesor } = require('../services/statusService.js')
 
 function handleJoin(socket, { userId, role, nombreEmpresa }, context) {
   if (!userId || !role) {

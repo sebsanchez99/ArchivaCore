@@ -1,4 +1,4 @@
-const poolNewClient = require('../libs/supaBase');
+const poolNewClient = require('../libs/supaBase.js');
 
 const SupabaseClient = {
   createBucket: (bucketName, options) => poolNewClient.createBucket(bucketName, options),

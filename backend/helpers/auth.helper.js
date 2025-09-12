@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
-const { configToken } = require("../config/config");
-const ResponseUtil = require('../utils/response.util');
-const pool = require('../libs/postgres');
+const { configToken } = require("../config/config.js");
+const ResponseUtil = require('../utils/response.util.js');
+const pool = require('../libs/postgres.js');
 
 /**
  * @class Esta clase contiene métodos para la gestión de autenticación de usuarios.

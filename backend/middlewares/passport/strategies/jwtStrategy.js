@@ -1,5 +1,5 @@
 const { Strategy, ExtractJwt } = require('passport-jwt')
-const { configToken } = require("../../../config/config");
+const { configToken } = require("../../../config/config.js");
 
 
 // Configurar la extracción y validación del token que posee el usuario

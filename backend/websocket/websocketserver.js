@@ -1,9 +1,9 @@
 const { Server } = require('socket.io')
 
-const handleJoin = require('./handlers/handleJoin')
-const handleMessage = require('./handlers/handleMessage')
-const handleEndChat = require('./handlers/handleEndChat')
-const handleDisconnect = require('./handlers/handleDisconnect')
+const handleJoin = require('./handlers/handleJoin.js')
+const handleMessage = require('./handlers/handleMessage.js')
+const handleEndChat = require('./handlers/handleEndChat.js')
+const handleDisconnect = require('./handlers/handleDisconnect.js')
 
 class WebSocketServer {
   constructor(server) {

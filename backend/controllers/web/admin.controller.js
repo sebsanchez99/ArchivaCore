@@ -1,6 +1,6 @@
-const AdminHelper = require('../../helpers/admin.helper')
-const SupaBaseHelper = require('../../helpers/supabase.helper ')
-const ResponseUtil = require('../../utils/response.util')
+const AdminHelper = require('../../helpers/admin.helper.js')
+const SupaBaseHelper = require('../../helpers/supabase.helper.js')
+const ResponseUtil = require('../../utils/response.util.js')
 
 const getClients = async (req, res) => {
     try {

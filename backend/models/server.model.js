@@ -5,10 +5,10 @@
 const express = require("express")
 const cors = require("cors")
 const { createServer } = require("node:http")
-const { configServer } = require("../config/config")
-const router = require("../router/router")
-const passport = require("../middlewares/passport/passport")
-const WebSocketServer = require("../websocket/websocketserver")
+const { configServer } = require("../config/config.js")
+const router = require("../router/router.js")
+const passport = require("../middlewares/passport/passport.js")
+const WebSocketServer = require("../websocket/websocketserver.js")
 
 /**
  * Representa el servidor Express.

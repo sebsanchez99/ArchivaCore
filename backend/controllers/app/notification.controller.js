@@ -1,6 +1,6 @@
 
-const NotificationHelper = require('../../helpers/notification.helper')
-const ResponseUtil = require('../../utils/response.util')
+const NotificationHelper = require('../../helpers/notification.helper.js')
+const ResponseUtil = require('../../utils/response.util.js')
 
 const listUserNotifications = async (req, res) => {
   try {

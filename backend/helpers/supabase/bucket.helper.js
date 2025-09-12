@@ -1,6 +1,6 @@
-const SupabaseClient = require('../../clients/supabase.client');
-const ResponseUtil = require('../../utils/response.util');
-const { buildBucketName } = require('../../utils/supabase.util');
+const SupabaseClient = require('../../clients/supabase.client.js');
+const ResponseUtil = require('../../utils/response.util.js');
+const { buildBucketName } = require('../../utils/supabase.util.js');
 
 /**
  * @class Helper para la gestión de buckets de Supabase.

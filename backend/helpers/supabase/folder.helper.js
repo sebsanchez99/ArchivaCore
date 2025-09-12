@@ -1,7 +1,7 @@
 const path = require('path');
-const SupabaseClient = require('../../clients/supabase.client');
-const ResponseUtil = require('../../utils/response.util');
-const { buildBucketName, builderStructure, copyFilesFoldersRecursively } = require('../../utils/supabase.util');
+const SupabaseClient = require('../../clients/supabase.client.js');
+const ResponseUtil = require('../../utils/response.util.js');
+const { buildBucketName, builderStructure, copyFilesFoldersRecursively } = require('../../utils/supabase.util.js');
 
 /**
  * @class Helper para la gestión de carpetas en Supabase.

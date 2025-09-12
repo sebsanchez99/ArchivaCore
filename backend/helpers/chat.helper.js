@@ -1,4 +1,4 @@
-const pool = require('../libs/postgres')
+const pool = require('../libs/postgres.js')
 
 class ChatHelper {
   /**

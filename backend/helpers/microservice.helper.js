@@ -5,9 +5,9 @@
 const OpenAI = require( 'openai')
 const pdfParse = require("pdf-parse")
 const mammoth = require("mammoth")
-const { configGPT } = require("../config/config")
-const { buildPrompt } = require('../utils/prompt.util')
-const ResponseUtil = require('../utils/response.util')
+const { configGPT } = require("../config/config.js")
+const { buildPrompt } = require('../utils/prompt.util.js')
+const ResponseUtil = require('../utils/response.util.js')
 
 const models = {
   accurate: "gpt-4.1",               

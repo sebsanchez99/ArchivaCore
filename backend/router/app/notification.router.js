@@ -6,7 +6,7 @@ const {
     deleteAllNotification,
     markNotification,
     markAllNotifications
-} = require('../../controllers/app/notification.controller')
+} = require('../../controllers/app/notification.controller.js')
 
 const router = Router()
 

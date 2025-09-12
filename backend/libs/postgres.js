@@ -1,5 +1,5 @@
 const { Pool } = require('pg')
-const { configDB } = require('../config/config')
+const { configDB } = require('../config/config.js')
 
 // Cadena de conexión de base de datos
 const connectionString = `postgresql://${configDB.dbUser}:${configDB.dbPassword}@${configDB.dbHost}:${configDB.dbPort}/${configDB.dbName}`

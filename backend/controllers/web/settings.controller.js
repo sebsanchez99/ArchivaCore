@@ -1,6 +1,6 @@
-const ResponseUtil = require('../../utils/response.util')
-const AdminHelper = require('../../helpers/admin.helper')
-const SupaBaseHelper = require('../../helpers/supabase.helper ')
+const ResponseUtil = require('../../utils/response.util.js')
+const AdminHelper = require('../../helpers/admin.helper.js')
+const SupaBaseHelper = require('../../helpers/supabase.helper.js')
 
 const changeUserPassword = async (req, res) => {
     try {

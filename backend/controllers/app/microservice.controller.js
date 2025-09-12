@@ -2,8 +2,8 @@
  * @namespace Controladores
  * @description Controladores de la API
  */
-const AIHelper = require('../../helpers/microservice.helper')
-const ResponseUtil = require('../../utils/response.util')
+const AIHelper = require('../../helpers/microservice.helper.js')
+const ResponseUtil = require('../../utils/response.util.js')
 
 /**
  * @namespace MicroserviceController

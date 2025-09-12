@@ -1,7 +1,6 @@
 const path = require('path')
-const poolNewClient = require('../libs/postgres')
-const ResponseUtil = require('../utils/response.util')
-const { log } = require('console')
+const poolNewClient = require('../libs/postgres.js')
+const ResponseUtil = require('../utils/response.util.js')
 
 class NotificationsUser {
     async listUserNotifications(userId) {

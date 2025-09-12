@@ -1,9 +1,9 @@
-const ResponseUtil = require('../../utils/response.util');
+const ResponseUtil = require('../../utils/response.util.js');
 const { 
   buildBucketName, 
   builderStructure, 
   sumFileSizesByCategory 
-} = require('../../utils/supabase.util');
+} = require('../../utils/supabase.util.js');
 
 /**
  * @class Helper para el cálculo de almacenamiento y estadísticas del bucket.
