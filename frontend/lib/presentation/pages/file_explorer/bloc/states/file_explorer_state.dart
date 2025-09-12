@@ -23,6 +23,7 @@ class FileExplorerState with _$FileExplorerState {
     @Default([]) List<String> allTypes,
     @Default([]) List<String> allAuthors,
     @Default(false) bool isBusy,
+    @Default(false) bool downloading,
     ServerResponseModel? response,
     FileModel? selectedFile,
     FolderModel? selectedFolder,

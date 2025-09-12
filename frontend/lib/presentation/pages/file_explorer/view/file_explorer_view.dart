@@ -12,6 +12,7 @@ import 'package:frontend/presentation/pages/file_explorer/utils/utils.dart';
 import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_details_view.dart';
 import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_grid_view.dart';
 import 'package:frontend/presentation/pages/file_explorer/view/file_explorer_list_view.dart';
+import 'package:frontend/presentation/pages/file_explorer/widgets/downloading_dialog.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/multi_select_dropdown.dart';
 import 'package:frontend/presentation/pages/notification/bloc/notification_bloc.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_popupmenu.dart';
@@ -19,9 +20,15 @@ import 'package:frontend/presentation/widgets/states/failure_state.dart';
 import 'package:frontend/presentation/widgets/states/loading_state.dart';
 import 'package:frontend/presentation/pages/file_explorer/bloc/events/grid_explorer_events.dart'; // Importa los eventos del GridBloc
 
-class FileExplorerView extends StatelessWidget {
+class FileExplorerView extends StatefulWidget {
   const FileExplorerView({super.key});
 
+  @override
+  State<FileExplorerView> createState() => _FileExplorerViewState();
+}
+
+class _FileExplorerViewState extends State<FileExplorerView> {
+  BuildContext? _downloadingDialogContext;
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -45,6 +52,26 @@ class FileExplorerView extends StatelessWidget {
               if (response != null) {
                 showResult(context, response);
                 context.read<FileExplorerBloc>().add(DeleteResponseEvent());
+              }
+
+              if (value.downloading) {
+                // Solo mostrar si no se ha mostrado ya
+                if (_downloadingDialogContext == null) {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (dialogContext) {
+                      _downloadingDialogContext = dialogContext;
+                      return const DownloadingDialog();
+                    },
+                  );
+                }
+              } else {
+                // Si el diálogo está abierto, lo cerramos
+                if (_downloadingDialogContext != null) {
+                  Navigator.of(_downloadingDialogContext!, rootNavigator: true).pop();
+                  _downloadingDialogContext = null;
+                }
               }
 
               context.read<GridExplorerBloc>().add(UpdateFromExplorer(

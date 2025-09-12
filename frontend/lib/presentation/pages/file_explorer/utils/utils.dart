@@ -138,46 +138,46 @@ Future<void> showResult(BuildContext context, ServerResponseModel response) asyn
   );
 }
 
-  IconData getFileIcon(String type) {
-    switch (type.toLowerCase()) {
-      case "pdf":
-        return Icons.picture_as_pdf;
-      case "doc":
-      case "docx":
-        return Icons.description;
-      case "jpg":
-      case "png":
-      case "jpeg":
-        return Icons.image;
-      case "mp4":
-      case "avi":
-        return Icons.movie;
-      case "mp3":
-      case "wav":
-        return Icons.music_note;
-      default:
-        return Icons.insert_drive_file;
-    }
+IconData getFileIcon(String type) {
+  switch (type.toLowerCase()) {
+    case "pdf":
+      return Icons.picture_as_pdf;
+    case "doc":
+    case "docx":
+      return Icons.description;
+    case "jpg":
+    case "png":
+    case "jpeg":
+      return Icons.image;
+    case "mp4":
+    case "avi":
+      return Icons.movie;
+    case "mp3":
+    case "wav":
+      return Icons.music_note;
+    default:
+      return Icons.insert_drive_file;
   }
+}
 
-  Color getFileColor(String type) {
-    switch (type.toLowerCase()) {
-      case "pdf":
-        return Colors.red;
-      case "doc":
-      case "docx":
-        return Colors.blue;
-      case "jpg":
-      case "png":
-      case "jpeg":
-        return Colors.orange;
-      case "mp4":
-      case "avi":
-        return Colors.purple;
-      case "mp3":
-      case "wav":
-        return Colors.green;
-      default:
-        return SchemaColors.primary;
-    }
+Color getFileColor(String type) {
+  switch (type.toLowerCase()) {
+    case "pdf":
+      return Colors.red;
+    case "doc":
+    case "docx":
+      return Colors.blue;
+    case "jpg":
+    case "png":
+    case "jpeg":
+      return Colors.orange;
+    case "mp4":
+    case "avi":
+      return Colors.purple;
+    case "mp3":
+    case "wav":
+      return Colors.green;
+    default:
+      return SchemaColors.primary;
   }
+}
