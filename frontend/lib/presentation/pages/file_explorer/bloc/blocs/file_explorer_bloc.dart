@@ -275,7 +275,7 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     await state.mapOrNull(
       loaded: (value) async{
         final fileName =  value.file?.name;
-        final result = await _fileExplorerRepository.createFiles(value.file!, event.folderRoute);
+        final result = await _fileExplorerRepository.createFiles(value.file!, event.folderRoute, event.fileName);
         await result.when(
           left: (failure) {
             emit(FileExplorerState.failed(failure));

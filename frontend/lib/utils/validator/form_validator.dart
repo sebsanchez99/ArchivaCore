@@ -125,17 +125,43 @@ class FormValidator {
   }
 
   static String? Function(String?) name({String? message}) {
-  return (value) {
-    if (value == null || value.trim().isEmpty) {
-      return message ?? 'El nombre no puede estar vacío';
-    }
-    // Permite letras, espacios y tildes (acentos)
-    final nameRegex = RegExp(r"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$");
-    if (!nameRegex.hasMatch(value.trim())) {
-      return message ?? 'El nombre solo puede contener letras y espacios';
-    }
-    return null;
-  };
-}
+    return (value) {
+      if (value == null || value.trim().isEmpty) {
+        return message ?? 'El nombre no puede estar vacío';
+      }
+      // Permite letras, espacios y tildes (acentos)
+      final nameRegex = RegExp(r"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$");
+      if (!nameRegex.hasMatch(value.trim())) {
+        return message ?? 'El nombre solo puede contener letras y espacios';
+      }
+      return null;
+    };
+  }
+
+  static String? Function(String?) folderFileName({String? message}) {
+    return (value) {
+      if (value == null || value.trim().isEmpty) {
+        return message ?? 'El nombre no puede estar vacío';
+      }
+
+      final trimmedValue = value.trim();
+
+      final allowedCharsRegex = RegExp(r'^[a-zA-Z0-9\s._()\-\[\]]+$');
+      if (!allowedCharsRegex.hasMatch(trimmedValue)) {
+        return message ?? 'El nombre contiene caracteres no permitidos';
+      }
+
+      final disallowedCharsRegex = RegExp(r'[áéíóúÁÉÍÓÚñÑ]');
+      if (disallowedCharsRegex.hasMatch(trimmedValue)) {
+        return 'El nombre no puede contener tildes ni la letra ñ';
+      }
+
+      if (trimmedValue.isEmpty || trimmedValue.length > 255) {
+        return 'El nombre debe tener entre 1 y 255 caracteres';
+      }
+
+      return null;
+    };
+  }
 
 }

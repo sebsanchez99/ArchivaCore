@@ -16,12 +16,12 @@ class FileExplorerService {
     );
   }
 
-  HttpFuture<ServerResponseModel> createFiles(PlatformFile file, String folderRoute) {
+  HttpFuture<ServerResponseModel> createFiles(PlatformFile file, String folderRoute, String fileName) {
     final formData = FormData.fromMap({
       'folderRoute': folderRoute,
       'fileContent': MultipartFile.fromBytes(
         file.bytes!,
-        filename: file.name
+        filename: fileName
       ),
     });
     return DioHandler.handleRequest(

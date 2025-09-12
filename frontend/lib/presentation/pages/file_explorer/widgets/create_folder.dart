@@ -82,7 +82,7 @@ class _CreateFolderState extends State<CreateFolder> {
                     controller: _nameController,
                     isPassword: false,
                     hintText: "ej: ArchivaCore",
-                    validator: (value) => value.validateWith([FormValidator.notEmpty()])
+                    validator: (value) => value.validateWith([FormValidator.folderFileName()])
                   ),
                   const SizedBox(height: 20),
                   

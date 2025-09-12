@@ -63,7 +63,7 @@ class FileExplorerEvents with _$FileExplorerEvents {
 
   const factory FileExplorerEvents.uploadFile(PlatformFile? result) = UploadFileEvent;
   
-  const factory FileExplorerEvents.createFile({required String folderRoute}) = CreateFileEvent;
+  const factory FileExplorerEvents.createFile({required String folderRoute, required String fileName}) = CreateFileEvent;
 
 
   // Crear carpeta

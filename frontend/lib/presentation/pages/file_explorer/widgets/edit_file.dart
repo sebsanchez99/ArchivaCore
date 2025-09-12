@@ -107,7 +107,7 @@ class EditFileState extends State<EditFile> {
                                           isPassword: false,
                                           hintText: 'Nombre del archivo',
                                           controller: _nameController,
-                                          validator: (value) => value.validateWith([FormValidator.notEmpty()]),
+                                          validator: (value) => value.validateWith([FormValidator.folderFileName()]),
                                           onChanged: (text) {
                                             setState(() {}); 
                                           },

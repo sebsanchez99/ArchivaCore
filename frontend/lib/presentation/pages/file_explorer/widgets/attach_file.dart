@@ -9,6 +9,8 @@ import 'package:frontend/presentation/pages/file_explorer/utils/utils.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/location_button.dart';
 import 'package:frontend/presentation/pages/file_explorer/widgets/location_picker_modal.dart';
 import 'package:frontend/presentation/widgets/buttons/custom_button.dart';
+import 'package:frontend/utils/validator/form_validator.dart';
+import 'package:frontend/utils/validator/form_validator_extension.dart';
 
 class AttachFile extends StatefulWidget {
   final FileExplorerBloc bloc;
@@ -24,6 +26,14 @@ class AttachFile extends StatefulWidget {
 
 class _AttachFileState extends State<AttachFile> {
   String? selectedPath;
+  final TextEditingController _fileNameController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _fileNameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,186 +45,187 @@ class _AttachFileState extends State<AttachFile> {
           final isBusy = loadedState?.isBusy ?? false;
           final file = loadedState?.file;
 
+          if (file != null) {
+            _fileNameController.text = file.name;
+          }
+
           return AbsorbPointer(
             absorbing: isBusy,
-            child: AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              backgroundColor: SchemaColors.neutral100,
-              content: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      "Subir archivo",
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: SchemaColors.textPrimary),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      'Selecciona el archivo que desees subir. Máximo 50MB por archivo.',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SchemaColors.textSecondary),
-                    ),
-                    const SizedBox(height: 20),
-                    Center(
-                      child: file == null
-                          ? InkWell(
-                              onTap: () => pickFile(context, widget.bloc),
-                              child: DottedBorder(
-                                padding: const EdgeInsets.all(20),
-                                dashPattern: const [9],
-                                color: SchemaColors.border,
-                                strokeWidth: 1,
-                                borderType: BorderType.RRect,
-                                radius: const Radius.circular(10),
-                                child: Container(
-                                  width: 355,
-                                  height: 180,
-                                  color: SchemaColors.background,
-                                  child: const Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.upload_file,
-                                        color: SchemaColors.secondary,
-                                        size: 40,
-                                      ),
-                                      SizedBox(height: 15),
-                                      Text(
-                                        'Haz clic para seleccionar un archivo',
-                                        style: TextStyle(
-                                          color: SchemaColors.textPrimary,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500,
+            child: Form(
+              key: _formKey,
+              child: AlertDialog(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                backgroundColor: SchemaColors.neutral100,
+                content: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Subir archivo",
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: SchemaColors.textPrimary),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        'Selecciona el archivo que desees subir. Máximo 50MB por archivo.',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: SchemaColors.textSecondary),
+                      ),
+                      const SizedBox(height: 20),
+                      Center(
+                        child: file == null
+                            ? InkWell(
+                                onTap: () => pickFile(context, widget.bloc),
+                                child: DottedBorder(
+                                  padding: const EdgeInsets.all(20),
+                                  dashPattern: const [9],
+                                  color: SchemaColors.border,
+                                  strokeWidth: 1,
+                                  borderType: BorderType.RRect,
+                                  radius: const Radius.circular(10),
+                                  child: Container(
+                                    width: 355,
+                                    height: 180,
+                                    color: SchemaColors.background,
+                                    child: const Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.upload_file,
+                                          color: SchemaColors.secondary,
+                                          size: 40,
                                         ),
-                                      ),
-                                    ],
+                                        SizedBox(height: 15),
+                                        Text(
+                                          'Haz clic para seleccionar un archivo',
+                                          style: TextStyle(
+                                            color: SchemaColors.textPrimary,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
+                              )
+                            : Column(
+                                children: [
+                                  TextFormField(
+                                    controller: _fileNameController,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Nombre del archivo',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    validator:(value) => value.validateWith([FormValidator.folderFileName()])
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Container(
+                                    width: 355,
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                    decoration: BoxDecoration(
+                                      color: SchemaColors.neutral100,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(color: SchemaColors.border),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.05),
+                                          blurRadius: 5,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        // 🔹 Icono
+                                        Icon(
+                                          _getFileIcon(file.extension),
+                                          color: _getFileColor(file.extension),
+                                          size: 28,
+                                        ),
+                                        const SizedBox(width: 15),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "${(file.size / 1024).toStringAsFixed(2)} KB",
+                                                style: const TextStyle(
+                                                  color: SchemaColors.textSecondary,
+                                                  fontSize: 13,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                'En: ${selectedPath ?? "—"}',
+                                                style: const TextStyle(
+                                                  color: SchemaColors.textSecondary,
+                                                  fontSize: 13,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        // 🔹 Botón de eliminar
+                                        IconButton(
+                                          icon: const Icon(Icons.close, color: Colors.red, size: 20),
+                                          onPressed: () => context.read<FileExplorerBloc>().add(const FileExplorerEvents.uploadFile(null)),
+                                          tooltip: 'Eliminar archivo',
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                                    width: double.infinity,
+                                    child: LocationButton(
+                                      text: 'Seleccionar ubicación',
+                                      selectedPath: selectedPath,
+                                      onPressed: () async {
+                                        final ruta = await showDialog<String>(
+                                          context: context,
+                                          builder: (context) => LocationPickerModal(rootFolders: loadedState!.content.folders),
+                                        );
+                                        if (ruta != null) {
+                                          setState(() {
+                                            selectedPath = ruta;
+                                          });
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
-                            )
-                          : Column(
-                              children: [
-                                Container( 
-                                  width: 355,
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                  decoration: BoxDecoration(
-                                    color: SchemaColors.neutral100,
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(color: SchemaColors.border),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.05),
-                                        blurRadius: 5,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      // 🔹 Icono
-                                      Icon(
-                                        // Aquí estaba el error
-                                        _getFileIcon(file.extension),
-                                        color: _getFileColor(file.extension),
-                                        size: 28,
-                                      ),
-                                      const SizedBox(width: 15),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              file.name,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                color: SchemaColors.textPrimary,
-                                              ),
-                                              overflow: TextOverflow.ellipsis, 
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              "${(file.size / 1024).toStringAsFixed(2)} KB",
-                                              style: const TextStyle(
-                                                color: SchemaColors.textSecondary,
-                                                fontSize: 13,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              'En: ${selectedPath ?? "—"}',
-                                              style: const TextStyle(
-                                                color: SchemaColors.textSecondary,
-                                                fontSize: 13,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      // 🔹 Botón de eliminar
-                                      IconButton(
-                                        icon: const Icon(Icons.close, color: Colors.red, size: 20),
-                                        onPressed: () => context.read<FileExplorerBloc>().add(const FileExplorerEvents.uploadFile(null)),
-                                        tooltip: 'Eliminar archivo',
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                                  width: double.infinity,
-                                  child: LocationButton(
-                                    text: 'Seleccionar ubicación',
-                                    selectedPath: selectedPath,
-                                    onPressed: () async {
-                                      final ruta = await showDialog<String>(
-                                        context: context,
-                                        builder: (context) => LocationPickerModal(rootFolders: loadedState!.content.folders),
-                                      );
-                                  
-                                      if (ruta != null) {
-                                        setState(() {
-                                          selectedPath = ruta;
-                                        });
-                                      }
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
+                      ),
+                    ],
+                  ),
+                ),
+                actions: [
+                  if (isBusy)
+                    const Center(child: CircularProgressIndicator(color: SchemaColors.primary))
+                  else ...[
+                    CustomButton(
+                      message: 'Cancelar',
+                      onPressed: () {
+                        Navigator.pop(context);
+                        context.read<FileExplorerBloc>().add(const FileExplorerEvents.uploadFile(null));
+                      },
+                    ),
+                    CustomButton(
+                      message: 'Subir archivo',
+                      onPressed: () async {
+                        if (selectedPath == null) {
+                          await showErrorDialog(context, 'La ubicación de la carpeta es obligatoria');
+                          return;
+                        }
+                        if (_formKey.currentState!.validate()) {
+                          context.read<FileExplorerBloc>().add(FileExplorerEvents.createFile(folderRoute: selectedPath!, fileName: _fileNameController.text));
+                        }
+                      },
                     ),
                   ],
-                ),
-              ),
-              actions: [
-                if (isBusy)
-                  const Center(child: CircularProgressIndicator(color: SchemaColors.primary))
-                else ...[
-                  CustomButton(
-                    message: 'Cancelar',
-                    onPressed: () {
-                      Navigator.pop(context);
-                      context.read<FileExplorerBloc>().add(const FileExplorerEvents.uploadFile(null));
-                    }, 
-                  ),
-                  CustomButton(
-                    message: 'Subir archivo',
-                    onPressed: () async {
-                      if (file == null) {
-                        await showErrorDialog(context, 'Debes seleccionar un archivo primero');
-                        return;
-                      }
-
-                      if (selectedPath == null) {
-                        await showErrorDialog(context, 'La ubicación de la carpeta es obligatoria');
-                        return;
-                      }
-                      
-                      context.read<FileExplorerBloc>().add(FileExplorerEvents.createFile(folderRoute: selectedPath!));
-                    },
-                  ),
                 ],
-              ],
+              ),
             ),
           );
         },

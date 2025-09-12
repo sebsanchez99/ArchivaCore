@@ -111,9 +111,7 @@ class EditFolderState extends State<EditFolder> {
                                     hintText: widget.folder.name,
                                     controller: _nameController,
                                     validator:
-                                        (value) => value.validateWith([
-                                          FormValidator.notEmpty(),
-                                        ]),
+                                        (value) => value.validateWith([FormValidator.folderFileName()]),
                                     onChanged: (text) {
                                       setState(() {});
                                     },

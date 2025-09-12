@@ -16,8 +16,8 @@ class FileExplorerRepositoryImpl implements FileExplorerRepository {
   }
   
   @override
-  HttpFuture<ServerResponseModel> createFiles(PlatformFile file, String folderRoute) {
-    return _fileExplorerService.createFiles(file, folderRoute);
+  HttpFuture<ServerResponseModel> createFiles(PlatformFile file, String folderRoute, String fileName) {
+    return _fileExplorerService.createFiles(file, folderRoute, fileName);
   }
   
   @override
