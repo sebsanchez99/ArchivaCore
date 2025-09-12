@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon app",
-    "docs": "npx documentation build app.js -f md -o docs"
+    "docs": "npx documentation build app.js -f md -o docs",
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "",
