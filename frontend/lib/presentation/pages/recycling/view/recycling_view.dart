@@ -28,7 +28,8 @@ class RecyclingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<RecycleBloc>(
-      create: (_) => RecycleBloc(RecycleState.loading(),
+      create: (_) => RecycleBloc(
+        RecycleState.loading(),
         recycleRepository: context.read<RecycleRepository>(),
       )..add(InitializeEvent()),
       child: BlocConsumer<RecycleBloc, RecycleState>(
@@ -50,19 +51,20 @@ class RecyclingView extends StatelessWidget {
             loaded: (value) {
               final folderList = value.filteredContent.folders;
               final filesList = value.filteredContent.files;
-
               final combinedList = [...folderList, ...filesList];
 
-              if (combinedList.isEmpty) {
+              final isSearching = bloc.searchController.text.isNotEmpty;
+              final hasResults = combinedList.isNotEmpty;
+              final isTrashEmpty = !isSearching && !hasResults;
+
+              if (isTrashEmpty) {
+                // Papelera vacía
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
-                      Icon(
-                        Icons.delete_sweep_outlined,
-                        color: Colors.grey,
-                        size: 80,
-                      ),
+                      Icon(Icons.delete_sweep_outlined,
+                          color: Colors.grey, size: 80),
                       SizedBox(height: 16),
                       Text(
                         'Tu papelera está vacía.',
@@ -86,6 +88,89 @@ class RecyclingView extends StatelessWidget {
                 );
               }
 
+              if (!hasResults && isSearching) {
+                // Búsqueda sin resultados
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: bloc.searchController,
+                                decoration: InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide(
+                                      color: SchemaColors.secondary500,
+                                    ),
+                                  ),
+                                  hintStyle: const TextStyle(fontSize: 14),
+                                  isDense: true,
+                                  hintText: "Buscar contenido...",
+                                  prefixIcon: const Icon(Icons.search),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 20),
+                            CustomIconButton(
+                              message: 'Refrescar',
+                              icon: LucideIcons.refreshCcw,
+                              onPressed: () => bloc.add(InitializeEvent()),
+                            ),
+                            const SizedBox(width: 20),
+                            if (userRol == 'Administrador' ||
+                                userRol == 'Empresa')
+                              CustomIconButton(
+                                message: 'Vaciar papelera',
+                                backgroundColor: SchemaColors.error,
+                                icon: LucideIcons.trash2,
+                                onPressed: () => _showEmptyRecyclingFolderInfoDialog(context),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.search_off,
+                                color: Colors.grey, size: 80),
+                            SizedBox(height: 16),
+                            Text(
+                              'No se encontraron resultados.',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Intenta con otro término de búsqueda.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
+
+              // Vista normal con resultados
               return Column(
                 children: [
                   Padding(
@@ -101,10 +186,10 @@ class RecyclingView extends StatelessWidget {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15),
                                   borderSide: BorderSide(
-                                    color: SchemaColors.secondary500
-                                  )
+                                    color: SchemaColors.secondary500,
+                                  ),
                                 ),
-                                hintStyle: TextStyle(fontSize: 14),
+                                hintStyle: const TextStyle(fontSize: 14),
                                 isDense: true,
                                 hintText: "Buscar contenido...",
                                 prefixIcon: const Icon(Icons.search),
@@ -114,19 +199,19 @@ class RecyclingView extends StatelessWidget {
                               ),
                             ),
                           ),
-                          SizedBox(width: 20),
+                          const SizedBox(width: 20),
                           CustomIconButton(
-                            message: 'Refrescar', 
-                            icon: LucideIcons.refreshCcw, 
-                            onPressed: () => bloc.add(InitializeEvent())
+                            message: 'Refrescar',
+                            icon: LucideIcons.refreshCcw,
+                            onPressed: () => bloc.add(InitializeEvent()),
                           ),
-                            SizedBox(width: 20),
-                          if(userRol == 'Administrador' || userRol == 'Empresa')
+                          const SizedBox(width: 20),
+                          if (userRol == 'Administrador' || userRol == 'Empresa')
                             CustomIconButton(
-                              message: 'Vaciar papelera', 
+                              message: 'Vaciar papelera',
                               backgroundColor: SchemaColors.error,
-                              icon: LucideIcons.trash2, 
-                              onPressed: () => _showEmptyRecyclingFolderInfoDialog(context)
+                              icon: LucideIcons.trash2,
+                              onPressed: () => _showEmptyRecyclingFolderInfoDialog(context),
                             ),
                         ],
                       ),
@@ -143,16 +228,21 @@ class RecyclingView extends StatelessWidget {
                           return FolderTile(
                             folder: item,
                             userRol: userRol,
-                            viewDetailsAction: () => _showFolderDetailsDialog(context, item),
-                            deleteAction: () => _showDeleteFolderInfoDialog(context, item),
-                            restoreAction: () => _showRestoreFolderInfoDialog(context, item),
+                            viewDetailsAction: () =>
+                                _showFolderDetailsDialog(context, item),
+                            deleteAction: () =>
+                                _showDeleteFolderInfoDialog(context, item),
+                            restoreAction: () =>
+                                _showRestoreFolderInfoDialog(context, item),
                           );
                         } else if (item is FileModel) {
                           return FileTile(
                             file: item,
                             userRol: userRol,
-                            deleteAction: () => _showDeleteFileInfoDialog(context, item),
-                            restoreAction: () => _showRestoreFileInfoDialog(context, item),
+                            deleteAction: () =>
+                                _showDeleteFileInfoDialog(context, item),
+                            restoreAction: () =>
+                                _showRestoreFileInfoDialog(context, item),
                           );
                         }
                         return const SizedBox.shrink();
