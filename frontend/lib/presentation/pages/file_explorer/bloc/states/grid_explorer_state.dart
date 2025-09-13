@@ -13,14 +13,19 @@ class GridExplorerState with _$GridExplorerState {
     @Default([]) List<FolderModel> navigationStack,
     required List<FolderModel> path,
     required List<FolderModel> rootFolders, 
+    @Default([]) List<FileModel> rootFiles, 
   }) = _GridExplorerState;
 
-  factory GridExplorerState.initial({List<FolderModel>? rootFolders}) => GridExplorerState(
-    folders: rootFolders ?? [],
-    files: [],
-    navigationStack: [],
-    currentFolder: null,
-    path: [],
-    rootFolders: rootFolders ?? [],
-  );
+  factory GridExplorerState.initial({
+    List<FolderModel>? rootFolders,
+    List<FileModel>? rootFiles,
+  }) => GridExplorerState(
+        folders: rootFolders ?? [],
+        files: [],
+        navigationStack: [],
+        currentFolder: null,
+        path: [],
+        rootFolders: rootFolders ?? [],
+        rootFiles: rootFiles ?? [],
+      );
 }
