@@ -43,7 +43,7 @@ const demoPlan: Plan = {
   name: "Plan DEMO",
   shortName: "DEMO",
   description: "Estás usando la versión gratuita de ArchivaCore con funciones limitadas.",
-  features: ["2 GB de almacenamiento", "Hasta 3 usuarios", "Soporte por correo electrónico"],
+  features: ["2 GB de almacenamiento", "Hasta 3 usuarios", "Soporte por chat"],
   price: "Gratis",
 };
 const currentPlan = ref<Plan>(demoPlan);

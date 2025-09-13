@@ -20,17 +20,17 @@ const plans = [
     price: 'Gratis',
     description: 'Por 14 días',
     features: [
-      'Almacenamiento de 5GB',
+      'Almacenamiento de 2GB',
       'Hasta 3 usuarios',
       'Funciones básicas',
-      'Soporte por email',
+      'Soporte por chat',
     ],
     recommended: false,
     color: 'bg-primary-100',
   },
   {
     title: 'ANUAL',
-    price: '$1,000,000',
+    price: '$500,000',
     description: 'Por empresa / año',
     features: [
       'Almacenamiento ilimitado',
