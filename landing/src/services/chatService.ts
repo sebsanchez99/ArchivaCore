@@ -7,7 +7,7 @@ let socket: Socket | null = null;
  */
 export function connectChat(userId: string, role: string, companyName?: string) {
   if (!socket) {
-    socket = io(import.meta.env.VITE_API_URL || "ws://localhost:3000");
+    socket = io(import.meta.env.VITE_API_WS_BASE_URL || "ws://localhost:3000");
     socket.on("connect", () => {
       socket?.emit("join", { userId, role, nombreEmpresa: companyName });
     });
