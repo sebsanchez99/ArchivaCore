@@ -94,13 +94,15 @@ Output JSON (minimizado) — esquema en español (mantén exactamente estas clav
 
 Reglas finales y formato:
 
-Entrega únicamente el JSON minimizado, sin comentarios, sin saltos de línea extra, sin código adicional.
+- Usa 0 o [] si falta información.
 
-No incluyas URLs ni referencias externas.
+- Entrega únicamente el JSON minimizado, sin comentarios, sin saltos de línea extra, sin código adicional.
 
-Si alguna información solicitada no aparece en el CV, usar 0, nula o [] según tipo.
+- No incluyas URLs ni referencias externas.
 
-Prioriza evidencia textual literal del CV para todas las comprobaciones.
+- Si alguna información solicitada no aparece en el CV, usar 0, nula o [] según tipo.
+
+- Prioriza evidencia textual literal del CV para todas las comprobaciones.
 
 Usa ${cvText} y ${offerText} como las entradas (sustituir por el texto real al ejecutar).
 
