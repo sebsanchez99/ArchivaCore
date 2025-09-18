@@ -6,7 +6,7 @@
       Descargue nuestro manual de usuario para obtener instrucciones detalladas sobre cómo instalar y utilizar
       ArchivaCore.
     </p>
-    <DownloadButton label="Manual de Usuario (PDF)" file="files/manualprueba.pdf" fileName="Manual_ArchivaCore.pdf">
+    <DownloadButton label="Manual de Usuario (PDF)" file="files/Manual_Usuario_de_ArchivaCore.pdf" fileName="Manual_ArchivaCore.pdf">
       <DocumentIcon class="w-4" />
     </DownloadButton>
   </div>
