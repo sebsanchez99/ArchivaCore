@@ -19,12 +19,14 @@ export default defineConfigWithVueTs(
     ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**'],
   },
 
-  pluginVue.configs['flat/essential'],
-  vueTsConfigs.recommended,
-  
+  pluginVue.configs['flat/essential'] as any,
+  vueTsConfigs.recommended as any,
+
   {
-    ...pluginVitest.configs.recommended,
+    ...(pluginVitest.configs.recommended as any),
     files: ['src/**/__tests__/*'],
   },
-  skipFormatting,
+
+  skipFormatting as any,
 )
+
