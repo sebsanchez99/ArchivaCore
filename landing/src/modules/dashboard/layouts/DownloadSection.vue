@@ -24,7 +24,7 @@
       </div>
 
       <div class="flex justify-center">
-        <DownloadButton label="Descargar para Windows (64 bits)" file="files/prueba.exe" file-name="ArchivaCoreSetup.exe"/>
+        <DownloadButton label="Descargar para Windows (64 bits)" file="files/ArchivaCoreSetup.exe" file-name="ArchivaCoreSetup.exe"/>
       </div>
     </div>
 
