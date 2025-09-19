@@ -96,6 +96,8 @@ Reglas finales y formato:
 
 - Usa 0 o [] si falta información.
 
+- Si no hay información sobre los años de experiencia o no puedes calcular los años de experiencia, ponle 0.
+
 - Entrega únicamente el JSON minimizado, sin comentarios, sin saltos de línea extra, sin código adicional.
 
 - No incluyas URLs ni referencias externas.
