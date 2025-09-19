@@ -27,7 +27,7 @@ class GridExplorerBloc extends Bloc<GridExplorerEvents, GridExplorerState> {
           path: event.folders.cast<FolderModel>(),
           rootFolders: event.folders.cast<FolderModel>(),
           rootFiles:
-              event.files.cast<FileModel>(), // ✅ guardamos los archivos raíz
+              event.files.cast<FileModel>(), // guardamos los archivos raíz
         ),
       );
     } else {

@@ -18,10 +18,11 @@ import 'package:frontend/utils/file_filter.dart';
 
 class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
   final SearchController searchController = SearchController();
-    final NotificationBloc _notificationBloc;
+  final NotificationBloc _notificationBloc;
 
   FileExplorerBloc(
-    super.initialState, this._notificationBloc, {
+    super.initialState,
+    this._notificationBloc, {
     required FileExplorerRepository fileExplorerRepository,
   }) : _fileExplorerRepository = fileExplorerRepository {
     searchController.addListener(() {
@@ -48,7 +49,10 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
   final FileExplorerRepository _fileExplorerRepository;
   final _fileFilter = FileFilter();
 
-  Future<void> _onInitialize(InitializeEvent event, Emitter<FileExplorerState> emit) async {
+  Future<void> _onInitialize(
+    InitializeEvent event,
+    Emitter<FileExplorerState> emit,
+  ) async {
     state.maybeWhen(
       loading: () {},
       orElse: () => emit(FileExplorerState.loading()),
@@ -70,7 +74,7 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
             selectedFolder: null,
             allTypes: allTypes,
             allAuthors: allAuthors,
-            isBusy: false
+            isBusy: false,
           );
         },
         left: (failure) => FileExplorerState.failed(failure),
@@ -89,11 +93,19 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     );
   }
 
-  Future<void> _onUploadFile(UploadFileEvent event, Emitter<FileExplorerState> emit) async {
-    state.mapOrNull(loaded: (value) => emit(value.copyWith(file: event.result)));
+  Future<void> _onUploadFile(
+    UploadFileEvent event,
+    Emitter<FileExplorerState> emit,
+  ) async {
+    state.mapOrNull(
+      loaded: (value) => emit(value.copyWith(file: event.result)),
+    );
   }
 
-  Future<void> _onFilterContent(FilterContentEvent event, Emitter<FileExplorerState> emit) async {
+  Future<void> _onFilterContent(
+    FilterContentEvent event,
+    Emitter<FileExplorerState> emit,
+  ) async {
     state.mapOrNull(
       loaded: (value) {
         final result = _fileFilter.applyAllFilters(
@@ -107,12 +119,18 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     );
   }
 
-  Future<void> _onCreateFolder(CreateFolderEvent event, Emitter<FileExplorerState> emit) async {
+  Future<void> _onCreateFolder(
+    CreateFolderEvent event,
+    Emitter<FileExplorerState> emit,
+  ) async {
     final currentState = state.mapOrNull(loaded: (value) => value);
     if (currentState != null) {
       emit(currentState.copyWith(isBusy: true));
     }
-    final result = await _fileExplorerRepository.createFolder(event.folderName, event.routefolder);
+    final result = await _fileExplorerRepository.createFolder(
+      event.folderName,
+      event.routefolder,
+    );
 
     await result.when(
       left: (failure) {
@@ -120,19 +138,29 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
       },
       right: (response) async {
         if (response.result) {
-          _notificationBloc.add(NotificationEvents.createNotification(title: 'Carpeta creada', message: 'Se creó la carpeta ${event.folderName}.'));
+          _notificationBloc.add(
+            NotificationEvents.createNotification(
+              title: 'Carpeta creada',
+              message: 'Se creó la carpeta ${event.folderName}.',
+            ),
+          );
         }
         await _refreshContentAndEmit(emit, response: response);
       },
     );
   }
 
-  Future<void> _onDeleteFolder(DeleteFolderEvent event, Emitter<FileExplorerState> emit) async {
+  Future<void> _onDeleteFolder(
+    DeleteFolderEvent event,
+    Emitter<FileExplorerState> emit,
+  ) async {
     final currentState = state.mapOrNull(loaded: (value) => value);
     if (currentState != null) {
       emit(currentState.copyWith(isBusy: true));
     }
-    final result = await _fileExplorerRepository.moveFolderToRecycle(event.folderPath);
+    final result = await _fileExplorerRepository.moveFolderToRecycle(
+      event.folderPath,
+    );
 
     await result.when(
       left: (failure) {
@@ -140,52 +168,85 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
       },
       right: (response) async {
         if (response.result) {
-          _notificationBloc.add(NotificationEvents.createNotification(title: 'Carpeta movida a reciclaje', message: 'Se movió a reciclaje la carpeta ${event.folderPath}.'));
+          _notificationBloc.add(
+            NotificationEvents.createNotification(
+              title: 'Carpeta movida a reciclaje',
+              message: 'Se movió a reciclaje la carpeta ${event.folderPath}.',
+            ),
+          );
         }
         await _refreshContentAndEmit(emit, response: response);
       },
     );
   }
 
-  Future<void> _onPutFolder(PutFolderEvent event, Emitter<FileExplorerState> emit) async {
+  Future<void> _onPutFolder(
+    PutFolderEvent event,
+    Emitter<FileExplorerState> emit,
+  ) async {
     final currentState = state.mapOrNull(loaded: (value) => value);
     if (currentState != null) {
       emit(currentState.copyWith(isBusy: true));
     }
-    final result = await _fileExplorerRepository.updateFolder(event.folderName, event.currentRoute, event.newRoute);
+    final result = await _fileExplorerRepository.updateFolder(
+      event.folderName,
+      event.currentRoute,
+      event.newRoute,
+    );
     await result.when(
       left: (failure) {
         emit(FileExplorerState.failed(failure));
       },
       right: (response) async {
         if (response.result) {
-          _notificationBloc.add(NotificationEvents.createNotification(title: 'Carpeta actualizada', message: 'Se actualizó la carpeta ${event.folderName}.'));
+          _notificationBloc.add(
+            NotificationEvents.createNotification(
+              title: 'Carpeta actualizada',
+              message: 'Se actualizó la carpeta ${event.folderName}.',
+            ),
+          );
         }
         await _refreshContentAndEmit(emit, response: response);
       },
     );
   }
 
-  Future<void> _onPutFile(PutFileEvent event, Emitter<FileExplorerState> emit) async {
+  Future<void> _onPutFile(
+    PutFileEvent event,
+    Emitter<FileExplorerState> emit,
+  ) async {
     final currentState = state.mapOrNull(loaded: (value) => value);
     if (currentState != null) {
       emit(currentState.copyWith(isBusy: true));
     }
-    final result = await _fileExplorerRepository.updateFile(event.fileName, event.currentRoute, event.newRoute);
+    final result = await _fileExplorerRepository.updateFile(
+      event.fileName,
+      event.currentRoute,
+      event.newRoute,
+    );
     await result.when(
       left: (failure) {
         emit(FileExplorerState.failed(failure));
       },
       right: (response) async {
         if (response.result) {
-          _notificationBloc.add(NotificationEvents.createNotification(title: 'Información de archivo actualizada', message: 'Se actualizó al información del archivo ${event.fileName}.'));
+          _notificationBloc.add(
+            NotificationEvents.createNotification(
+              title: 'Información de archivo actualizada',
+              message:
+                  'Se actualizó al información del archivo ${event.fileName}.',
+            ),
+          );
         }
         await _refreshContentAndEmit(emit, response: response);
       },
     );
   }
 
-  Future<void> _onDeleteFile(DeleteFileEvent event, Emitter<FileExplorerState> emit) async {
+  Future<void> _onDeleteFile(
+    DeleteFileEvent event,
+    Emitter<FileExplorerState> emit,
+  ) async {
     final currentState = state.mapOrNull(loaded: (value) => value);
     if (currentState != null) {
       emit(currentState.copyWith(isBusy: true));
@@ -198,14 +259,22 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
       },
       right: (response) async {
         if (response.result) {
-          _notificationBloc.add(NotificationEvents.createNotification(title: 'Archivo movida a reciclaje', message: 'Se movió a reciclaje el archivo ${event.filePath}.'));
+          _notificationBloc.add(
+            NotificationEvents.createNotification(
+              title: 'Archivo movida a reciclaje',
+              message: 'Se movió a reciclaje el archivo ${event.filePath}.',
+            ),
+          );
         }
         await _refreshContentAndEmit(emit, response: response);
       },
     );
   }
 
-  Future<void> _onSelectFile(SelectFileEvent event, Emitter<FileExplorerState> emit) async {
+  Future<void> _onSelectFile(
+    SelectFileEvent event,
+    Emitter<FileExplorerState> emit,
+  ) async {
     state.mapOrNull(
       loaded: (value) {
         emit(value.copyWith(selectedFile: event.file, selectedFolder: null));
@@ -213,15 +282,28 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     );
   }
 
-  Future<void> _onSelectFolder(SelectFolderEvent event, Emitter<FileExplorerState> emit) async {
-    state.mapOrNull(
-      loaded: (value) {
-        emit(value.copyWith(selectedFolder: event.folder, selectedFile: null));
-      },
-    );
+  Future<void> _onSelectFolder(
+    SelectFolderEvent event,
+    Emitter<FileExplorerState> emit,
+  ) async {
+    final currentState = state.mapOrNull(loaded: (value) => value);
+    if (currentState != null) {
+      // Selecciona la carpeta o limpia selección si es null
+      emit(
+        currentState.copyWith(selectedFolder: event.folder, selectedFile: null),
+      );
+
+      // 👇 Si es null significa que el user dio "go back"
+      if (event.folder == null) {
+        await _refreshContentAndEmit(emit);
+      }
+    }
   }
 
-  Future<void> _onDeleteResponse(DeleteResponseEvent event, Emitter<FileExplorerState> emit) async {
+  Future<void> _onDeleteResponse(
+    DeleteResponseEvent event,
+    Emitter<FileExplorerState> emit,
+  ) async {
     state.mapOrNull(
       loaded: (value) {
         emit(value.copyWith(response: null));
@@ -229,16 +311,20 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     );
   }
 
-  Future<void> _onDownloadFile(DownloadFileEvent event, Emitter<FileExplorerState> emit) async {
+  Future<void> _onDownloadFile(
+    DownloadFileEvent event,
+    Emitter<FileExplorerState> emit,
+  ) async {
     await state.mapOrNull(
       loaded: (value) async {
         emit(value.copyWith(downloading: true));
 
-        final result = await _fileExplorerRepository.downloadFile(event.filePath);
+        final result = await _fileExplorerRepository.downloadFile(
+          event.filePath,
+        );
 
         await result.when(
           right: (response) async {
-            
             final fileData = response.data as Map<String, dynamic>;
             final rawBuffer = fileData['buffer']['data'] as List<dynamic>;
             final fileName = fileData['fileName'] as String;
@@ -246,15 +332,19 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
             final Uint8List bytes = Uint8List.fromList(buffer);
 
             try {
-              await FilePicker.platform.saveFile(fileName: fileName, bytes: bytes);
+              await FilePicker.platform.saveFile(
+                fileName: fileName,
+                bytes: bytes,
+              );
               if (response.result) {
-                _notificationBloc.add(NotificationEvents.createNotification(
-                  title: 'Archivo descargado',
-                  message: 'Se descargó el archivo ${event.filePath}.',
-                ));
+                _notificationBloc.add(
+                  NotificationEvents.createNotification(
+                    title: 'Archivo descargado',
+                    message: 'Se descargó el archivo ${event.filePath}.',
+                  ),
+                );
               }
               emit(value.copyWith(downloading: false));
-
             } catch (e) {
               emit(FileExplorerState.failed(HttpRequestFailure.local()));
             }
@@ -267,22 +357,34 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     );
   }
 
-  Future<void> _onCreateFile(CreateFileEvent event, Emitter<FileExplorerState> emit) async {
+  Future<void> _onCreateFile(
+    CreateFileEvent event,
+    Emitter<FileExplorerState> emit,
+  ) async {
     final currentState = state.mapOrNull(loaded: (value) => value);
     if (currentState != null) {
       emit(currentState.copyWith(isBusy: true));
     }
     await state.mapOrNull(
-      loaded: (value) async{
-        final fileName =  value.file?.name;
-        final result = await _fileExplorerRepository.createFiles(value.file!, event.folderRoute, event.fileName);
+      loaded: (value) async {
+        final fileName = value.file?.name;
+        final result = await _fileExplorerRepository.createFiles(
+          value.file!,
+          event.folderRoute,
+          event.fileName,
+        );
         await result.when(
           left: (failure) {
             emit(FileExplorerState.failed(failure));
           },
           right: (response) async {
             if (response.result) {
-              _notificationBloc.add(NotificationEvents.createNotification(title: 'Archivo subido', message: 'Se subió el archivo $fileName'));
+              _notificationBloc.add(
+                NotificationEvents.createNotification(
+                  title: 'Archivo subido',
+                  message: 'Se subió el archivo $fileName',
+                ),
+              );
             }
             await _refreshContentAndEmit(emit, response: response);
           },
@@ -291,7 +393,10 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     );
   }
 
-  Future<void> _onFilterByTypesAndAuthors(FilterByTypesAndAuthorsEvent event, Emitter<FileExplorerState> emit) async {
+  Future<void> _onFilterByTypesAndAuthors(
+    FilterByTypesAndAuthorsEvent event,
+    Emitter<FileExplorerState> emit,
+  ) async {
     state.mapOrNull(
       loaded: (value) {
         final updatedState = value.copyWith(
@@ -309,7 +414,10 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
     );
   }
 
-  Future<void> _refreshContentAndEmit(Emitter<FileExplorerState> emit, {ServerResponseModel? response}) async {
+  Future<void> _refreshContentAndEmit(
+    Emitter<FileExplorerState> emit, {
+    ServerResponseModel? response,
+  }) async {
     final result = await _fileExplorerRepository.getFolders();
 
     result.when(
@@ -318,26 +426,28 @@ class FileExplorerBloc extends Bloc<FileExplorerEvents, FileExplorerState> {
       },
       right: (newContentResponse) {
         final currentState = state.mapOrNull(loaded: (value) => value);
-        
+
         final responseData = newContentResponse.data;
         final newContent = FolderResponse.fromJson(responseData);
         final allTypes = _fileFilter.getAllTypes(newContent);
         final allAuthors = _fileFilter.getAllAuthors(newContent);
 
-        emit(FileExplorerState.loaded(
-          content: newContent,
-          filteredContent: _fileFilter.applyAllFilters(
+        emit(
+          FileExplorerState.loaded(
             content: newContent,
-            query: searchController.text,
-            selectedTypes: currentState?.selectedTypes ?? {},
-            selectedAuthors: currentState?.selectedAuthors ?? {},
+            filteredContent: _fileFilter.applyAllFilters(
+              content: newContent,
+              query: searchController.text,
+              selectedTypes: currentState?.selectedTypes ?? {},
+              selectedAuthors: currentState?.selectedAuthors ?? {},
+            ),
+            allTypes: allTypes,
+            allAuthors: allAuthors,
+            response: response,
+            viewType: currentState?.viewType ?? FileExplorerViewType.grid(),
+            isBusy: false,
           ),
-          allTypes: allTypes,
-          allAuthors: allAuthors,
-          response: response,
-          viewType: currentState?.viewType ?? FileExplorerViewType.grid(),
-          isBusy: false,
-        ));
+        );
       },
     );
   }
