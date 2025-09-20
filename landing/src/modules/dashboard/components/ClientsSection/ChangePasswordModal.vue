@@ -94,7 +94,6 @@ async function submit() {
   if (!isValid) return
   await clientsStore.changePassword(props.company!.id, fields.password)
   const result = clientsStore.response!.result ? true : false
-  emit('passwordChanged')
   close()
   await resetFields()
   return result
