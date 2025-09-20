@@ -19,24 +19,12 @@ BEGIN
             v_usuario := NULL;
             v_nombre_usuario := COALESCE(OLD.usu_nombrecompleto, NEW.usu_nombrecompleto);
         END IF;
+
     ELSIF TG_TABLE_NAME = 'empresa' THEN
         v_registro := COALESCE(NEW.emp_id, OLD.emp_id);
-        v_usuario := NULL;
-        v_nombre_usuario := NULL;
-    ELSIF TG_TABLE_NAME = 'documento' THEN
-        v_registro := COALESCE(NEW.doc_id, OLD.doc_id);
-        IF TG_OP <> 'DELETE' THEN
-            v_usuario := COALESCE(NEW.doc_subidopor, OLD.doc_subidopor);
-            SELECT usu_nombrecompleto INTO v_nombre_usuario
-            FROM Usuario WHERE usu_id = v_usuario;
-        ELSE
-            v_usuario := NULL;
-            v_nombre_usuario := NULL;
-        END IF;
+
     ELSIF TG_TABLE_NAME = 'notificacion' THEN
         v_registro := COALESCE(NEW.not_id, OLD.not_id);
-        v_usuario := NULL;
-        v_nombre_usuario := NULL;
     END IF;
 
     INSERT INTO LogActividad (
@@ -85,11 +73,9 @@ BEGIN
             v_nombre_usuario := COALESCE(OLD.usu_nombrecompleto, NEW.usu_nombrecompleto);
         END IF;
         v_desc := TG_OP || ' usuario: ' || COALESCE(NEW.usu_nombre, OLD.usu_nombre);
+
     ELSIF TG_TABLE_NAME = 'empresa' THEN
         v_registro := COALESCE(NEW.emp_id, OLD.emp_id);
-        v_usuario := NULL;
-        v_nombre_usuario := NULL;
-        v_desc := TG_OP || ' empresa: ' || COALESCE(NEW.emp_nombre, OLD.emp_nombre);
         IF TG_OP = 'DELETE' THEN
             v_empresa := NULL;
             v_nombre_empresa := COALESCE(OLD.emp_nombre, NEW.emp_nombre);
@@ -97,22 +83,11 @@ BEGIN
             v_empresa := COALESCE(NEW.emp_id, OLD.emp_id);
             v_nombre_empresa := COALESCE(NEW.emp_nombre, OLD.emp_nombre);
         END IF;
-    ELSIF TG_TABLE_NAME = 'documento' THEN
-        v_empresa := COALESCE(NEW.doc_empresa, OLD.doc_empresa);
-        v_registro := COALESCE(NEW.doc_id, OLD.doc_id);
-        IF TG_OP <> 'DELETE' THEN
-            v_usuario := COALESCE(NEW.doc_subidopor, OLD.doc_subidopor);
-            v_nombre_usuario := NULL; -- Puedes hacer un JOIN si quieres traer el nombre aquí también
-        ELSE
-            v_usuario := NULL;
-            v_nombre_usuario := NULL;
-        END IF;
-        v_desc := TG_OP || ' documento: ' || COALESCE(NEW.doc_nombre, OLD.doc_nombre);
+        v_desc := TG_OP || ' empresa: ' || COALESCE(NEW.emp_nombre, OLD.emp_nombre);
+
     ELSIF TG_TABLE_NAME = 'notificacion' THEN
         v_empresa := NULL;
         v_registro := COALESCE(NEW.not_id, OLD.not_id);
-        v_usuario := NULL;
-        v_nombre_usuario := NULL;
         v_desc := TG_OP || ' notificación: ' || COALESCE(NEW.not_titulo, OLD.not_titulo);
     END IF;
 
@@ -138,6 +113,7 @@ BEGIN
             v_nombre_usuario
         );
     END IF;
+
     RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
@@ -213,11 +189,11 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION fn_usuario_delete_cascade()
 RETURNS TRIGGER AS $$
 BEGIN
-    DELETE FROM Documento WHERE Doc_SubidoPor = OLD.Usu_ID;
     DELETE FROM NotificacionUsuario WHERE NotUsu_Usuario = OLD.Usu_ID;
     RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
+
 
 CREATE TRIGGER trg_usuario_delete_cascade
 BEFORE DELETE ON Usuario
